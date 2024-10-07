@@ -6,5 +6,6 @@ public class MultiplicationExerciseFromAbstract : AbstractMathExercise<IMultipli
 {
     public MultiplicationExerciseFromAbstract(IMultiplicationExampleGenerator exampleGenerator, IMultiplicationTextGenerator textGenerator) : base(exampleGenerator, textGenerator)
     {
+        
     }
 }

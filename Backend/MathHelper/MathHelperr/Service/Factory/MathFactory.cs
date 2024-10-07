@@ -27,11 +27,15 @@ public class MathFactory : IMathFactory
             case "algebra":
                 var algebraExampleGenerator = _serviceProvider.GetRequiredService<IAlgebraExampleGenerator>();
                 var algebraTextGenerator = _serviceProvider.GetRequiredService<IAlgebraTextGenerator>();
-                return new AlgebraExcercise(algebraExampleGenerator, algebraTextGenerator);
+                return new AlgebraExerciseFromAbstract(algebraExampleGenerator, algebraTextGenerator);
            
             case "multiplication":
                 return new MultiplicationExerciseFromAbstract(_multiplicationExampleGenerator,
                     _multiplicationTextGenerator);
+            case "division":
+                return new DivisionExerciseFromAbstract(
+                    _serviceProvider.GetRequiredService<IDivisionExampleGenerator>(),
+                    _serviceProvider.GetRequiredService<IDivisionTextGenerator>());
             default:
                 throw new NotImplementedException("operation not implemented");
         }

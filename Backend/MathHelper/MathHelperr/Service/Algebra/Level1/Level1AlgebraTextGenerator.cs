@@ -2,7 +2,7 @@ using MathHelperr.Model;
 
 namespace MathHelperr.Service;
 
-public class AlgebraTextGenerator : IAlgebraTextGenerator
+public class Level1AlgebraTextGenerator : IAlgebraTextGenerator
 {
     public string Answer(AlgebraResult example)
     {

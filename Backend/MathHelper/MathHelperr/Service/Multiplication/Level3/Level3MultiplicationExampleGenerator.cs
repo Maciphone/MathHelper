@@ -2,7 +2,7 @@ using MathHelperr.Model;
 
 namespace MathHelperr.Service;
 
-public class MultiplicationExampleGenerator : IMultiplicationExampleGenerator
+public class Level3MultiplicationExampleGenerator : IMultiplicationExampleGenerator
 {
     private static readonly Random _random = new Random();
 
@@ -14,7 +14,7 @@ public class MultiplicationExampleGenerator : IMultiplicationExampleGenerator
     private AlgebraResult GetNumbers()
     {
         int a = _random.Next(1, 10);
-        int b = _random.Next(1, 10);
+        int b = _random.Next(1, 21);
         int result = a * b;
         return new AlgebraResult
         {

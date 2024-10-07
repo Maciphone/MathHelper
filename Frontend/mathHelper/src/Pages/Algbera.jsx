@@ -1,16 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 export default function Algbera() {
   const [matek, setMath] = useState([]);
   const [userAnswer, setUserAnswer] = useState("");
   const [feedback, setFeedback] = useState("");
+  const [level, setLevel] = useState("1");
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
-      const response = await fetch(`api/algebra/GetExercise?type=algebra`, {
+      const response = await fetch(`api/algebra/GetExercise?type=division`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
+          Level: `${level}`,
         },
       });
       if (!response.ok) {
@@ -22,18 +24,18 @@ export default function Algbera() {
     } catch (error) {
       console.error(error);
     }
-  };
+  }, [level]);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (parseInt(userAnswer) === matek.result) {
       setFeedback("Bravo!");
-      fetchData();
+      await fetchData();
     } else {
       setFeedback("Rossz válasz, próbáld újra!");
     }
@@ -44,9 +46,26 @@ export default function Algbera() {
     fetchData();
   };
 
+  const handleLevel = (e) => {
+    const level = e.target.value;
+    setLevel(level);
+  };
+
   return (
     <div>
-      <h2>Algbera</h2>
+      <div>
+        <p>szint</p>
+        <button value="1" onClick={handleLevel}>
+          1
+        </button>
+        <button value="2" onClick={handleLevel}>
+          2
+        </button>
+        <button value="3" onClick={handleLevel}>
+          3
+        </button>
+      </div>
+      <h2>Összeadás</h2>
       {matek ? (
         <div>
           <p>Kérdés: {matek.question}</p>

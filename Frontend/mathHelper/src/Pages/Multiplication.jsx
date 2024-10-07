@@ -4,6 +4,7 @@ export default function Multiplication() {
   const [matek, setMath] = useState([]);
   const [userAnswer, setUserAnswer] = useState("");
   const [feedback, setFeedback] = useState("");
+  const [level, setLevel] = useState("1");
 
   const fetchData = async () => {
     try {
@@ -13,6 +14,7 @@ export default function Multiplication() {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
+            Level: `${level}`,
           },
         }
       );
@@ -49,7 +51,7 @@ export default function Multiplication() {
 
   return (
     <div>
-      <h2>Algbera</h2>
+      <h2>Szorzás</h2>
       {matek ? (
         <div>
           <p>Kérdés: {matek.question}</p>

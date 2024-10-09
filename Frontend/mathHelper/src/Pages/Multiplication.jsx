@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 export default function Multiplication() {
   const [matek, setMath] = useState([]);
@@ -6,7 +6,7 @@ export default function Multiplication() {
   const [feedback, setFeedback] = useState("");
   const [level, setLevel] = useState("1");
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const response = await fetch(
         `api/algebra/GetExercise?type=multiplication`,
@@ -27,11 +27,11 @@ export default function Multiplication() {
     } catch (error) {
       console.error(error);
     }
-  };
+  }, [level]);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -48,9 +48,25 @@ export default function Multiplication() {
   const skip = () => {
     fetchData();
   };
+  const handleLevel = (e) => {
+    const level = e.target.value;
+    setLevel(level);
+  };
 
   return (
     <div>
+      <div>
+        <p>szint</p>
+        <button value="1" onClick={handleLevel}>
+          1
+        </button>
+        <button value="2" onClick={handleLevel}>
+          2
+        </button>
+        <button value="3" onClick={handleLevel}>
+          3
+        </button>
+      </div>
       <h2>Szorzás</h2>
       {matek ? (
         <div>

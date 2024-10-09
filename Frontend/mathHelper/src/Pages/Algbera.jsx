@@ -8,7 +8,7 @@ export default function Algbera() {
 
   const fetchData = useCallback(async () => {
     try {
-      const response = await fetch(`api/algebra/GetExercise?type=division`, {
+      const response = await fetch(`api/algebra/GetAiExercise?type=algebra`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

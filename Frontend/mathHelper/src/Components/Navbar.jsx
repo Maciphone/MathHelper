@@ -8,10 +8,16 @@ export default function Navbar() {
         <button>Home</button>
       </Link>
       <Link to={"/algebra"}>
-        <button>Algebra</button>
+        <button>Összeadás</button>
       </Link>
       <Link to={"/multiplication"}>
         <button>Szorzás</button>
+      </Link>
+      <Link to={"/division"}>
+        <button>Szorzás</button>
+      </Link>
+      <Link to={"/text"}>
+        <button>Szöveges</button>
       </Link>
     </nav>
   );

@@ -4,6 +4,8 @@ import Layout from "./Components/Layout";
 import Welcome from "./Pages/Welcome";
 import Algbera from "./Pages/Algbera";
 import Multiplication from "./Pages/Multiplication";
+import Division from "./Pages/Division";
+import AITextExercise from "./Pages/AITextExercise";
 
 function App() {
   const routes = useRoutes([
@@ -22,6 +24,14 @@ function App() {
         {
           path: "/multiplication",
           element: <Multiplication />,
+        },
+        {
+          path: "/division",
+          element: <Division />,
+        },
+        {
+          path: "/text",
+          element: <AITextExercise />,
         },
       ],
     },

@@ -27,7 +27,8 @@ public class MathFactory : IMathFactory
             case "algebra":
                 var algebraExampleGenerator = _serviceProvider.GetRequiredService<IAlgebraExampleGenerator>();
                 var algebraTextGenerator = _serviceProvider.GetRequiredService<IAlgebraTextGenerator>();
-                return new AlgebraExerciseFromAbstract(algebraExampleGenerator, algebraTextGenerator);
+                return new AlgebraExerciseFromAbstract(
+                    algebraExampleGenerator, algebraTextGenerator);
            
             case "multiplication":
                 return new MultiplicationExerciseFromAbstract(_multiplicationExampleGenerator,

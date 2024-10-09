@@ -25,12 +25,12 @@ where TText : IMathTextGenerator
     }
 
 
-    public string Question()
+    public virtual string Question()
     {
         return _question;
     }
 
-    public AlgebraResult Answer()
+    public virtual AlgebraResult Answer()
     {
 
         return _generatedNumber;

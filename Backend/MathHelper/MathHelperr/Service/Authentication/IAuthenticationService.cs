@@ -1,0 +1,10 @@
+using SolarWatch.Service.Authentication;
+
+namespace MathHelperr.Service.Authentication;
+
+public interface IAuthenticationService
+{
+    Task<AuthResult> RegisterAsync(string email, string username, string password, string role);
+    Task<AuthResult> LoginAsync(string email, string password);
+    
+}

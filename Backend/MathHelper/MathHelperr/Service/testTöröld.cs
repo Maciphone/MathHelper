@@ -2,7 +2,7 @@ using MathHelperr.Model;
 
 namespace MathHelperr.Service;
 
-public class testTöröld
+public class testTöröld :IAlgebraTextGenerator
 {
     public string Answer(AlgebraResult example)
     {

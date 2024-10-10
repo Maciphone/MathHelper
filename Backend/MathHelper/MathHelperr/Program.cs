@@ -1,47 +1,29 @@
+using System.Text;
+using MathHelperr.Data;
 using MathHelperr.Service;
 using MathHelperr.Service.AbstractImplementation;
+using MathHelperr.Service.Authentication;
 using MathHelperr.Service.Factory;
 using MathHelperr.Service.Groq;
 using MathHelperr.Service.LevelProvider;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Scrutor;
+using SolarWatch.Service.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration.AddJsonFile("appsettings.json");
+builder.Configuration.AddUserSecrets<Program>();
+
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-
-//Scrutor használata
-// builder.Services.Scan(scan => scan
-//     .FromAssemblyOf<AlgebraExampleGenerator>()
-//     .AddClasses(classes => classes.AssignableTo<IMathExampleGenerator>())
-//     .AsImplementedInterfaces()
-//     .WithTransientLifetime());
-//
-// builder.Services.Scan(scan => scan
-//     .FromAssemblyOf<AlgebraTextGenerator>()
-//     .AddClasses(classes => classes.AssignableTo<IMathTextGenerator>())
-//     .AsImplementedInterfaces()
-//     .WithTransientLifetime());
-//
-// builder.Services.Scan(scan => scan
-//     .FromAssemblyOf<AlgebraExcercise>()
-//     .AddClasses(classes => classes.AssignableTo<IMathExcercise>())
-//     .AsImplementedInterfaces()
-//     .WithTransientLifetime());
-//
-// builder.Services.AddTransient<MultiplicationExampleGenerator>();
-// builder.Services.AddTransient<MultiplicationTextGenerator>();
-// builder.Services.AddTransient<MultiplicationExcercise>();
-//
-// builder.Services.AddScoped<IMathFactory, MathFactory>();
-
-//builder.Services.AddTransient<IAlgebraExampleGenerator, AlgebraExampleGenerator>();
-//builder.Services.AddTransient<IAlgebraTextGenerator, AlgebraTextGenerator>();
-//builder.Services.AddTransient<IMultiplicationExampleGenerator, MultiplicationExampleGenerator>();
-//builder.Services.AddTransient<IMultiplicationTextGenerator, MultiplicationTextGenerator>();
 
 builder.Services.AddTransient<IAlgebraExcercise, AlgebraExerciseFromAbstract>();
 builder.Services.AddTransient<IMultiplicationExcercise, MultiplicationExerciseFromAbstract>();
@@ -57,6 +39,10 @@ builder.Services.AddScoped<GroqRequest>();
 builder.Services.AddScoped<GroqApiClient>();
 builder.Services.AddScoped<GroqTextGenerator>();
 
+//authentication registration
+builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+
 
 // IMath children registration for different levels, solution for same interface
 // implementations registration
@@ -64,7 +50,11 @@ AddAlgebraGenerators();
 AddMultiplicationGenerators();
 AddDivisionGenerators();
 
+AddJwtAuthentication();
+AddIdentity();
 
+// Configure Identity DbContext
+builder.Services.AddDbContext<UserContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
 
@@ -84,6 +74,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.MapControllers();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.Run();
 
@@ -123,8 +115,7 @@ void AddDivisionGenerators()
 
 void AddMultiplicationGenerators()
 {
-
-
+    
     builder.Services.AddTransient<IMultiplicationTextGenerator>(provider =>
     {
         var context = provider.GetRequiredService<IContextProvider>();
@@ -198,7 +189,69 @@ void AddAlgebraGenerators()
 
         throw new ArgumentException("Invalid level");
     });
-    
-    
-    
+}
+
+void AddJwtAuthentication()
+{
+
+
+
+    var jwtSettings = builder.Configuration.GetSection("Jwt");
+    var issuerSigningKey = builder.Configuration["Jwt:IssuerSigningKey"];
+
+    builder.Services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = jwtSettings["ValidIssuer"],
+                ValidAudience = jwtSettings["ValidAudience"],
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(issuerSigningKey))
+            };
+            options.Events = new JwtBearerEvents
+            {
+                OnMessageReceived = context =>
+                {
+                    context.Token = context.Request.Cookies["jwt"];
+                    return Task.CompletedTask;
+                }
+            };
+        })
+//outgoing settings
+        .AddCookie(options =>
+        {
+            options.Cookie.HttpOnly = true;
+            options.Cookie.SecurePolicy =
+                CookieSecurePolicy.Always; // Set to Always in production, Csak HTTPS-en keresztül
+            options.Cookie.SameSite = SameSiteMode.None;
+            options.Cookie.Name = "jwt";
+            options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+        });
+
+}
+
+void AddIdentity()
+{
+//https://journey.study/v2/learn/materials/asp-register-2q2023
+    builder.Services
+        .AddIdentityCore<IdentityUser>(options =>
+        {
+            options.SignIn.RequireConfirmedAccount = false;
+            options.User.RequireUniqueEmail = true;
+            options.Password.RequireDigit = false;
+            options.Password.RequiredLength = 6;
+            options.Password.RequireNonAlphanumeric = false;
+            options.Password.RequireUppercase = false;
+            options.Password.RequireLowercase = false;
+        })
+        .AddRoles<IdentityRole>() //Enable Identity roles 
+        .AddEntityFrameworkStores<UserContext>();
 }

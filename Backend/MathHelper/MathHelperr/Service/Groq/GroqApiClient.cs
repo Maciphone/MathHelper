@@ -6,7 +6,8 @@ using System.Text.Json.Nodes;
 namespace MathHelperr.Service.Groq;
 
  public class GroqApiClient : IDisposable
-    {
+ {
+     private readonly IConfiguration _configuration;
         
         private readonly HttpClient _httpClient;
         private const string BaseUrl = "https://api.groq.com/openai/v1";
@@ -14,14 +15,13 @@ namespace MathHelperr.Service.Groq;
         private const string TranscriptionsEndpoint = "/audio/transcriptions";
         private const string TranslationsEndpoint = "/audio/translations";
        
-        // TODO: hide in apsettings 
-        private string apiKey = "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";  
         
 
-        public GroqApiClient()
+        public GroqApiClient(IConfiguration configuration)
         {
+            _configuration = configuration;
             _httpClient = new HttpClient();
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _configuration["Groq_Api_Key"]);
         }
 
         public async Task<JsonObject?> CreateChatCompletionAsync(JsonObject request)

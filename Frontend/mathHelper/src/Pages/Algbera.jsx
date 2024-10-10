@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
+import LevelButtons from "../Components/LevelButtons";
 
 export default function Algbera() {
   const [matek, setMath] = useState([]);
@@ -47,6 +48,10 @@ export default function Algbera() {
   };
 
   const handleLevel = (e) => {
+    //  const level = e.target.value;
+    setLevel(e);
+  };
+  const handleLevelLocal = (e) => {
     const level = e.target.value;
     setLevel(level);
   };
@@ -54,14 +59,15 @@ export default function Algbera() {
   return (
     <div>
       <div>
+        <LevelButtons operation={"algebra"} handleLevel={handleLevel} />
         <p>szint</p>
-        <button value="1" onClick={handleLevel}>
+        <button value="1" onClick={handleLevelLocal}>
           1
         </button>
-        <button value="2" onClick={handleLevel}>
+        <button value="2" onClick={handleLevelLocal}>
           2
         </button>
-        <button value="3" onClick={handleLevel}>
+        <button value="3" onClick={handleLevelLocal}>
           3
         </button>
       </div>

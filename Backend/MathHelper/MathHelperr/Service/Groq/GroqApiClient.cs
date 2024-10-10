@@ -15,7 +15,7 @@ namespace MathHelperr.Service.Groq;
         private const string TranslationsEndpoint = "/audio/translations";
        
         // TODO: hide in apsettings 
-        private string apiKey = "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";  
+        private string apiKey = "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";  
         
 
         public GroqApiClient()

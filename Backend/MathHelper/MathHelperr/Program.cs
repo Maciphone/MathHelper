@@ -55,6 +55,7 @@ builder.Services.AddScoped<IContextProvider, WebContextProvider>();
 
 builder.Services.AddScoped<GroqRequest>();
 builder.Services.AddScoped<GroqApiClient>();
+builder.Services.AddScoped<GroqTextGenerator>();
 
 
 // IMath children registration for different levels, solution for same interface

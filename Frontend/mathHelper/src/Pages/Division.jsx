@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
+import LevelButtons from "../Components/LevelButtons";
 
 export default function Division() {
   const [matek, setMath] = useState([]);
@@ -53,18 +54,7 @@ export default function Division() {
 
   return (
     <div>
-      <div>
-        <p>szint</p>
-        <button value="1" onClick={handleLevel}>
-          1
-        </button>
-        <button value="2" onClick={handleLevel}>
-          2
-        </button>
-        <button value="3" onClick={handleLevel}>
-          3
-        </button>
-      </div>
+      <LevelButtons operation={"division"} handleLevel={handleLevel} />
       <h2>Osztás</h2>
       {matek ? (
         <div>
@@ -89,3 +79,16 @@ export default function Division() {
     </div>
   );
 }
+
+// <div>
+//         <p>szint</p>
+//         <button value="1" onClick={handleLevel}>
+//           1
+//         </button>
+//         <button value="2" onClick={handleLevel}>
+//           2
+//         </button>
+//         <button value="3" onClick={handleLevel}>
+//           3
+//         </button>
+//       </div>

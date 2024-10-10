@@ -8,6 +8,7 @@ import Division from "./Pages/Division";
 import AITextExercise from "./Pages/TesterPage";
 import LevelButtons from "./Components/LevelButtons";
 import { Login } from "./Pages/Login";
+import { CookiesProvider } from "react-cookie";
 
 function App() {
   const routes = useRoutes([
@@ -50,7 +51,7 @@ function App() {
       ],
     },
   ]);
-  return routes;
+  return <CookiesProvider>{routes}</CookiesProvider>;
 }
 
 export default App;

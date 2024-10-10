@@ -40,7 +40,7 @@ builder.Services.AddScoped<GroqApiClient>();
 builder.Services.AddScoped<GroqTextGenerator>();
 
 //authentication registration
-builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
 

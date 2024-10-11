@@ -7,7 +7,7 @@ using SolarWatch.Service.Authentication;
 namespace MathHelperr.Controller;
 
 [ApiController]
-[Route("api/auth")]
+[Route("api/authentication")]
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
@@ -50,8 +50,11 @@ public class AuthController : ControllerBase
             }
             return BadRequest(ModelState);
         }
+        Console.WriteLine(request.Email);
+        Console.WriteLine(request.Password);
 
         var result = await _authService.LoginAsync(request.Email, request.Password);
+        Console.WriteLine(result.UserName);
 
         if (!result.Success)
         {

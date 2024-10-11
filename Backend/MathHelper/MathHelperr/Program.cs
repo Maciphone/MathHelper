@@ -42,6 +42,9 @@ builder.Services.AddScoped<GroqTextGenerator>();
 //authentication registration
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<AuthenticationSeeder>();
+//AddRoles() belongs also to auth.
+
 
 
 // IMath children registration for different levels, solution for same interface
@@ -57,11 +60,12 @@ AddIdentity();
 builder.Services.AddDbContext<UserContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
-
-
 builder.Services.AddControllers();
 
 var app = builder.Build();
+
+// Authentication: add identity roles
+AddRoles();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -78,6 +82,16 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.Run();
+
+
+void AddRoles()
+{
+    using var scope = app.Services.CreateScope(); // AuthenticationSeeder is a scoped service, therefore we need a scope instance to access it
+    var authenticationSeeder = scope.ServiceProvider.GetRequiredService<AuthenticationSeeder>();
+    authenticationSeeder.AddRoles(); //User and Admin roles 
+    authenticationSeeder.AddAdmin(); // admin created and added
+}
+
 
 void AddDivisionGenerators()
 {

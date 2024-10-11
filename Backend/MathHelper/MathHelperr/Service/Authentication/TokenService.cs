@@ -49,6 +49,7 @@ public class TokenService : ITokenService
 
     private List<Claim> CreateClaims(IdentityUser user, string? role)
     {
+       
         try
         {
             var claims = new List<Claim>
@@ -59,6 +60,7 @@ public class TokenService : ITokenService
                     EpochTime.GetIntDate(DateTime.UtcNow).ToString(CultureInfo.InvariantCulture),
                     ClaimValueTypes.Integer64),
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
+                new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(ClaimTypes.Email, user.Email)
             };
             if (role != null)
@@ -79,7 +81,7 @@ public class TokenService : ITokenService
 
     private SigningCredentials CreateSigningCredentials()
     {
-        var secret = _configuration["IssuerSigningKey"];
+        var secret = _configuration["Jwt:IssuerSigningKey"];
         return new SigningCredentials(
             new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(secret)

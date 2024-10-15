@@ -14,10 +14,13 @@ export default function Navbar() {
         <button>Szorzás</button>
       </Link>
       <Link to={"/division"}>
-        <button>Szorzás</button>
+        <button>Osztás</button>
       </Link>
       <Link to={"/text"}>
         <button>Szöveges</button>
+      </Link>
+      <Link to={"/login"}>
+        <button>Login</button>
       </Link>
     </nav>
   );

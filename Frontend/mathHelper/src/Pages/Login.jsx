@@ -6,6 +6,8 @@ import { useCookies } from "react-cookie";
 // // download the CSS file too OR
 // // remove the following line if you're already using Tailwind
 import "../styles.css";
+import { useDispatch, useSelector } from "react-redux";
+import { addName } from "../Reduce/userInformation";
 
 export const Login = () => {
   const [cookies, setCookie, removeCookie] = useCookies(["token"]);
@@ -13,12 +15,16 @@ export const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  //Reduce
+  const dispatch = useDispatch();
+  const username = useSelector((state) => state.userData.value);
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    console.log(password, email);
 
     try {
-      const response = await fetch("api/auth/Login", {
+      const response = await fetch("api/authentication/Login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -27,8 +33,17 @@ export const Login = () => {
       });
       if (response.ok) {
         const data = await response.json();
-        //cookieProvider
-        setCookie("token", data.token, { path: "/", maxAge: 30 });
+
+        //data storage in localstorage
+        localStorage.setItem(`user`, data.userName);
+        console.log(localStorage.getItem`user`);
+
+        //data storage with Redux , add username to Reduce
+        dispatch(addName(data.userName));
+
+        //cookieProvider - don't use it xxs attack
+        // setCookie("token", data.token, { path: "/", maxAge: 30 });
+
         navigate("/");
       } else {
         setError("Invalid credentials");
@@ -38,6 +53,13 @@ export const Login = () => {
       console.error(error);
     }
   };
+
+  useEffect(() => {
+    // Figyeljük a Redux állapot változását
+    if (username) {
+      console.log("Felhasználónév a Redux-ból:", username);
+    }
+  }, [username]);
 
   const logOut = () => {
     document.cookie = "token=; path=/; max-age=0";

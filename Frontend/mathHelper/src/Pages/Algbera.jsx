@@ -1,11 +1,18 @@
 import React, { useCallback, useEffect, useState } from "react";
 import LevelButtons from "../Components/LevelButtons";
+import Stopwatch from "../Components/StopWatch";
 
 export default function Algbera() {
   const [matek, setMath] = useState([]);
   const [userAnswer, setUserAnswer] = useState("");
   const [feedback, setFeedback] = useState("");
   const [level, setLevel] = useState("1");
+
+  //stopwatch
+  const [isRunning, setIsRunning] = useState(false);
+  const [reset, setReset] = useState(false);
+  const [elapsedTime, setElapsedTime] = useState([]);
+  const [isTimeRequested, setIsTimeRequested] = useState(false);
 
   const fetchData = useCallback(async () => {
     try {
@@ -22,6 +29,7 @@ export default function Algbera() {
       const data = await response.json();
       console.log(data);
       setMath(data);
+      setIsRunning(true);
     } catch (error) {
       console.error(error);
     }
@@ -31,11 +39,18 @@ export default function Algbera() {
     fetchData();
   }, [fetchData]);
 
+  useEffect(() => {
+    setReset((prevReset) => !prevReset);
+  }, [matek]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (parseInt(userAnswer) === matek.result) {
       setFeedback("Bravo!");
+      setIsRunning(false);
+      setIsTimeRequested(true);
+      setReset(!reset);
       await fetchData();
     } else {
       setFeedback("Rossz válasz, próbáld újra!");
@@ -47,14 +62,25 @@ export default function Algbera() {
     fetchData();
   };
 
+  //set time required to solve the exercise,
+  const handleElapsedTime = (time) => {
+    setElapsedTime(time);
+    setIsTimeRequested(false);
+    console.log(`Eltelt idő: ${time} ms`);
+  };
+
   const handleLevel = (e) => {
-    //  const level = e.target.value;
     setLevel(e);
+    setIsRunning(true);
   };
   const handleLevelLocal = (e) => {
     const level = e.target.value;
     setLevel(level);
   };
+
+  useEffect(() => {
+    console.log(reset);
+  }, [reset]);
 
   return (
     <div>
@@ -87,6 +113,16 @@ export default function Algbera() {
             <button type="submit">ennyi :)</button>
           </form>
           <button onClick={skip}>másikat</button>
+
+          <div onClick={() => setReset(!reset)}>
+            <Stopwatch
+              isRunning={isRunning}
+              onReset={reset}
+              handleElapsedTime={handleElapsedTime}
+              isTimeRequested={isTimeRequested}
+            />
+          </div>
+
           {feedback && <p>{feedback}</p>}
         </div>
       ) : (

@@ -10,8 +10,6 @@ import { Provider } from "react-redux"; //A REUDUX importálása, és az app bec
 ReactDOM.createRoot(document.getElementById("root")).render(
   <StrictMode>
     <Provider store={store}>
-      {" "}
-      /
       <BrowserRouter>
         <App />
       </BrowserRouter>

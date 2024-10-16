@@ -1,7 +1,6 @@
 import React, { useState, useEffect, memo } from "react";
 
 function LevelButtons({ operation, handleLevel }) {
-  console.log(operation);
   const [levels, setLevels] = useState(0);
 
   useEffect(() => {

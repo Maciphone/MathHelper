@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import LevelButtons from "../Components/LevelButtons";
 
 export default function Division() {
@@ -6,6 +6,7 @@ export default function Division() {
   const [userAnswer, setUserAnswer] = useState("");
   const [feedback, setFeedback] = useState("");
   const [level, setLevel] = useState("1");
+  const inputRef = useRef(null);
 
   const fetchData = useCallback(async () => {
     try {
@@ -22,6 +23,7 @@ export default function Division() {
       const data = await response.json();
       console.log(data);
       setMath(data);
+      inputRef.current.focus();
     } catch (error) {
       console.error(error);
     }
@@ -37,10 +39,12 @@ export default function Division() {
     if (parseInt(userAnswer) === matek.result) {
       setFeedback("Bravo!");
       await fetchData();
+      inputRef.current.focus();
     } else {
       setFeedback("Rossz válasz, próbáld újra!");
     }
     setUserAnswer("");
+    inputRef.current.focus();
   };
 
   const skip = () => {
@@ -63,6 +67,7 @@ export default function Division() {
             <label>
               A válaszom:
               <input
+                ref={inputRef}
                 type="number"
                 value={userAnswer}
                 onChange={(e) => setUserAnswer(e.target.value)}

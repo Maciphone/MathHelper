@@ -42,7 +42,7 @@ export const Login = () => {
         dispatch(addName(data.userName));
 
         //cookieProvider - don't use it xxs attack
-        // setCookie("token", data.token, { path: "/", maxAge: 30 });
+        setCookie("token", data.token, { path: "/", maxAge: 30 });
 
         navigate("/");
       } else {

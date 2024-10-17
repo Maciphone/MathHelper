@@ -9,6 +9,7 @@ import AITextExercise from "./Pages/TesterPage";
 import LevelButtons from "./Components/LevelButtons";
 import { Login } from "./Pages/Login";
 import { CookiesProvider } from "react-cookie";
+import RemainDivision from "./Pages/RemainDivision";
 
 function App() {
   const routes = useRoutes([
@@ -39,6 +40,10 @@ function App() {
         {
           path: "/tester",
           element: <AITextExercise />,
+        },
+        {
+          path: "/maradek",
+          element: <RemainDivision />,
         },
         {
           path: "/button",

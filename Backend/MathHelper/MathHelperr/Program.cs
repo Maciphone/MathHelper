@@ -28,6 +28,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<IAlgebraExcercise, AlgebraExerciseFromAbstract>();
 builder.Services.AddTransient<IMultiplicationExcercise, MultiplicationExerciseFromAbstract>();
 builder.Services.AddTransient<IDivisionExcercise, DivisionExerciseFromAbstract>();
+builder.Services.AddTransient<IRemainDivisionExcercise, RemainDivisionExerciseFromAbstract>();
 builder.Services.AddScoped<IMathFactory, MathFactory>();
 
 //Get "level" data from htttp context or later from desctop application
@@ -58,6 +59,7 @@ AddIdentity();
 
 // Configure Identity DbContext
 builder.Services.AddDbContext<UserContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
 builder.Services.AddControllers();
@@ -148,7 +150,7 @@ void AddMultiplicationGenerators()
 
         throw new InvalidOperationException();
     });
-
+    
     builder.Services.AddTransient<IMultiplicationExampleGenerator>(implementationFactory: provider =>
     {
         var context = provider.GetRequiredService<IContextProvider>();
@@ -166,6 +168,36 @@ void AddMultiplicationGenerators()
         }
         throw new InvalidOperationException();
     });
+
+    builder.Services.AddTransient<IRemainDivisonExampleGenerator>(implementationFactory: provider =>
+    {
+        var context = provider.GetRequiredService<IContextProvider>();
+        var level = context.GetLevel();
+        switch (level)
+        {
+            case "1":
+                return new Level1RemainDivisionExampleGenerator();
+           default:
+                return new Level1RemainDivisionExampleGenerator();
+        }
+        throw new InvalidOperationException();
+    });
+    
+    builder.Services.AddTransient<IRemainDivisionTextGenerator>(implementationFactory: provider =>
+    {
+        var context = provider.GetRequiredService<IContextProvider>();
+        var level = context.GetLevel();
+        switch (level)
+        {
+            case "1":
+                return new Level1RemainDivisionTextGenerator();
+            default:
+                return new Level1RemainDivisionTextGenerator();
+        }
+        throw new InvalidOperationException();
+    });
+    
+    
 }
 
 void AddAlgebraGenerators()

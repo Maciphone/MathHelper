@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import LevelButtons from "./LevelButtons";
 
 // Don't forget to
@@ -11,6 +11,7 @@ function TestComp({ operation, translatedOperation }) {
   const [userAnswer, setUserAnswer] = useState("");
   const [feedback, setFeedback] = useState("");
   const [level, setLevel] = useState("1");
+  const inputRef = useRef(null);
 
   const fetchData = useCallback(async () => {
     try {
@@ -30,6 +31,7 @@ function TestComp({ operation, translatedOperation }) {
       const data = await response.json();
       console.log(data);
       setMath(data);
+      inputRef.current.focus();
     } catch (error) {
       console.error(error);
     }
@@ -45,10 +47,12 @@ function TestComp({ operation, translatedOperation }) {
     if (parseInt(userAnswer) === matek.result) {
       setFeedback("Bravo!");
       await fetchData();
+      inputRef.current.focus();
     } else {
       setFeedback("Rossz válasz, próbáld újra!");
     }
     setUserAnswer("");
+    inputRef.current.focus();
   };
 
   const skip = () => {
@@ -75,6 +79,7 @@ function TestComp({ operation, translatedOperation }) {
                 <form className="mb-4" onSubmit={handleSubmit}>
                   <label className="block mb-2">A válaszom:</label>
                   <input
+                    ref={inputRef}
                     type="number"
                     value={userAnswer}
                     onChange={(e) => setUserAnswer(e.target.value)}

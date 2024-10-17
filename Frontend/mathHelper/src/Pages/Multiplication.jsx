@@ -1,10 +1,11 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 export default function Multiplication() {
   const [matek, setMath] = useState([]);
   const [userAnswer, setUserAnswer] = useState("");
   const [feedback, setFeedback] = useState("");
   const [level, setLevel] = useState("1");
+  const inputRef = useRef(null);
 
   const fetchData = useCallback(async () => {
     try {
@@ -24,6 +25,7 @@ export default function Multiplication() {
       const data = await response.json();
       console.log(data);
       setMath(data);
+      inputRef.current.focus();
     } catch (error) {
       console.error(error);
     }
@@ -39,10 +41,12 @@ export default function Multiplication() {
     if (parseInt(userAnswer) === matek.result) {
       setFeedback("Bravo!");
       fetchData();
+      inputRef.current.focus();
     } else {
       setFeedback("Rossz válasz, próbáld újra!");
     }
     setUserAnswer("");
+    inputRef.current.focus();
   };
 
   const skip = () => {
@@ -75,6 +79,7 @@ export default function Multiplication() {
             <label>
               A válaszom:
               <input
+                ref={inputRef}
                 type="number"
                 value={userAnswer}
                 onChange={(e) => setUserAnswer(e.target.value)}

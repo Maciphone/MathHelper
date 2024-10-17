@@ -1,12 +1,21 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import LevelButtons from "../Components/LevelButtons";
 import Stopwatch from "../Components/StopWatch";
+import { useSelector } from "react-redux";
 
 export default function Algbera() {
   const [matek, setMath] = useState([]);
   const [userAnswer, setUserAnswer] = useState("");
   const [feedback, setFeedback] = useState("");
   const [level, setLevel] = useState("1");
+  const userReduxName = useSelector((state) => state.userData.value);
+  const inputRef = useRef(null); // hivatkozási pont létrehozása
+
+  if (userReduxName) {
+    console.log(userReduxName);
+  } else {
+    console.log("not loged in");
+  }
 
   //stopwatch
   const [isRunning, setIsRunning] = useState(false);
@@ -30,6 +39,7 @@ export default function Algbera() {
       console.log(data);
       setMath(data);
       setIsRunning(true);
+      inputRef.current.focus();
     } catch (error) {
       console.error(error);
     }
@@ -48,14 +58,20 @@ export default function Algbera() {
 
     if (parseInt(userAnswer) === matek.result) {
       setFeedback("Bravo!");
-      setIsRunning(false);
-      setIsTimeRequested(true);
-      setReset(!reset);
+      elapsedTimeSetting();
       await fetchData();
+      inputRef.current.focus();
     } else {
       setFeedback("Rossz válasz, próbáld újra!");
     }
     setUserAnswer("");
+    inputRef.current.focus();
+  };
+
+  const elapsedTimeSetting = () => {
+    setIsRunning(false);
+    setIsTimeRequested(true);
+    setReset(!reset);
   };
 
   const skip = () => {
@@ -78,12 +94,10 @@ export default function Algbera() {
     setLevel(level);
   };
 
-  useEffect(() => {
-    console.log(reset);
-  }, [reset]);
-
   return (
     <div>
+      <div>{userReduxName && <p1>Szia {userReduxName}</p1>}</div>
+
       <div>
         <LevelButtons operation={"algebra"} handleLevel={handleLevel} />
         <p>szint</p>
@@ -105,6 +119,7 @@ export default function Algbera() {
             <label>
               A válaszom:
               <input
+                ref={inputRef}
                 type="number"
                 value={userAnswer}
                 onChange={(e) => setUserAnswer(e.target.value)}

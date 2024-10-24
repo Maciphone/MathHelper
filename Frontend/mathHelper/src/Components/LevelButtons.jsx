@@ -4,6 +4,7 @@ function LevelButtons({ operation, handleLevel }) {
   const [levels, setLevels] = useState(0);
 
   useEffect(() => {
+    console.log(operation);
     fetch(`/api/level/${operation}`)
       .then((response) => response.json())
       .then((data) => setLevels(data));
@@ -13,7 +14,6 @@ function LevelButtons({ operation, handleLevel }) {
   const handleButtonClick = (level) => {
     console.log(`Selected level: ${level}`);
     handleLevel(level);
-    // Itt kezelheted, hogy mi történik a kiválasztott szinttel
   };
 
   const renderButtons = () => {

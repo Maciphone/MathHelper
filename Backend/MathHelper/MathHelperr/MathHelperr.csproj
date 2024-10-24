@@ -22,8 +22,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Service\Division\Level2\" />
-      <Folder Include="Service\Division\Level3\" />
+      <Folder Include="Service\Math\" />
     </ItemGroup>
 
 </Project>

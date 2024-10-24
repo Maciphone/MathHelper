@@ -12,13 +12,11 @@ public class Solution
     [JsonIgnore]
     public Exercise Exercise { get; set; }
     
-    public int ResultId { get; set; }
-    [JsonIgnore]
-    public Result Result { get; set; }
     
     public string UserId { get; set; }
     
     
     public int ElapsedTime { get; set; }
     public DateTime SolvedAt { get; set; }
+    public DateTime CreatedAt { get; set; }
 }

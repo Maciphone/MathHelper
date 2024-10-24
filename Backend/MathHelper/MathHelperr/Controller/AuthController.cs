@@ -1,8 +1,8 @@
 using MathHelperr.Service.Authentication;
-using Microsoft.AspNetCore.Authentication;
+
 using Microsoft.AspNetCore.Mvc;
 using SolarWatch.Contracts;
-using SolarWatch.Service.Authentication;
+
 
 namespace MathHelperr.Controller;
 
@@ -55,6 +55,17 @@ public class AuthController : ControllerBase
 
         var result = await _authService.LoginAsync(request.Email, request.Password);
         Console.WriteLine(result.UserName);
+        
+        //token to send in headers
+        var token = result.Token;
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Expires = DateTimeOffset.UtcNow.AddMinutes(30),
+            SameSite = SameSiteMode.None,
+            Secure = true //only on Https con, else true
+        };
+        Response.Cookies.Append("jwt", token, cookieOptions);
 
         if (!result.Success)
         {
@@ -68,7 +79,7 @@ public class AuthController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        return Ok(new AuthResponse(result.Email, result.UserName, result.Token));
+        return Ok(new AuthResponse(result.Email, result.UserName));
     }
 
     private void AddErrors(AuthResult result)

@@ -6,9 +6,9 @@ public class Result
 {
     public int ResultId { get; set; }
     
-    public int ResultValue { get; set; }
-
-    [JsonIgnore]
-    public virtual ICollection<Solution> Solutions { get; set; }
+    public List<int> ResultValues { get; set; } = new List<int>();
+    public int ResultHash { get; set; }
+    //public int ResultValue { get; set; }
+    
 
 }

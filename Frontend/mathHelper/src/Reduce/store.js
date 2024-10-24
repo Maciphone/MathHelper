@@ -6,8 +6,6 @@ import { configureStore } from '@reduxjs/toolkit'
 import userInfoReducer from './userInformation'
 
 
-
-
 export default configureStore({
     reducer: {
         userData: userInfoReducer,

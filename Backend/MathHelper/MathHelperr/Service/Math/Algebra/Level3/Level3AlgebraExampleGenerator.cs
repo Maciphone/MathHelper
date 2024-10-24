@@ -22,7 +22,7 @@ public class Level3AlgebraExampleGenerator : IAlgebraExampleGenerator
             A = a,
             B = b,
             Equal = equal,
-            Result = result
+            Result =  [result]
         };
         
 

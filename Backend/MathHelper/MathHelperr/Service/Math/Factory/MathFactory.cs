@@ -1,4 +1,5 @@
 using MathHelperr.Service.AbstractImplementation;
+using MathHelperr.Utility;
 
 namespace MathHelperr.Service.Factory;
 
@@ -23,25 +24,25 @@ public class MathFactory : IMathFactory
         _remainDivisonExampleGenerator = remainDivisonExampleGenerator;
     }
     
-    public IMathExcercise getMathExcercise(string operationType)
+    public IMathExcercise getMathExcercise(MathTypeName operationType)
     {
         switch (operationType)
         {
                 //Same outcome, works both way! shorter code with serviceProvider!!!
-            case "algebra":
+            case MathTypeName.Algebra:
                 var algebraExampleGenerator = _serviceProvider.GetRequiredService<IAlgebraExampleGenerator>();
                 var algebraTextGenerator = _serviceProvider.GetRequiredService<IAlgebraTextGenerator>();
                 return new AlgebraExerciseFromAbstract(
                     algebraExampleGenerator, algebraTextGenerator);
            
-            case "multiplication":
+            case MathTypeName.Multiplication:
                 return new MultiplicationExerciseFromAbstract(_multiplicationExampleGenerator,
                     _multiplicationTextGenerator);
-            case "division":
+            case MathTypeName.Division:
                 return new DivisionExerciseFromAbstract(
                     _serviceProvider.GetRequiredService<IDivisionExampleGenerator>(),
                     _serviceProvider.GetRequiredService<IDivisionTextGenerator>());
-            case "remainDivision":
+            case MathTypeName.RemainDivision:
                 return new RemainDivisionExerciseFromAbstract(
                     _remainDivisonExampleGenerator,
                     _remainDivisionTextGenerator);

@@ -11,11 +11,11 @@ export default function Algbera() {
   const userReduxName = useSelector((state) => state.userData.value);
   const inputRef = useRef(null); // hivatkozási pont létrehozása
 
-  if (userReduxName) {
-    console.log(userReduxName);
-  } else {
-    console.log("not loged in");
-  }
+  // if (userReduxName) {
+  //   console.log(userReduxName);
+  // } else {
+  //   console.log("not loged in");
+  // }
 
   //stopwatch
   const [isRunning, setIsRunning] = useState(false);
@@ -23,7 +23,38 @@ export default function Algbera() {
   const [elapsedTime, setElapsedTime] = useState([]);
   const [isTimeRequested, setIsTimeRequested] = useState(false);
 
-  const fetchData = useCallback(async () => {
+  useEffect(() => {
+    const fetcher = async () => {
+      try {
+        const response = await fetch(
+          `api/algebra/TestForDatabase?type=Algebra`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Level: `${level}`,
+            },
+            credentials: "include",
+          }
+        );
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error("Error from backend:", errorData);
+          throw new Error(errorData.message || "Failed to fetch");
+        }
+        const data = await response.json();
+        console.log(data);
+        setMath(data);
+        setIsRunning(true);
+        inputRef.current.focus();
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetcher();
+  }, [level]);
+
+  const fetchData = async () => {
     try {
       const response = await fetch(`api/algebra/GetAiExercise?type=algebra`, {
         method: "GET",
@@ -43,11 +74,7 @@ export default function Algbera() {
     } catch (error) {
       console.error(error);
     }
-  }, [level]);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+  };
 
   useEffect(() => {
     setReset((prevReset) => !prevReset);
@@ -56,7 +83,7 @@ export default function Algbera() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (parseInt(userAnswer) === matek.result) {
+    if (parseInt(userAnswer) === matek.result[0]) {
       setFeedback("Bravo!");
       elapsedTimeSetting();
       await fetchData();

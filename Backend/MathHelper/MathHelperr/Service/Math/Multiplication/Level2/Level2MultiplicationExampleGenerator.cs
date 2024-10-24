@@ -22,7 +22,7 @@ public class Level2MultiplicationExampleGenerator : IMultiplicationExampleGenera
             A = a,
             B = b,
             Equal = equal,
-            Result = result
+            Result =  [result]
         };
         
 

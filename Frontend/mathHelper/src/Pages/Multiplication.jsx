@@ -10,7 +10,7 @@ export default function Multiplication() {
   const fetchData = useCallback(async () => {
     try {
       const response = await fetch(
-        `api/algebra/GetExercise?type=multiplication`,
+        `api/algebra/GetExercise?type=Multiplication`,
         {
           method: "GET",
           headers: {
@@ -38,7 +38,7 @@ export default function Multiplication() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (parseInt(userAnswer) === matek.result) {
+    if (parseInt(userAnswer) === matek.result[0]) {
       setFeedback("Bravo!");
       fetchData();
       inputRef.current.focus();

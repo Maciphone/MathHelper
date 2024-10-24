@@ -11,8 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Scrutor;
-using SolarWatch.Service.Authentication;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,11 +38,13 @@ builder.Services.AddScoped<IContextProvider, WebContextProvider>();
 builder.Services.AddScoped<GroqRequest>();
 builder.Services.AddScoped<GroqApiClient>();
 builder.Services.AddScoped<GroqTextGenerator>();
+builder.Services.AddScoped<IGroqResultGenerator, GroqResultGenerator>();
+builder.Services.AddScoped<ICreatorRepository, CreatorRepository>();
+
 
 //authentication registration
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
-builder.Services.AddScoped<AuthenticationSeeder>();
 //AddRoles() belongs also to auth.
 
 
@@ -60,9 +61,23 @@ AddIdentity();
 // Configure Identity DbContext
 builder.Services.AddDbContext<UserContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddScoped<AuthenticationSeeder>();
 
 
 builder.Services.AddControllers();
+
+//CORS settings - call before MApControllers()
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", build =>
+    {
+        build.WithOrigins("https://localhost:5173") // Frontend URL
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials(); // Fontos a sütik küldéséhez
+        
+    });
+});
 
 var app = builder.Build();
 
@@ -79,9 +94,13 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapControllers();
 app.UseAuthentication();
 app.UseAuthorization();
+
+//CORS settings
+app.UseCors("AllowAll");
+
+app.MapControllers();
 
 app.Run();
 
@@ -254,6 +273,7 @@ void AddJwtAuthentication()
         {
             options.TokenValidationParameters = new TokenValidationParameters
             {
+                ClockSkew = TimeSpan.Zero,
                 ValidateIssuer = true,
                 ValidateAudience = true,
                 ValidateLifetime = true,
@@ -266,7 +286,7 @@ void AddJwtAuthentication()
             {
                 OnMessageReceived = context =>
                 {
-                    context.Token = context.Request.Cookies["jwt"];
+                    context.Token = context.Request.Cookies["jwt"]; //"jwt"
                     return Task.CompletedTask;
                 }
             };
@@ -277,9 +297,10 @@ void AddJwtAuthentication()
             options.Cookie.HttpOnly = true;
             options.Cookie.SecurePolicy =
                 CookieSecurePolicy.Always; // Set to Always in production, Csak HTTPS-en keresztül
-            options.Cookie.SameSite = SameSiteMode.None;
+            options.Cookie.SameSite = SameSiteMode.None; //Cross origin cookies
             options.Cookie.Name = "jwt";
             options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+            
         });
 
 }
@@ -299,5 +320,7 @@ void AddIdentity()
             options.Password.RequireLowercase = false;
         })
         .AddRoles<IdentityRole>() //Enable Identity roles 
-        .AddEntityFrameworkStores<UserContext>();
+        .AddEntityFrameworkStores<UserContext>()
+        .AddDefaultTokenProviders();
+    
 }

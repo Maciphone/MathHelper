@@ -8,12 +8,14 @@ namespace MathHelperr.Controller;
 [Route("api/level")]
 public class LevelController : ControllerBase
 {
+    
     [HttpGet("{operation}")]
     public IActionResult GetNumberOfLevels(string operation)
     {
+       // Console.WriteLine(operation);
         int numberOfLevels;
 
-        switch (operation.ToLower())
+        switch (operation)
         {
             case "multiplication":
                 numberOfLevels = LevelChecker.GetNumberOfImplementations<IMultiplicationTextGenerator>();
@@ -24,10 +26,13 @@ public class LevelController : ControllerBase
             case "division":
                 numberOfLevels = LevelChecker.GetNumberOfImplementations<IDivisionTextGenerator>();
                 break;
+            case "remainDivision":
+                numberOfLevels = LevelChecker.GetNumberOfImplementations<IRemainDivisionTextGenerator>();
+                break;
             default:
                 return BadRequest("Unknown operation.");
         }
-
+       // Console.WriteLine($"levels implemented: {numberOfLevels}");
         return Ok(numberOfLevels);
     }
     

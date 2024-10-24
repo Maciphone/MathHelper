@@ -20,7 +20,7 @@ public class Level2AlgebraExampleGenerator : IAlgebraExampleGenerator
         {
             A = a,
             B = equal,
-            Result = result
+            Result =  [result]
         };
         
 

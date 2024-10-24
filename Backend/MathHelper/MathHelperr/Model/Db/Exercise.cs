@@ -7,11 +7,13 @@ public partial class Exercise
     public int ExerciseId { get; set; }
     public string Question { get; set; }
     
-    public int ResultId { get; set; } 
+    public string Level { get; set; }
     
-    [JsonIgnore]
+    public string MathType { get; set; }
+    
+    public int ResultId { get; set; } 
     public virtual Result Result { get; set; }
-    [JsonIgnore]
+    
     public virtual ICollection<Solution> Solutions { get; set; }
 
 }

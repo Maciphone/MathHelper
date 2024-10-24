@@ -4,6 +4,7 @@ import LevelButtons from "./LevelButtons";
 function ExercisePage({ operation, translatedOperation }) {
   const [matek, setMath] = useState([]);
   const [userAnswer, setUserAnswer] = useState("");
+  const [userSecondAnswer, setUserSecondAnswer] = useState("");
   const [feedback, setFeedback] = useState("");
   const [level, setLevel] = useState("1");
 
@@ -36,14 +37,21 @@ function ExercisePage({ operation, translatedOperation }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (parseInt(userAnswer) === matek.result) {
+    if (
+      operation == "RemainDivision" &&
+      parseInt(userAnswer) === matek.result[0] &&
+      parseInt(userSecondAnswer) === matek.result[1]
+    ) {
+      setFeedback("Bravo!");
+      await fetchData();
+    } else if (parseInt(userAnswer) === matek.result[0]) {
       setFeedback("Bravo!");
       await fetchData();
     } else {
       setFeedback("Rossz válasz, próbáld újra!");
     }
     setUserAnswer("");
+    setUserSecondAnswer("");
   };
 
   const skip = () => {
@@ -66,13 +74,24 @@ function ExercisePage({ operation, translatedOperation }) {
           <p>Kérdés: {matek.question}</p>
           <form onSubmit={handleSubmit}>
             <label>
-              A válaszom:
+              {operation == "RemainDivision" ? "maradék" : "A válaszom:"}
               <input
                 type="number"
                 value={userAnswer}
                 onChange={(e) => setUserAnswer(e.target.value)}
               />
             </label>
+
+            {operation === "RemainDivision" && (
+              <label>
+                Osztó:
+                <input
+                  type="number"
+                  value={userSecondAnswer}
+                  onChange={(e) => setUserSecondAnswer(e.target.value)}
+                />
+              </label>
+            )}
             <button type="submit">ennyi :)</button>
           </form>
           <button onClick={skip}>másikat</button>

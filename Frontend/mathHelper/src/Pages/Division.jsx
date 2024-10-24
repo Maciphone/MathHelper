@@ -10,7 +10,7 @@ export default function Division() {
 
   const fetchData = useCallback(async () => {
     try {
-      const response = await fetch(`api/algebra/GetExercise?type=division`, {
+      const response = await fetch(`api/algebra/GetExercise?type=Division`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -36,7 +36,7 @@ export default function Division() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (parseInt(userAnswer) === matek.result) {
+    if (parseInt(userAnswer) === matek.result[0]) {
       setFeedback("Bravo!");
       await fetchData();
       inputRef.current.focus();

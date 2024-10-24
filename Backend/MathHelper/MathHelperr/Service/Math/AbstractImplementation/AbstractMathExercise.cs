@@ -1,4 +1,5 @@
 using MathHelperr.Model;
+using MathHelperr.Model.Db;
 
 namespace MathHelperr.Service.AbstractImplementation;
 

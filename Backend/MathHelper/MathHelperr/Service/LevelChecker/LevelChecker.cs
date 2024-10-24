@@ -22,7 +22,7 @@ public class LevelChecker
             .Where(type => interfaceType.IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract)
             .ToList();
         
-        // Visszatér a szám, hogy hány implementáció van
+      
         return implementations.Count;
     }
 

@@ -16,16 +16,18 @@ public class ExerciseRepository : IRepository<Exercise>
     public async Task<Exercise?> GetByIdAsync(int id)
     {
         return await _context.Exercises
-            .Include(e => e.Solutions)
             .Include(e => e.Result)
+            .Include(m=>m.MathType)
+            .Include(l=> l.Level)
             .FirstOrDefaultAsync(e => e.ExerciseId == id);
     }
 
-    public async Task<IEnumerable<Exercise>> GetAllAsync()
+    public async Task<IEnumerable<Exercise?>> GetAllAsync()
     {
         return await _context.Exercises
-            .Include(e => e.Solutions)
             .Include(e => e.Result)
+            .Include(m=>m.MathType)
+            .Include(l=> l.Level)
             .ToListAsync();
     }
 

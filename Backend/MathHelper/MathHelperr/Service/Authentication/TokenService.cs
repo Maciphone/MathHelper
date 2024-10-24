@@ -5,7 +5,7 @@ using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
-namespace SolarWatch.Service.Authentication;
+namespace MathHelperr.Service.Authentication;
 
 public class TokenService : ITokenService
 {

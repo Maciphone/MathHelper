@@ -17,15 +17,13 @@ public class ResultRepository : IRepository<Result>
     public async Task<Result?> GetByIdAsync(int id)
     {
         return await _context.Results
-            .Include(r => r.Solutions)  
             .FirstOrDefaultAsync(r => r.ResultId == id);
     }
 
     // GET ALL
-    public async Task<IEnumerable<Result>> GetAllAsync()
+    public async Task<IEnumerable<Result?>> GetAllAsync()
     {
         return await _context.Results
-            .Include(r => r.Solutions)  
             .ToListAsync();
     }
 

@@ -11,7 +11,7 @@ function ExercisePage({ operation, translatedOperation }) {
   const fetchData = useCallback(async () => {
     try {
       const response = await fetch(
-        `api/algebra/GetExercise?type=${operation}`,
+        `api/algebra/TestForDatabase?type=${operation}`,
         {
           method: "GET",
           headers: {

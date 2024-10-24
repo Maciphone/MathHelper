@@ -12,10 +12,10 @@ public class LevelController : ControllerBase
     [HttpGet("{operation}")]
     public IActionResult GetNumberOfLevels(string operation)
     {
-       // Console.WriteLine(operation);
+        Console.WriteLine(operation);
         int numberOfLevels;
 
-        switch (operation)
+        switch (operation.ToLower())
         {
             case "multiplication":
                 numberOfLevels = LevelChecker.GetNumberOfImplementations<IMultiplicationTextGenerator>();
@@ -26,7 +26,7 @@ public class LevelController : ControllerBase
             case "division":
                 numberOfLevels = LevelChecker.GetNumberOfImplementations<IDivisionTextGenerator>();
                 break;
-            case "remainDivision":
+            case "remaindivision":
                 numberOfLevels = LevelChecker.GetNumberOfImplementations<IRemainDivisionTextGenerator>();
                 break;
             default:

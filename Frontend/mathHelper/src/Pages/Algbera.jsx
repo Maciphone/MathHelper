@@ -56,12 +56,13 @@ export default function Algbera() {
 
   const fetchData = async () => {
     try {
-      const response = await fetch(`api/algebra/GetAiExercise?type=algebra`, {
+      const response = await fetch(`api/algebra/TestForDatabase?type=Algebra`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           Level: `${level}`,
         },
+        credentials: "include",
       });
       if (!response.ok) {
         throw new Error("failed to fetch");

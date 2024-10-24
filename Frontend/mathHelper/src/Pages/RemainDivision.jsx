@@ -2,7 +2,7 @@ import React from "react";
 import ExercisePage from "../Components/ExercisePage";
 
 export default function RemainDivision() {
-  const operation = "remainDivision";
+  const operation = "RemainDivision";
   const transltedOperation = "maradékosztás";
 
   return (

@@ -33,11 +33,10 @@ public class TokenService : ITokenService
 
     private JwtSecurityToken CreateJwtToken(List<Claim> claims, SigningCredentials credentials, DateTime expiration)
     {
-         var jwtStettings =_configuration.GetSection("JWTSettings"); //IConfigurationSection object - kulcsokra hivatkozva get value like a json
+         var jwtStettings =_configuration.GetSection("Jwt"); //IConfigurationSection object - kulcsokra hivatkozva get value like a json
          var validIssuer = jwtStettings["ValidIssuer"];
          var validAudience = jwtStettings["ValidAudience"];
-        //var validIssuer = "apiWithBackend";
-        //var validAudience = "apiWithBackend";
+ 
         return new JwtSecurityToken(
             validIssuer,
             validAudience,

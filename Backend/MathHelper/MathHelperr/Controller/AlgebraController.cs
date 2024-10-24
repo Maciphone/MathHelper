@@ -59,30 +59,14 @@ public class AlgebraController :ControllerBase
     //[FromHeader(Name= "Level")]string level, 
     public async Task<ActionResult<ExcerciseResult>> TestDb(MathTypeName type)
     {
-        var jwtToken = Request.Cookies["jwt"];
-        var tokenHandler = new JwtSecurityTokenHandler();
-        Console.WriteLine(jwtToken);
-        if (tokenHandler.CanReadToken(jwtToken))
-        {
-            var a_jwtToken = tokenHandler.ReadJwtToken(jwtToken);
-            foreach (var claim in a_jwtToken.Claims)
-            {
-                Console.WriteLine($"{claim.Type}: {claim.Value}");
-            }
-        }
-        else
-        {
-            Console.WriteLine("Invalid token");
-        }
-       
+  
         //frontend a headers-ben "Level" kulcson küldi
-        Console.WriteLine("bent vagyok");
+      
         var level = Request.Headers["Level"].ToString();
         Console.WriteLine($"level: {level}");
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        userId = "31e1ab6f-3175-49b6-9c19-879f8de77004";
         var user = User.Identity.Name;
-        user = "Reka";
+        
         Console.WriteLine($"username: {user}");
         Console.WriteLine($"userID: {userId}");
         
@@ -94,6 +78,7 @@ public class AlgebraController :ControllerBase
       
         
         var exercise =_mathFactory.getMathExcercise(type);
+        exercise.Answer().Result.ForEach(e=>Console.WriteLine($"origi eredmények: {e}"));
         var solution = await _creatorRepository.GetSolution(exercise, type, level, userId);
 
         if(solution==null){Console.WriteLine("db crasch");}

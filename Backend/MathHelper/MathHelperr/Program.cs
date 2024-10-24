@@ -263,6 +263,8 @@ void AddJwtAuthentication()
 
     var jwtSettings = builder.Configuration.GetSection("Jwt");
     var issuerSigningKey = builder.Configuration["Jwt:IssuerSigningKey"];
+    
+  
 
     builder.Services.AddAuthentication(options =>
         {
@@ -284,12 +286,25 @@ void AddJwtAuthentication()
             };
             options.Events = new JwtBearerEvents
             {
-                OnMessageReceived = context =>
-                {
-                    context.Token = context.Request.Cookies["jwt"]; //"jwt"
-                    return Task.CompletedTask;
-                }
-            };
+                
+                    OnAuthenticationFailed = context =>
+                    {
+                        Console.WriteLine("Authentication failed: " + context.Exception.Message);
+                        return Task.CompletedTask;
+                    },
+                    OnTokenValidated = context =>
+                    {
+                        Console.WriteLine("Token validated for user: " + context.Principal.Identity.Name);
+                        return Task.CompletedTask;
+                    },
+                    OnMessageReceived = context =>
+                    {
+                        Console.WriteLine("JWT Token received: " + context.Token);
+                        context.Token = context.Request.Cookies["jwt"];  // A token cookie-ból való kiolvasása
+                        return Task.CompletedTask;
+                    }
+                };
+            
         })
 //outgoing settings
         .AddCookie(options =>

@@ -5,7 +5,7 @@ import TestComp from "../Components/TestComp";
 import ExercisePage from "../Components/ExercisePage";
 
 export default function TesterPage() {
-  const operation = "algebra";
+  const operation = "Algebra";
   const transltedOperation = "összeadás";
 
   return (

@@ -1,0 +1,244 @@
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import LevelButtons from "./LevelButtons";
+import Stopwatch from "./StopWatch";
+import { useSelector } from "react-redux";
+
+export default function ExercisePageWithStopWatch({
+  operation,
+  translatedOperation,
+}) {
+  const [matek, setMath] = useState([]);
+  const [userAnswer, setUserAnswer] = useState("");
+  const [userSecondAnswer, setUserSecondAnswer] = useState("");
+  const [feedback, setFeedback] = useState("");
+  const [level, setLevel] = useState(1);
+
+  const userReduxName = useSelector((state) => state.userData.value);
+  const inputRef = useRef(null); // hivatkozási pont létrehozása
+
+  // if (userReduxName) {
+  //   console.log(userReduxName);
+  // } else {
+  //   console.log("not loged in");
+  // }
+
+  //stopwatch
+  const [isRunning, setIsRunning] = useState(false);
+  const [reset, setReset] = useState(false);
+  const [elapsedTime, setElapsedTime] = useState(null);
+  const [isTimeRequested, setIsTimeRequested] = useState(false);
+  const [isBuilt, setIsBuilt] = useState(false);
+
+  useEffect(() => {
+    const fetcher = async () => {
+      try {
+        const response = await fetch(
+          `api/algebra/TestForDatabase?type=${operation}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Level: `${level}`,
+            },
+            credentials: "include",
+          }
+        );
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error("Error from backend:", errorData);
+          throw new Error(errorData.message || "Failed to fetch");
+        }
+        const data = await response.json();
+        console.log(data);
+
+        setMath(data);
+        setIsRunning(true);
+        inputRef.current.focus();
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    if (isBuilt) {
+      fetcher();
+    }
+  }, [level, isBuilt]);
+
+  const fetchData = async () => {
+    try {
+      const response = await fetch(
+        `api/algebra/TestForDatabase?type=${operation}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Level: `${level}`,
+          },
+          credentials: "include",
+        }
+      );
+      if (!response.ok) {
+        throw new Error("failed to fetch");
+      }
+      const data = await response.json();
+      console.log(data);
+      setMath(data);
+      setIsRunning(true);
+
+      inputRef.current.focus();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const updateSolution = async () => {
+    var solvedAt = new Date().toISOString();
+
+    var solution = {
+      ...matek.solutionSolvedDto,
+      elapsedTime,
+      solvedAt: solvedAt,
+    };
+    console.log(solution);
+
+    try {
+      var response = await fetch("api/solution/UpdateSolution", {
+        method: "Post",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(solution),
+      });
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
+    } catch (error) {
+      console.error("Failed to update solution:", error.message);
+    }
+  };
+
+  useEffect(() => {
+    setReset((prevReset) => !prevReset);
+  }, [matek]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (
+      (operation == "RemainDivision" &&
+        parseInt(userAnswer) === matek.result[0] &&
+        parseInt(userSecondAnswer) === matek.result[1]) ||
+      parseInt(userAnswer) === matek.result[0]
+    ) {
+      setFeedback("Bravo!");
+      setIsTimeRequested(true); //triger stopwatch
+      setUserAnswer("");
+      inputRef.current.focus();
+    } else {
+      setFeedback("Rossz válasz, próbáld újra!");
+    }
+    setUserAnswer("");
+    inputRef.current.focus();
+  };
+  useEffect(() => {
+    const update = async () => {
+      await updateSolution();
+      await fetchData();
+    };
+    if (isBuilt) {
+      update();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [elapsedTime]);
+
+  const skip = async () => {
+    await fetchData();
+  };
+
+  //set time required to solve the exercise, passed to stopwatch comp.
+  const handleElapsedTime = (time) => {
+    setElapsedTime(time);
+    setIsTimeRequested(false);
+    console.log(`Eltelt idő: ${time} ms`);
+  };
+
+  const handleLevel = (e) => {
+    setLevel(e);
+    setIsRunning(true);
+    setIsBuilt(true);
+  };
+
+  return (
+    <div>
+      <div>{userReduxName && <p>Szia {userReduxName}</p>}</div>
+
+      <div>
+        <LevelButtons operation={operation} handleLevel={handleLevel} />
+      </div>
+
+      {matek ? (
+        <div>
+          <p>Kérdés: {matek.question}</p>
+          <form onSubmit={handleSubmit}>
+            <label>
+              {operation == "RemainDivision" ? "maradék" : "A válaszom:"}
+              <input
+                ref={inputRef}
+                type="number"
+                value={userAnswer}
+                onChange={(e) => setUserAnswer(e.target.value)}
+              />
+            </label>
+
+            {operation === "RemainDivision" && (
+              <label>
+                Osztó:
+                <input
+                  type="number"
+                  value={userSecondAnswer}
+                  onChange={(e) => setUserSecondAnswer(e.target.value)}
+                />
+              </label>
+            )}
+
+            <button type="submit">ennyi :)</button>
+          </form>
+          <button onClick={skip}>másikat</button>
+
+          <div onClick={() => setReset(!reset)}>
+            <Stopwatch
+              isRunning={isRunning}
+              onReset={reset}
+              handleElapsedTime={handleElapsedTime}
+              isTimeRequested={isTimeRequested}
+            />
+          </div>
+
+          {feedback && <p>{feedback}</p>}
+        </div>
+      ) : (
+        <p>Loading...</p>
+      )}
+    </div>
+  );
+}
+
+// const handleSubmit = async (e) => {
+//   e.preventDefault();
+
+//   if (parseInt(userAnswer) === matek.result[0]) {
+//     setFeedback("Bravo!");
+//     elapsedTimeSetting();
+//     setIsSubmitPending(true);
+//     if (elapsedTime) {
+//       console.log("elapsedtime", elapsedTime);
+//       await updateSolution();
+//       await fetchData();
+//       inputRef.current.focus();
+//     }
+//   } else {
+//     setFeedback("Rossz válasz, próbáld újra!");
+//   }
+//   setUserAnswer("");
+//   inputRef.current.focus();
+// };

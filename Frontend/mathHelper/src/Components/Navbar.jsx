@@ -25,6 +25,9 @@ export default function Navbar() {
       <Link to={"/saját"}>
         <button>Megoldásaim</button>
       </Link>
+      <Link to={"/todelete"}>
+        <button>próbaoldal</button>
+      </Link>
       <Link to={"/login"}>
         <button>Login</button>
       </Link>

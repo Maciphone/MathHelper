@@ -10,5 +10,5 @@ public class SolutionDto
     public DateTime SolvedAt { get; set; }
     public DateTime CreatedAt { get; set; }
     public string? UserId { get; set; }
-    public string Exercise { get; set; }
+    public string Question { get; set; }
 }

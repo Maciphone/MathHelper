@@ -5,6 +5,7 @@ using MathHelperr.Model.Db.DTO;
 using MathHelperr.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 namespace MathHelperr.Controller;
 
@@ -45,6 +46,48 @@ public class SolutionController :ControllerBase
             Console.WriteLine(e);
             throw;
         }
+
+    }
+    
+    //[Authorize (Roles = "User")]
+    [HttpPost("UpdateSolution")]
+    public async Task<IActionResult> UpdateSolution(SolutionSolvedDto solutionSolvedDto)
+    { 
+      
+        try
+        {
+            
+            var solution =  await _context.Solutions.FirstOrDefaultAsync(s => s.SolutionId == solutionSolvedDto.SolutionId);
+            if (solution == null)
+            {
+                return NotFound("no solution with this id");
+            }
+
+            
+            var solvedAtLocalTime = solutionSolvedDto.SolvedAt.ToLocalTime();
+           
+            solution.ElapsedTime = solutionSolvedDto.ElapsedTime;
+            solution.SolvedAt = solvedAtLocalTime;
+            Console.WriteLine(solution);
+            await _solutionRepository.UpdateAsync(solution);
+            return Ok();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            return Conflict("A concurrency probléma lépett fel.");
+
+        }
+        catch (DbUpdateException)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, "Adatbázis hiba történt.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError, $"Váratlan hiba történt: {ex.Message}");
+        }
+
+       
 
     }
 }

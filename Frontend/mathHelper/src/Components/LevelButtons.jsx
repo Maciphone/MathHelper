@@ -30,7 +30,7 @@ function LevelButtons({ operation, handleLevel }) {
 
   return (
     <div>
-      <h1>{operation} Levels</h1>
+      <h6>{operation} Levels</h6>
       {renderButtons()}
     </div>
   );

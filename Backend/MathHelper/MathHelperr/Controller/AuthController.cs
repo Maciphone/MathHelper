@@ -42,7 +42,7 @@ public class AuthController : ControllerBase
     [HttpPost("Login")]
     public async Task<ActionResult<AuthResponse>> Authenticate([FromBody] AuthRequest request)
     {
-        var tokenValidTimesSpan = 1;
+        var tokenValidTimesSpan =int.Parse(_configuration["Jwt:CookieExpiration"]);
         if (!ModelState.IsValid)
         {
             var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);

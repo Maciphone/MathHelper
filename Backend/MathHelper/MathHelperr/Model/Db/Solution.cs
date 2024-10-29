@@ -9,7 +9,7 @@ public class Solution
    
     public int ExerciseId { get; set; }
     
-    [JsonIgnore]
+   [JsonIgnore]
     public Exercise Exercise { get; set; }
     
     

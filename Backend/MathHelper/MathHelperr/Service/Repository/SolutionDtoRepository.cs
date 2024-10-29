@@ -38,7 +38,7 @@ public class SolutionDtoRepository : IRepositoryUserData<SolutionDto>
                 SolvedAt = s.SolvedAt,
                 CreatedAt = s.CreatedAt,
                 UserId = s.UserId,
-                Exercise = s.Exercise.Question
+                Question = s.Exercise.Question
             };
         }
 
@@ -59,7 +59,8 @@ public class SolutionDtoRepository : IRepositoryUserData<SolutionDto>
                 ElapsedTime = s.ElapsedTime,
                 SolvedAt = s.SolvedAt,
                 CreatedAt = s.CreatedAt,
-                UserId = s.UserId
+                UserId = s.UserId,
+                Question = s.Exercise.Question
             })
             .ToListAsync();
         
@@ -79,7 +80,8 @@ public class SolutionDtoRepository : IRepositoryUserData<SolutionDto>
                 ElapsedTime = s.ElapsedTime,
                 SolvedAt = s.SolvedAt,
                 CreatedAt = s.CreatedAt,
-                UserId = s.UserId
+                UserId = s.UserId,
+                Question = s.Exercise.Question
             })
             .ToListAsync();
     }

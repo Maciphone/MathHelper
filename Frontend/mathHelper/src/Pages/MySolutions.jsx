@@ -14,7 +14,7 @@ export default function MySolutions() {
         const response = await fetch(`/api/solution/userSolutions`);
         const data = await response.json();
         setSolutions(data);
-        setIsBuilt(false);
+        setIsBuilt(true);
         console.log(data); // Csak ha valóban logolni akarod
       } catch (error) {
         console.error(error);
@@ -39,7 +39,7 @@ export default function MySolutions() {
             <th>Szint</th>
             <th>Kezdési Dátum</th>
             <th>Megoldási Idő (másodperc)</th>
-            <th>Megoldási Dátum</th>
+            <th>Feladat</th>
             <th>Eredmény</th>
           </tr>
         </thead>
@@ -49,8 +49,8 @@ export default function MySolutions() {
               <td>{solution.mathTypeName}</td>
               <td>{solution.level}</td>
               <td>{new Date(solution.createdAt).toLocaleString()}</td>
-              <td>{solution.elapsedTime} s</td>
-              <td>{new Date(solution.solvedAt).toLocaleString()}</td>
+              <td>{solution.elapsedTime / 100} s</td>
+              <td>{solution.question}</td>
               <td>{solution.resultValue.join(", ")}</td>
             </tr>
           ))}

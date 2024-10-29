@@ -85,11 +85,15 @@ export const Login = () => {
   }, [error]);
 
   return (
-    <div id="webcrumbs">
-      <div className="w-[400px] bg-neutral-50 min-h-[500px] p-6 rounded-lg shadow-lg flex flex-col items-center justify-between">
+    <div
+      id="webcrumbs"
+      className="flex justify-center items-center min-h-screen"
+    >
+      <div className="w-[400px] bg-neutral-50 min-h-[500px] p-6 rounded-lg shadow-lg flex flex-col items-center">
         <h1 className="text-2xl font-title mb-6">Login</h1>
 
         <form className="w-full flex flex-col gap-4" onSubmit={handleLogin}>
+          {/* Email mező */}
           <div className="flex flex-col gap-1">
             <label htmlFor="email" className="font-semibold">
               Email
@@ -106,6 +110,7 @@ export const Login = () => {
             />
           </div>
 
+          {/* Password mező */}
           <div className="flex flex-col gap-1">
             <label htmlFor="password" className="font-semibold">
               Password
@@ -122,9 +127,10 @@ export const Login = () => {
             />
           </div>
 
+          {/* Login gomb */}
           <button
             type="submit"
-            className="w-full bg-primary text-white py-3 rounded-md mt-4"
+            className="w-full bg-primary text-white py-3 rounded-md mt-4 hover:bg-primary-600"
           >
             Log In
           </button>

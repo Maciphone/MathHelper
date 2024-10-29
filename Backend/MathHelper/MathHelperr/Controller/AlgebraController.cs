@@ -72,49 +72,6 @@ public class AlgebraController :ControllerBase
         //var res = await _context.Solutions.FirstOrDefaultAsync(e => e.SolutionId == dto.SolutionId);
         return 1;
     }
-
-    //[Authorize (Roles = "User")]
-    [HttpPost("UpdateSolution")]
-    public async Task<IActionResult> UpdateSolution(SolutionSolvedDto solutionSolvedDto)
-    { 
-      
-        try
-        {
-            
-            var solution =  await _context.Solutions.FirstOrDefaultAsync(s => s.SolutionId == solutionSolvedDto.SolutionId);
-           if (solution == null)
-           {
-               return NotFound("no solution with this id");
-           }
-
-           var el = solutionSolvedDto.ElapsedTime;
-           DateTime date = solutionSolvedDto.SolvedAt;
-           
-           solution.ElapsedTime = solutionSolvedDto.ElapsedTime;
-           solution.SolvedAt = solutionSolvedDto.SolvedAt;
-           Console.WriteLine(solution);
-           await _solutionRepository.UpdateAsync(solution);
-           return Ok();
-        }
-   catch (DbUpdateConcurrencyException)
-   {
-           return Conflict("A concurrency probléma lépett fel.");
-
-   }
-   catch (DbUpdateException)
-   {
-           return StatusCode(StatusCodes.Status500InternalServerError, "Adatbázis hiba történt.");
-   }
-   catch (Exception ex)
-   {
-           Console.WriteLine(ex.Message);
-           return StatusCode(StatusCodes.Status500InternalServerError, $"Váratlan hiba történt: {ex.Message}");
-   }
-
-       
-
-    }
-    
     
     [Authorize(Roles = "User")]
     [HttpGet("TestForDatabase") ]

@@ -23,7 +23,7 @@ const Stopwatch = ({
 
   useEffect(() => {
     if (isTimeRequested) {
-      handleElapsedTime(time); // Visszaküldjük az aktuális időt a szülő komponensnek
+      handleElapsedTime(time); // 100 milisec 1 másodperc
     }
   }, [isTimeRequested, handleElapsedTime, time]);
 

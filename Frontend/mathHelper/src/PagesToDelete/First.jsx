@@ -1,9 +1,9 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React from "react";
 import ExercisePageWithStopWatch from "../Components/ExercisePageWithStopWatch";
 
-export default function Multiplication() {
-  const operation = "Multiplication";
-  const transltedOperation = "Szorzás";
+export default function First() {
+  const operation = "Division";
+  const transltedOperation = "osztás";
 
   return (
     <ExercisePageWithStopWatch

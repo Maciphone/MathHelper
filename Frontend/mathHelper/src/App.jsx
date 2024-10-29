@@ -5,15 +5,17 @@ import Welcome from "./Pages/Welcome";
 import Algbera from "./Pages/Algbera";
 import Multiplication from "./Pages/Multiplication";
 import Division from "./Pages/Division";
-import AITextExercise from "./Pages/TesterPage";
-import LevelButtons from "./Components/LevelButtons";
+import AITextExercise from "./PagesToDelete/TesterPage";
+
 import { Login } from "./Pages/Login";
 import { CookiesProvider } from "react-cookie";
 import RemainDivision from "./Pages/RemainDivision";
 import MySolutions from "./Pages/MySolutions";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { removeName } from "./Reduce/userInformation";
+import ExpirationAlert from "./Components/ExpirationAlert";
+import First from "./PagesToDelete/First";
 
 function App() {
   const navigate = useNavigate();
@@ -23,19 +25,31 @@ function App() {
   );
   console.log(tokenExpiration);
   //backend sends in min tokens expire, this useEffect sets a timeout
+
+  //alert modal
+  const [showModal, setShowModal] = useState(false);
+
+  //
   useEffect(() => {
     if (!tokenExpiration) return;
-    console.log("Token expiration (minutes):", tokenExpiration);
+
     const timeUntillExpiration = tokenExpiration * 60 * 1000; //set to milisecs
-    console.log("Time until expiration (ms):", timeUntillExpiration);
 
     const timeoutSet = setTimeout(() => {
       dispatch(removeName());
-      alert("a munkamenet lejárt, jelntkezz be újra");
-      //navigate("/login");
+      setShowModal(true);
     }, timeUntillExpiration);
     return () => clearTimeout(timeoutSet);
   }, [tokenExpiration, dispatch, navigate]);
+
+  const handleModalClose = () => {
+    setShowModal(false); // close alertModal
+  };
+
+  const handleNavigateLogin = () => {
+    setShowModal(false);
+    navigate("/login"); // navigation in modal
+  };
 
   const routes = useRoutes([
     {
@@ -78,10 +92,24 @@ function App() {
           path: "/login",
           element: <Login />,
         },
+        {
+          path: "/todelete",
+          element: <First />,
+        },
       ],
     },
   ]);
-  return <CookiesProvider>{routes}</CookiesProvider>;
+  return (
+    <CookiesProvider>
+      {routes}
+      {showModal && (
+        <ExpirationAlert
+          onClose={handleModalClose}
+          onNavigate={handleNavigateLogin}
+        />
+      )}
+    </CookiesProvider>
+  );
 }
 
 export default App;

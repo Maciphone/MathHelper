@@ -1,0 +1,236 @@
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import LevelButtons from "../Components/LevelButtons";
+import Stopwatch from "../Components/StopWatch";
+import { useSelector } from "react-redux";
+
+export default function Algbera() {
+  const [matek, setMath] = useState([]);
+  const [userAnswer, setUserAnswer] = useState("");
+  const [feedback, setFeedback] = useState("");
+  const [level, setLevel] = useState(1);
+
+  const userReduxName = useSelector((state) => state.userData.value);
+  const inputRef = useRef(null); // hivatkozási pont létrehozása
+
+  // if (userReduxName) {
+  //   console.log(userReduxName);
+  // } else {
+  //   console.log("not loged in");
+  // }
+
+  //stopwatch
+  const [isRunning, setIsRunning] = useState(false);
+  const [reset, setReset] = useState(false);
+  const [elapsedTime, setElapsedTime] = useState(null);
+  const [isTimeRequested, setIsTimeRequested] = useState(false);
+  const [isBuilt, setIsBuilt] = useState(false);
+
+  const [isSubmitPending, setIsSubmitPending] = useState(false);
+
+  useEffect(() => {
+    const fetcher = async () => {
+      try {
+        const response = await fetch(
+          `api/algebra/TestForDatabase?type=Algebra`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Level: `${level}`,
+            },
+            credentials: "include",
+          }
+        );
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error("Error from backend:", errorData);
+          throw new Error(errorData.message || "Failed to fetch");
+        }
+        const data = await response.json();
+        console.log(data);
+
+        setMath(data);
+        setIsRunning(true);
+        inputRef.current.focus();
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    if (isBuilt) {
+      fetcher();
+    }
+  }, [level, isBuilt]);
+
+  const fetchData = async () => {
+    try {
+      const response = await fetch(`api/algebra/TestForDatabase?type=Algebra`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Level: `${level}`,
+        },
+        credentials: "include",
+      });
+      if (!response.ok) {
+        throw new Error("failed to fetch");
+      }
+      const data = await response.json();
+      console.log(data);
+      setMath(data);
+      setIsRunning(true);
+
+      inputRef.current.focus();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const updateSolution = async () => {
+    var solvedAt = new Date().toISOString();
+
+    var solution = {
+      ...matek.solutionSolvedDto,
+      elapsedTime,
+      solvedAt: solvedAt,
+    };
+    console.log(solution);
+
+    try {
+      var response = await fetch("api/solution/UpdateSolution", {
+        method: "Post",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(solution),
+      });
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
+    } catch (error) {
+      console.error("Failed to update solution:", error.message);
+    }
+  };
+
+  useEffect(() => {
+    setReset((prevReset) => !prevReset);
+  }, [matek]);
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   if (parseInt(userAnswer) === matek.result[0]) {
+  //     setFeedback("Bravo!");
+  //     elapsedTimeSetting();
+  //     setIsSubmitPending(true);
+  //     if (elapsedTime) {
+  //       console.log("elapsedtime", elapsedTime);
+  //       await updateSolution();
+  //       await fetchData();
+  //       inputRef.current.focus();
+  //     }
+  //   } else {
+  //     setFeedback("Rossz válasz, próbáld újra!");
+  //   }
+  //   setUserAnswer("");
+  //   inputRef.current.focus();
+  // };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (parseInt(userAnswer) === matek.result[0]) {
+      setFeedback("Bravo!");
+      setIsTimeRequested(true); //triger stopwatch
+      setIsSubmitPending(true);
+      inputRef.current.focus();
+    } else {
+      setFeedback("Rossz válasz, próbáld újra!");
+    }
+    setUserAnswer("");
+    inputRef.current.focus();
+  };
+  useEffect(() => {
+    const update = async () => {
+      await updateSolution();
+      await fetchData();
+    };
+    if (isBuilt) {
+      update();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [elapsedTime]);
+
+  const skip = async () => {
+    await fetchData();
+  };
+
+  //set time required to solve the exercise, passed to stopwatch comp.
+  const handleElapsedTime = (time) => {
+    setElapsedTime(time);
+    setIsTimeRequested(false);
+    console.log(`Eltelt idő: ${time} ms`);
+  };
+
+  const handleLevel = (e) => {
+    setLevel(e);
+    setIsRunning(true);
+    setIsBuilt(true);
+  };
+  const handleLevelLocal = (e) => {
+    const level = e.target.value;
+    setLevel(level);
+    setIsBuilt(true);
+  };
+
+  return (
+    <div>
+      <div>{userReduxName && <p>Szia {userReduxName}</p>}</div>
+
+      <div>
+        <LevelButtons operation={"algebra"} handleLevel={handleLevel} />
+        <p>szint</p>
+        <button value="1" onClick={handleLevelLocal}>
+          1
+        </button>
+        <button value="2" onClick={handleLevelLocal}>
+          2
+        </button>
+        <button value="3" onClick={handleLevelLocal}>
+          3
+        </button>
+      </div>
+      <h2>Összeadás</h2>
+      {matek ? (
+        <div>
+          <p>Kérdés: {matek.question}</p>
+          <form onSubmit={handleSubmit}>
+            <label>
+              A válaszom:
+              <input
+                ref={inputRef}
+                type="number"
+                value={userAnswer}
+                onChange={(e) => setUserAnswer(e.target.value)}
+              />
+            </label>
+            <button type="submit">ennyi :)</button>
+          </form>
+          <button onClick={skip}>másikat</button>
+
+          <div onClick={() => setReset(!reset)}>
+            <Stopwatch
+              isRunning={isRunning}
+              onReset={reset}
+              handleElapsedTime={handleElapsedTime}
+              isTimeRequested={isTimeRequested}
+            />
+          </div>
+
+          {feedback && <p>{feedback}</p>}
+        </div>
+      ) : (
+        <p>Loading...</p>
+      )}
+    </div>
+  );
+}

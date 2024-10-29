@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 export default function Welcome() {
   const [userName, setUserName] = useState(null);
   const userReduxName = useSelector((state) => state.userData.value);
+
   //const [cookie] = useCookies(["token"]);
   //const token = cookie.token;
   //console.log(token);
@@ -21,7 +22,7 @@ export default function Welcome() {
 
   return (
     <div>
-      <p>{userName ? `Welcome ${userName}` : "Nincs token"}</p>
+      <p>{userReduxName ? `Welcome ${userReduxName}` : "Nincs token"}</p>
       <p>
         {userReduxName
           ? `Welcome ${userReduxName} be vagy jelentkezve`

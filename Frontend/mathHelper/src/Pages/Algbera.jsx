@@ -7,7 +7,8 @@ export default function Algbera() {
   const [matek, setMath] = useState([]);
   const [userAnswer, setUserAnswer] = useState("");
   const [feedback, setFeedback] = useState("");
-  const [level, setLevel] = useState("1");
+  const [level, setLevel] = useState(1);
+
   const userReduxName = useSelector((state) => state.userData.value);
   const inputRef = useRef(null); // hivatkozási pont létrehozása
 
@@ -22,6 +23,9 @@ export default function Algbera() {
   const [reset, setReset] = useState(false);
   const [elapsedTime, setElapsedTime] = useState([]);
   const [isTimeRequested, setIsTimeRequested] = useState(false);
+  const [isBuilt, setIsBuilt] = useState(false);
+
+  const [isSubmitPending, setIsSubmitPending] = useState(false);
 
   useEffect(() => {
     const fetcher = async () => {
@@ -44,6 +48,7 @@ export default function Algbera() {
         }
         const data = await response.json();
         console.log(data);
+
         setMath(data);
         setIsRunning(true);
         inputRef.current.focus();
@@ -51,8 +56,10 @@ export default function Algbera() {
         console.error(error);
       }
     };
-    fetcher();
-  }, [level]);
+    if (isBuilt) {
+      fetcher();
+    }
+  }, [level, isBuilt]);
 
   const fetchData = async () => {
     try {
@@ -71,9 +78,37 @@ export default function Algbera() {
       console.log(data);
       setMath(data);
       setIsRunning(true);
+
       inputRef.current.focus();
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const updateSolution = async () => {
+    var solvedAt = new Date().toISOString();
+
+    var solution = {
+      ...matek.solutionSolvedDto,
+      elapsedTime,
+      solvedAt: solvedAt,
+    };
+    console.log(solution);
+
+    try {
+      var response = await fetch("api/algebra/UpdateSolution", {
+        method: "Post",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(solution),
+      });
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
+    } catch (error) {
+      console.error("Failed to update solution:", error.message);
     }
   };
 
@@ -87,8 +122,13 @@ export default function Algbera() {
     if (parseInt(userAnswer) === matek.result[0]) {
       setFeedback("Bravo!");
       elapsedTimeSetting();
-      await fetchData();
-      inputRef.current.focus();
+      setIsSubmitPending(true);
+      if (elapsedTime) {
+        console.log("elapsedtime", elapsedTime);
+        await updateSolution();
+        await fetchData();
+        inputRef.current.focus();
+      }
     } else {
       setFeedback("Rossz válasz, próbáld újra!");
     }
@@ -96,14 +136,15 @@ export default function Algbera() {
     inputRef.current.focus();
   };
 
+  //triger stopwatch
   const elapsedTimeSetting = () => {
-    setIsRunning(false);
+    //  setIsRunning(false);
     setIsTimeRequested(true);
-    setReset(!reset);
+    // setReset(!reset);
   };
 
-  const skip = () => {
-    fetchData();
+  const skip = async () => {
+    await fetchData();
   };
 
   //set time required to solve the exercise,
@@ -116,15 +157,17 @@ export default function Algbera() {
   const handleLevel = (e) => {
     setLevel(e);
     setIsRunning(true);
+    setIsBuilt(true);
   };
   const handleLevelLocal = (e) => {
     const level = e.target.value;
     setLevel(level);
+    setIsBuilt(true);
   };
 
   return (
     <div>
-      <div>{userReduxName && <p1>Szia {userReduxName}</p1>}</div>
+      <div>{userReduxName && <p>Szia {userReduxName}</p>}</div>
 
       <div>
         <LevelButtons operation={"algebra"} handleLevel={handleLevel} />

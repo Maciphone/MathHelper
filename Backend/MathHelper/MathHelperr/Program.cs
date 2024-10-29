@@ -1,11 +1,14 @@
 using System.Text;
 using MathHelperr.Data;
+using MathHelperr.Model.Db;
+using MathHelperr.Model.Db.DTO;
 using MathHelperr.Service;
 using MathHelperr.Service.AbstractImplementation;
 using MathHelperr.Service.Authentication;
 using MathHelperr.Service.Factory;
 using MathHelperr.Service.Groq;
 using MathHelperr.Service.LevelProvider;
+using MathHelperr.Service.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -24,10 +27,10 @@ builder.Configuration.AddUserSecrets<Program>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddTransient<IAlgebraExcercise, AlgebraExerciseFromAbstract>();
-builder.Services.AddTransient<IMultiplicationExcercise, MultiplicationExerciseFromAbstract>();
-builder.Services.AddTransient<IDivisionExcercise, DivisionExerciseFromAbstract>();
-builder.Services.AddTransient<IRemainDivisionExcercise, RemainDivisionExerciseFromAbstract>();
+builder.Services.AddScoped<IAlgebraExcercise, AlgebraExerciseFromAbstract>();
+builder.Services.AddScoped<IMultiplicationExcercise, MultiplicationExerciseFromAbstract>();
+builder.Services.AddScoped<IDivisionExcercise, DivisionExerciseFromAbstract>();
+builder.Services.AddScoped<IRemainDivisionExcercise, RemainDivisionExerciseFromAbstract>();
 builder.Services.AddScoped<IMathFactory, MathFactory>();
 
 //Get "level" data from htttp context or later from desctop application
@@ -40,6 +43,10 @@ builder.Services.AddScoped<GroqApiClient>();
 builder.Services.AddScoped<GroqTextGenerator>();
 builder.Services.AddScoped<IGroqResultGenerator, GroqResultGenerator>();
 builder.Services.AddScoped<ICreatorRepository, CreatorRepository>();
+builder.Services.AddScoped<IRepositoryUserData<SolutionDto>, SolutionDtoRepository>();
+
+//register repository
+builder.Services.AddScoped<IRepository<Solution>, SolutionRepository>();
 
 
 //authentication registration
@@ -116,7 +123,7 @@ void AddRoles()
 
 void AddDivisionGenerators()
 {
-    builder.Services.AddTransient<IDivisionExampleGenerator>(provider =>
+    builder.Services.AddScoped<IDivisionExampleGenerator>(provider =>
     {
         var context = provider.GetRequiredService<IContextProvider>();
         var level = context.GetLevel();
@@ -131,7 +138,7 @@ void AddDivisionGenerators()
         throw new InvalidOperationException();
     });
     
-    builder.Services.AddTransient<IDivisionTextGenerator>(provider =>
+    builder.Services.AddScoped<IDivisionTextGenerator>(provider =>
     {
         var context = provider.GetRequiredService<IContextProvider>();
         var level = context.GetLevel();
@@ -151,7 +158,7 @@ void AddDivisionGenerators()
 void AddMultiplicationGenerators()
 {
     
-    builder.Services.AddTransient<IMultiplicationTextGenerator>(provider =>
+    builder.Services.AddScoped<IMultiplicationTextGenerator>(provider =>
     {
         var context = provider.GetRequiredService<IContextProvider>();
         var level = context.GetLevel();
@@ -170,7 +177,7 @@ void AddMultiplicationGenerators()
         throw new InvalidOperationException();
     });
     
-    builder.Services.AddTransient<IMultiplicationExampleGenerator>(implementationFactory: provider =>
+    builder.Services.AddScoped<IMultiplicationExampleGenerator>(implementationFactory: provider =>
     {
         var context = provider.GetRequiredService<IContextProvider>();
         var level = context.GetLevel();
@@ -188,7 +195,7 @@ void AddMultiplicationGenerators()
         throw new InvalidOperationException();
     });
 
-    builder.Services.AddTransient<IRemainDivisonExampleGenerator>(implementationFactory: provider =>
+    builder.Services.AddScoped<IRemainDivisonExampleGenerator>(implementationFactory: provider =>
     {
         var context = provider.GetRequiredService<IContextProvider>();
         var level = context.GetLevel();
@@ -202,7 +209,7 @@ void AddMultiplicationGenerators()
         throw new InvalidOperationException();
     });
     
-    builder.Services.AddTransient<IRemainDivisionTextGenerator>(implementationFactory: provider =>
+    builder.Services.AddScoped<IRemainDivisionTextGenerator>(implementationFactory: provider =>
     {
         var context = provider.GetRequiredService<IContextProvider>();
         var level = context.GetLevel();
@@ -221,7 +228,7 @@ void AddMultiplicationGenerators()
 
 void AddAlgebraGenerators()
 {
-    builder.Services.AddTransient<IAlgebraTextGenerator>(provider =>
+    builder.Services.AddScoped<IAlgebraTextGenerator>(provider =>
     {
         var context = provider.GetRequiredService<IContextProvider>();
         var level = context.GetLevel();
@@ -233,12 +240,14 @@ void AddAlgebraGenerators()
                 return new Level2AlgebraTextGenerator();
             case "3":
                 return new Level3AlgebraTextGenerator();
+            default:
+                return new Level1AlgebraTextGenerator();
         }
 
         throw new ArgumentException("Invalid level");
     });
 
-    builder.Services.AddTransient<IAlgebraExampleGenerator>(provider =>
+    builder.Services.AddScoped<IAlgebraExampleGenerator>(provider =>
     {
         var context = provider.GetRequiredService<IContextProvider>();
         var level = context.GetLevel();
@@ -250,6 +259,8 @@ void AddAlgebraGenerators()
                 return new Level2AlgebraExampleGenerator();
             case "3":
                 return new Level3AlgebraExampleGenerator();
+            default:
+                return new Level1AlgebraExampleGenerator();
         }
 
         throw new ArgumentException("Invalid level");
@@ -263,8 +274,8 @@ void AddJwtAuthentication()
 
     var jwtSettings = builder.Configuration.GetSection("Jwt");
     var issuerSigningKey = builder.Configuration["Jwt:IssuerSigningKey"];
-    
-  
+
+
 
     builder.Services.AddAuthentication(options =>
         {
@@ -286,37 +297,40 @@ void AddJwtAuthentication()
             };
             options.Events = new JwtBearerEvents
             {
-                
-                    OnAuthenticationFailed = context =>
-                    {
-                        Console.WriteLine("Authentication failed: " + context.Exception.Message);
-                        return Task.CompletedTask;
-                    },
-                    OnTokenValidated = context =>
-                    {
-                        Console.WriteLine("Token validated for user: " + context.Principal.Identity.Name);
-                        return Task.CompletedTask;
-                    },
-                    OnMessageReceived = context =>
-                    {
-                        Console.WriteLine("JWT Token received: " + context.Token);
-                        context.Token = context.Request.Cookies["jwt"];  // A token cookie-ból való kiolvasása
-                        return Task.CompletedTask;
-                    }
-                };
-            
-        })
-//outgoing settings
-        .AddCookie(options =>
-        {
-            options.Cookie.HttpOnly = true;
-            options.Cookie.SecurePolicy =
-                CookieSecurePolicy.Always; // Set to Always in production, Csak HTTPS-en keresztül
-            options.Cookie.SameSite = SameSiteMode.None; //Cross origin cookies
-            options.Cookie.Name = "jwt";
-            options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
-            
+
+                OnAuthenticationFailed = context =>
+                {
+                    Console.WriteLine("Authentication failed: " + context.Exception.Message);
+                    return Task.CompletedTask;
+                },
+                OnTokenValidated = context =>
+                {
+                    Console.WriteLine("Token validated for user: " + context.Principal.Identity.Name);
+                    return Task.CompletedTask;
+                },
+                OnMessageReceived = context =>
+                {
+                    Console.WriteLine("JWT Token received: " + context.Token);
+                    context.Token = context.Request.Cookies[
+                        jwtSettings["CookieName"] ??
+                        throw new InvalidOperationException(
+                            "no CookieName key in appsettings")]; // A token cookie-ból való kiolvasása
+                    return Task.CompletedTask;
+                }
+            };
+
         });
+//outgoing settings
+    // .AddCookie(options =>
+    // {
+    //     options.Cookie.HttpOnly = true;
+    //     options.Cookie.SecurePolicy =
+    //         CookieSecurePolicy.Always; // Set to Always in production, Csak HTTPS-en keresztül
+    //     options.Cookie.SameSite = SameSiteMode.None; //Cross origin cookies
+    //     options.Cookie.Name = "jwt";
+    //     options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+    //     
+    // });
 
 }
 

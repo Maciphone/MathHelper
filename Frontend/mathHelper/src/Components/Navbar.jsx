@@ -22,6 +22,9 @@ export default function Navbar() {
       <Link to={"/maradek"}>
         <button>MaradékOsztás</button>
       </Link>
+      <Link to={"/saját"}>
+        <button>Megoldásaim</button>
+      </Link>
       <Link to={"/login"}>
         <button>Login</button>
       </Link>

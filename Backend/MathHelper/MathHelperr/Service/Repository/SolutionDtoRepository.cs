@@ -16,7 +16,7 @@ public class SolutionDtoRepository : IRepositoryUserData<SolutionDto>
     }
 
 
-    public async Task<SolutionDto> GetByUserIdAsync(int id, int userId)
+    public async Task<SolutionDto> GetByUserIdAsync(int id, string userId)
     {
         var s =  await _context.Solutions
             .Include(e =>e.Exercise)
@@ -37,17 +37,19 @@ public class SolutionDtoRepository : IRepositoryUserData<SolutionDto>
                 ElapsedTime = s.ElapsedTime,
                 SolvedAt = s.SolvedAt,
                 CreatedAt = s.CreatedAt,
-                UserId = s.UserId
+                UserId = s.UserId,
+                Exercise = s.Exercise.Question
             };
         }
 
         return null;
     }
 
-    public async Task<IEnumerable<SolutionDto>> GetAllByUserIdAsync(int userId)
+    public async Task<IEnumerable<SolutionDto>> GetAllByUserIdAsync(string userId)
     {
         return await _context.Solutions
-            .Where(s => s.UserId == userId.ToString())
+            .Where(s => s.UserId == userId)
+            .Where(s => s.SolvedAt != DateTime.MinValue)
             .Select(s => new SolutionDto
             {
                 SolutionId = s.SolutionId,
@@ -63,10 +65,10 @@ public class SolutionDtoRepository : IRepositoryUserData<SolutionDto>
         
     }
 
-    public async Task<IEnumerable<SolutionDto>> GetByUserIdIntervalAsync(int userId, DateTime fromDate, DateTime toDate)
+    public async Task<IEnumerable<SolutionDto>> GetByUserIdIntervalAsync(string userId, DateTime fromDate, DateTime toDate)
     {
         return await _context.Solutions
-            .Where(s => s.UserId == userId.ToString())
+            .Where(s => s.UserId == userId)
             .Where(s => s.SolvedAt >= fromDate && s.SolvedAt <= toDate)
             .Select(s => new SolutionDto
             {

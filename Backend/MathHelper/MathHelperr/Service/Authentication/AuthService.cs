@@ -7,6 +7,7 @@ public class AuthService :IAuthService
 {
     private readonly UserManager<IdentityUser> _userManager;
     private readonly ITokenService _tokenService;
+    
 
     public AuthService(UserManager<IdentityUser> userManager, ITokenService tokenService)
     {
@@ -25,12 +26,12 @@ public class AuthService :IAuthService
         }
 
         await _userManager.AddToRoleAsync(user, role); // Adding the user to a role
-        return new AuthResult(true, email, username, "");
+        return new AuthResult(true, email, username, "", null);
     }
     
     private static AuthResult FailedRegistration(IdentityResult result, string email, string username)
     {
-        var authResult = new AuthResult(false, email, username, "");
+        var authResult = new AuthResult(false, email, username, "", null);
 
         foreach (var error in result.Errors)
         {
@@ -40,7 +41,7 @@ public class AuthService :IAuthService
         return authResult;
     }
     
-    public async Task<AuthResult> LoginAsync(string email, string password)
+    public async Task<AuthResult> LoginAsync(string email, string password, int tokenValidTimespan)
     {
         var managedUser = await _userManager.FindByEmailAsync(email);
 
@@ -60,22 +61,36 @@ public class AuthService :IAuthService
         // get the role and pass it to the TokenService
         var roles = await _userManager.GetRolesAsync(managedUser);
         var accessToken = _tokenService.CreateToken(managedUser, roles[0]);
+
+        CookieOptions options = CreateCookieOptions(tokenValidTimespan);
     
         
 
-        return new AuthResult(true, managedUser.Email, managedUser.UserName, accessToken);
+        return new AuthResult(true, managedUser.Email, managedUser.UserName, accessToken, options);
     }
-    
+
+    private CookieOptions CreateCookieOptions(int tokenValidTimespan)
+    {
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Expires = DateTimeOffset.UtcNow.AddMinutes(tokenValidTimespan),
+            SameSite = SameSiteMode.None,
+            Secure = true //only on Https con, else true
+        };
+        return cookieOptions;
+    }
+
     private static AuthResult InvalidEmail(string email)
     {
-        var result = new AuthResult(false, email, "", "");
+        var result = new AuthResult(false, email, "", "", null);
         result.ErrorMessages.Add("Bad credentials", "Invalid email or password");
         return result;
     }
 
     private static AuthResult InvalidPassword(string email, string userName)
     {
-        var result = new AuthResult(false, email, userName, "");
+        var result = new AuthResult(false, email, userName, "", null);
         result.ErrorMessages.Add("Bad credentials", "Invalid email or password");
         return result;
     }

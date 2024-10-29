@@ -1,5 +1,5 @@
 import "./App.css";
-import { useRoutes } from "react-router-dom";
+import { useNavigate, useRoutes } from "react-router-dom";
 import Layout from "./Components/Layout";
 import Welcome from "./Pages/Welcome";
 import Algbera from "./Pages/Algbera";
@@ -10,8 +10,33 @@ import LevelButtons from "./Components/LevelButtons";
 import { Login } from "./Pages/Login";
 import { CookiesProvider } from "react-cookie";
 import RemainDivision from "./Pages/RemainDivision";
+import MySolutions from "./Pages/MySolutions";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { removeName } from "./Reduce/userInformation";
 
 function App() {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const tokenExpiration = useSelector(
+    (state) => state.authData.tokenExpiration
+  );
+  console.log(tokenExpiration);
+  //backend sends in min tokens expire, this useEffect sets a timeout
+  useEffect(() => {
+    if (!tokenExpiration) return;
+    console.log("Token expiration (minutes):", tokenExpiration);
+    const timeUntillExpiration = tokenExpiration * 60 * 1000; //set to milisecs
+    console.log("Time until expiration (ms):", timeUntillExpiration);
+
+    const timeoutSet = setTimeout(() => {
+      dispatch(removeName());
+      alert("a munkamenet lejárt, jelntkezz be újra");
+      //navigate("/login");
+    }, timeUntillExpiration);
+    return () => clearTimeout(timeoutSet);
+  }, [tokenExpiration, dispatch, navigate]);
+
   const routes = useRoutes([
     {
       path: "/",
@@ -46,8 +71,8 @@ function App() {
           element: <RemainDivision />,
         },
         {
-          path: "/button",
-          element: <LevelButtons />,
+          path: "/saját",
+          element: <MySolutions />,
         },
         {
           path: "/login",

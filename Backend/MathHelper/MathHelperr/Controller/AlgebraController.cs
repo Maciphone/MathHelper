@@ -3,12 +3,15 @@ using System.Net.Http.Headers;
 using System.Security.Claims;
 using MathHelperr.Data;
 using MathHelperr.Model;
+using MathHelperr.Model.Db;
+using MathHelperr.Model.Db.DTO;
 using MathHelperr.Service;
 using MathHelperr.Service.Factory;
 using MathHelperr.Service.Groq;
 using MathHelperr.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace MathHelperr.Controller;
@@ -20,15 +23,22 @@ public class AlgebraController :ControllerBase
     private readonly IGroqResultGenerator _groqResultGenerator;
     private readonly ApplicationDbContext _context;
     private readonly ICreatorRepository _creatorRepository;
-
-
+    private readonly IRepository<Solution> _solutionRepository;
     private readonly IMathFactory _mathFactory;
-    public AlgebraController(IMathFactory mathFactory, IGroqResultGenerator groqResultGenerator, ApplicationDbContext context, ICreatorRepository creatorRepository)
+    
+    public AlgebraController(
+        IMathFactory mathFactory, 
+        IGroqResultGenerator groqResultGenerator, 
+        ApplicationDbContext context, 
+        ICreatorRepository creatorRepository, 
+        IRepository<Solution> solutionRepository)
     {
         _mathFactory = mathFactory;
         _groqResultGenerator = groqResultGenerator;
         _context = context;
         _creatorRepository = creatorRepository;
+        _solutionRepository = solutionRepository;
+      
     }
 
     [HttpGet("GetExercise")]
@@ -52,6 +62,58 @@ public class AlgebraController :ControllerBase
         return Ok(result);
 
     }
+
+   
+    [HttpPost("test")]
+    public int JustTest(SolutionSolvedDto dto)
+    {
+        Console.WriteLine(dto);
+
+        //var res = await _context.Solutions.FirstOrDefaultAsync(e => e.SolutionId == dto.SolutionId);
+        return 1;
+    }
+
+    //[Authorize (Roles = "User")]
+    [HttpPost("UpdateSolution")]
+    public async Task<IActionResult> UpdateSolution(SolutionSolvedDto solutionSolvedDto)
+    { 
+      
+        try
+        {
+            
+            var solution =  await _context.Solutions.FirstOrDefaultAsync(s => s.SolutionId == solutionSolvedDto.SolutionId);
+           if (solution == null)
+           {
+               return NotFound("no solution with this id");
+           }
+
+           var el = solutionSolvedDto.ElapsedTime;
+           DateTime date = solutionSolvedDto.SolvedAt;
+           
+           solution.ElapsedTime = solutionSolvedDto.ElapsedTime;
+           solution.SolvedAt = solutionSolvedDto.SolvedAt;
+           Console.WriteLine(solution);
+           await _solutionRepository.UpdateAsync(solution);
+           return Ok();
+        }
+   catch (DbUpdateConcurrencyException)
+   {
+           return Conflict("A concurrency probléma lépett fel.");
+
+   }
+   catch (DbUpdateException)
+   {
+           return StatusCode(StatusCodes.Status500InternalServerError, "Adatbázis hiba történt.");
+   }
+   catch (Exception ex)
+   {
+           Console.WriteLine(ex.Message);
+           return StatusCode(StatusCodes.Status500InternalServerError, $"Váratlan hiba történt: {ex.Message}");
+   }
+
+       
+
+    }
     
     
     [Authorize(Roles = "User")]
@@ -64,7 +126,12 @@ public class AlgebraController :ControllerBase
       
         var level = Request.Headers["Level"].ToString();
         Console.WriteLine($"level: {level}");
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        //var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userId = User.FindAll(c => c.Type == ClaimTypes.NameIdentifier).FirstOrDefault().Value;
+        foreach (var claim in User.FindAll(c=>c.Type==ClaimTypes.NameIdentifier))
+        {
+            Console.WriteLine(claim.Type, claim.Value);
+        }
         var user = User.Identity.Name;
         
         Console.WriteLine($"username: {user}");
@@ -81,15 +148,22 @@ public class AlgebraController :ControllerBase
         exercise.Answer().Result.ForEach(e=>Console.WriteLine($"origi eredmények: {e}"));
         var solution = await _creatorRepository.GetSolution(exercise, type, level, userId);
 
-        if(solution==null){Console.WriteLine("db crasch");}
+        if (solution == null)
+        {
+            return BadRequest();
+        }
         var question = solution.Exercise.Question;
         var answer = solution.Exercise.Result.ResultValues;
+        SolutionSolvedDto dto = new SolutionSolvedDto
+        {
+            SolutionId = solution.SolutionId
+        };
        
         ExcerciseResult result = new ExcerciseResult()
         {
             Question = question,
             Result = answer,
-            Solution = solution
+            SolutionSolvedDto = dto
         };
        
         return Ok(result);

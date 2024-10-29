@@ -8,6 +8,7 @@ import { useCookies } from "react-cookie";
 import "../styles.css";
 import { useDispatch, useSelector } from "react-redux";
 import { addName } from "../Reduce/userInformation";
+import { setTokenExpiration } from "../Reduce/authSlice";
 
 export const Login = () => {
   const [cookies, setCookie, removeCookie] = useCookies(["token"]);
@@ -18,12 +19,16 @@ export const Login = () => {
   //Reduce
   const dispatch = useDispatch();
   const username = useSelector((state) => state.userData.value);
+  const tokenExpiration = useSelector(
+    (state) => state.authData.tokenExpiration
+  );
 
   const handleLogin = async (e) => {
     e.preventDefault();
     console.log(password, email);
 
     try {
+      console.log(password);
       const response = await fetch("api/authentication/Login", {
         method: "POST",
         headers: {
@@ -36,11 +41,14 @@ export const Login = () => {
         const data = await response.json();
 
         //data storage in localstorage
-        localStorage.setItem(`user`, data.userName);
-        console.log(localStorage.getItem`user`);
+        // localStorage.setItem(`user`, data.userName);
+        // console.log(localStorage.getItem`user`);
+        console.log(data.email);
 
         //data storage with Redux , add username to Reduce
         dispatch(addName(data.userName));
+        dispatch(setTokenExpiration(data.minutesTokenValid));
+        //console.log(data.minutesTokenValid);
 
         //cookieProvider - don't use it xxs attack
         // setCookie("token", data.token, { path: "/", maxAge: 30 });
@@ -59,8 +67,9 @@ export const Login = () => {
     // Figyeljük a Redux állapot változását
     if (username) {
       console.log("Felhasználónév a Redux-ból:", username);
+      console.log(tokenExpiration);
     }
-  }, [username]);
+  }, [username, tokenExpiration]);
 
   const logOut = () => {
     document.cookie = "token=; path=/; max-age=0";
@@ -74,6 +83,7 @@ export const Login = () => {
       setError("");
     }
   }, [error]);
+
   return (
     <div id="webcrumbs">
       <div className="w-[400px] bg-neutral-50 min-h-[500px] p-6 rounded-lg shadow-lg flex flex-col items-center justify-between">

@@ -7,7 +7,7 @@ public class Result
     public int ResultId { get; set; }
     
     public List<int> ResultValues { get; set; } = new List<int>();
-    public int ResultHash { get; set; }
+    public string ResultHash { get; set; }
     //public int ResultValue { get; set; }
     
 

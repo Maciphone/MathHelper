@@ -11,10 +11,12 @@ namespace MathHelperr.Controller;
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
+    private readonly IConfiguration _configuration;
 
-    public AuthController(IAuthService authService)
+    public AuthController(IAuthService authService, IConfiguration configuration)
     {
         _authService = authService;
+        _configuration = configuration;
     }
 
 
@@ -40,6 +42,7 @@ public class AuthController : ControllerBase
     [HttpPost("Login")]
     public async Task<ActionResult<AuthResponse>> Authenticate([FromBody] AuthRequest request)
     {
+        var tokenValidTimesSpan = 1;
         if (!ModelState.IsValid)
         {
             var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
@@ -50,22 +53,16 @@ public class AuthController : ControllerBase
             }
             return BadRequest(ModelState);
         }
-        Console.WriteLine(request.Email);
-        Console.WriteLine(request.Password);
 
-        var result = await _authService.LoginAsync(request.Email, request.Password);
-        Console.WriteLine(result.UserName);
+        var result = await _authService.LoginAsync(request.Email, request.Password, tokenValidTimesSpan);
+
+        var jwtKey = _configuration["Jwt:CookieName"];
         
         //token to send in headers
         var token = result.Token;
-        var cookieOptions = new CookieOptions
-        {
-            HttpOnly = true,
-            Expires = DateTimeOffset.UtcNow.AddMinutes(30),
-            SameSite = SameSiteMode.None,
-            Secure = true //only on Https con, else true
-        };
-        Response.Cookies.Append("jwt", token, cookieOptions);
+        var cookieOptions = result.Options;
+        Response.Cookies.Append(jwtKey, token, cookieOptions);
+
 
         if (!result.Success)
         {
@@ -79,7 +76,7 @@ public class AuthController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        return Ok(new AuthResponse(result.Email, result.UserName));
+        return Ok(new AuthResponse(result.Email, result.UserName, tokenValidTimesSpan));
     }
 
     private void AddErrors(AuthResult result)

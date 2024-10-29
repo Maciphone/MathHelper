@@ -21,12 +21,12 @@ public class CreatorRepository : ICreatorRepository
         //solutionId, resultId, exerciseId
         Result result = await GetResult(mathExcercise.Answer());
         Exercise exercise = await GetExercise(mathExcercise.Question(), mathTypeName, level, result.ResultId);
-        Solution solution = await GetSolution(result, exercise, userId);
+        Solution solution = await GetSolutionInternal(result, exercise, userId);
         
         return solution;
     }
 
-    private async Task<Solution> GetSolution(Result result, Exercise exercise, string userId)
+    private async Task<Solution> GetSolutionInternal(Result result, Exercise exercise, string userId)
     {
         var solution = new Solution
         {
@@ -64,7 +64,7 @@ public class CreatorRepository : ICreatorRepository
 
     private async Task<Result> GetResult(AlgebraResult answer)
     {
-        int answerHash = CalculateHash(answer.Result);
+        var answerHash = CreateString(answer.Result);
         var result = await _context.Results.FirstOrDefaultAsync(r => r.ResultHash == answerHash);
         if (result != null)
         {
@@ -83,8 +83,12 @@ public class CreatorRepository : ICreatorRepository
         }
     }
     
-    public int CalculateHash(List<int> resultValues)
+ 
+    private string CreateString(List<int> resultValues)
     {
-        return resultValues.Aggregate(0, (acc, val) => acc + val.GetHashCode());
+        var result = String.Join(",",
+            resultValues.Select(i => i.ToString()));
+        return result;
+
     }
 }

@@ -79,10 +79,8 @@ public class AlgebraController :ControllerBase
     public async Task<ActionResult<ExcerciseResult>> TestDb(MathTypeName type)
     {
   
-        //frontend a headers-ben "Level" kulcson küldi
-      
+        //frontend a headers-ben "Level" kulcson 
         var level = Request.Headers["Level"].ToString();
-        Console.WriteLine($"level: {level}");
         //var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         var userId = User.FindAll(c => c.Type == ClaimTypes.NameIdentifier).FirstOrDefault().Value;
         foreach (var claim in User.FindAll(c=>c.Type==ClaimTypes.NameIdentifier))
@@ -90,10 +88,6 @@ public class AlgebraController :ControllerBase
             Console.WriteLine(claim.Type, claim.Value);
         }
         var user = User.Identity.Name;
-        
-        Console.WriteLine($"username: {user}");
-        Console.WriteLine($"userID: {userId}");
-        
 
         if (userId == null)
         {
@@ -102,48 +96,54 @@ public class AlgebraController :ControllerBase
       
         
         var exercise =_mathFactory.getMathExcercise(type);
-        exercise.Answer().Result.ForEach(e=>Console.WriteLine($"origi eredmények: {e}"));
-        var solution = await _creatorRepository.GetSolution(exercise, type, level, userId);
-
-        if (solution == null)
-        {
-            return BadRequest();
-        }
-        var question = solution.Exercise.Question;
-        var answer = solution.Exercise.Result.ResultValues;
-        SolutionSolvedDto dto = new SolutionSolvedDto
-        {
-            SolutionId = solution.SolutionId
-        };
+  //      exercise.Answer().Result.ForEach(e=>Console.WriteLine($"origi eredmények: {e}"));
+ 
+        
+        var question = exercise.Question();
+        var answer = exercise.Answer().Result;
+        var exerciseId = await _creatorRepository.GetExerciseId(exercise, type, level, userId, null);
        
         ExcerciseResult result = new ExcerciseResult()
         {
             Question = question,
             Result = answer,
-            SolutionSolvedDto = dto
+           ExerciseId = exerciseId
         };
        
         return Ok(result);
 
     }
     
-    /*
+    
     [HttpGet("GetAiExercise")]
     public async Task<ActionResult<ExcerciseResult>> GetAiExercies(MathTypeName type)
     {
-        var exercise =_mathFactory.getMathExcercise(type);
-        var question = exercise.Question();
-        var answer = exercise.Answer().Result;
-        var aiStringResponse = await _groqResultGenerator.GetAiText(question);
-        
-        var result = new ExcerciseResult()
+     
+        var level = Request.Headers["Level"].ToString();
+        var userId = User.FindAll(c => c.Type == ClaimTypes.NameIdentifier).FirstOrDefault().Value;
+     
+
+        if (userId == null)
         {
-            Question = aiStringResponse,
-            Result = answer
+            return BadRequest("no id");
+        }
+      
+        
+        var exercise =_mathFactory.getMathExcercise(type);
+        
+        var question =  await _groqResultGenerator.GetAiText(exercise.Question());
+        var answer = exercise.Answer().Result;
+        var exerciseId = await _creatorRepository.GetExerciseId(exercise, type, level, userId, question);
+       
+        ExcerciseResult result = new ExcerciseResult()
+        {
+            Question = question,
+            Result = answer,
+            ExerciseId = exerciseId
         };
        
         return Ok(result);
-
+      
     }
     
     [HttpGet("GetAiExerciseTest")]
@@ -161,7 +161,7 @@ public class AlgebraController :ControllerBase
         return Ok(result);
 
     }
-*/
+
     
 
 }

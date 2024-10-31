@@ -5,7 +5,6 @@ import Welcome from "./Pages/Welcome";
 import Algbera from "./Pages/Algbera";
 import Multiplication from "./Pages/Multiplication";
 import Division from "./Pages/Division";
-import AITextExercise from "./PagesToDelete/TesterPage";
 
 import { Login } from "./Pages/Login";
 import { CookiesProvider } from "react-cookie";
@@ -16,6 +15,7 @@ import { useEffect, useState } from "react";
 import { removeName } from "./Reduce/userInformation";
 import ExpirationAlert from "./Components/ExpirationAlert";
 import First from "./PagesToDelete/First";
+import Ai from "./Pages/Ai";
 
 function App() {
   const navigate = useNavigate();
@@ -40,7 +40,7 @@ function App() {
       setShowModal(true);
     }, timeUntillExpiration);
     return () => clearTimeout(timeoutSet);
-  }, [tokenExpiration, dispatch, navigate]);
+  }, [dispatch, tokenExpiration]);
 
   const handleModalClose = () => {
     setShowModal(false); // close alertModal
@@ -72,17 +72,14 @@ function App() {
           path: "/division",
           element: <Division />,
         },
-        {
-          path: "/text",
-          element: <AITextExercise />,
-        },
-        {
-          path: "/tester",
-          element: <AITextExercise />,
-        },
+
         {
           path: "/maradek",
           element: <RemainDivision />,
+        },
+        {
+          path: "/text",
+          element: <Ai />,
         },
         {
           path: "/saját",

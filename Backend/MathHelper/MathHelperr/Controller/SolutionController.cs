@@ -51,25 +51,25 @@ public class SolutionController :ControllerBase
     
     //[Authorize (Roles = "User")]
     [HttpPost("UpdateSolution")]
-    public async Task<IActionResult> UpdateSolution(SolutionSolvedDto solutionSolvedDto)
+    public async Task<IActionResult> CreateSolution(SolutionSolvedDto solutionSolvedDto)
     { 
       
         try
         {
-            
-            var solution =  await _context.Solutions.FirstOrDefaultAsync(s => s.SolutionId == solutionSolvedDto.SolutionId);
-            if (solution == null)
-            {
-                return NotFound("no solution with this id");
-            }
+            var userId = User.FindAll(c => c.Type == ClaimTypes.NameIdentifier).FirstOrDefault().Value;
 
-            
-            var solvedAtLocalTime = solutionSolvedDto.SolvedAt.ToLocalTime();
-           
-            solution.ElapsedTime = solutionSolvedDto.ElapsedTime;
-            solution.SolvedAt = solvedAtLocalTime;
+            var solution = new Solution
+            {
+                ExerciseId = solutionSolvedDto.ExerciseId,
+                UserId = userId,
+                ElapsedTime = solutionSolvedDto.ElapsedTime,
+                SolvedAt = solutionSolvedDto.SolvedAt.ToLocalTime(),
+                CreatedAt = DateTime.Now,
+            };
+        
             Console.WriteLine(solution);
-            await _solutionRepository.UpdateAsync(solution);
+            await _solutionRepository.AddAsync(solution);
+            
             return Ok();
         }
         catch (DbUpdateConcurrencyException)

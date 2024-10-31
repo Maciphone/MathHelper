@@ -16,11 +16,11 @@ public class TokenService : ITokenService
         _configuration = configuration;
     }
 
-    private const int ExpirationMinutes = 90;
 
     public string CreateToken(IdentityUser user, string role)
     {
-        var expiration = DateTime.UtcNow.AddMinutes(ExpirationMinutes);
+        var expirationMinutes = int.Parse(_configuration["Jwt:CookieExpiration"]);
+        var expiration = DateTime.UtcNow.AddMinutes(expirationMinutes);
         var token = CreateJwtToken(
             CreateClaims(user, role),
             CreateSigningCredentials(),

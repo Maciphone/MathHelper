@@ -16,22 +16,24 @@ public class CreatorRepository : ICreatorRepository
         _context = context;
     }
 
-    public async Task<Solution> GetSolution(IMathExcercise mathExcercise, MathTypeName mathTypeName, string level, string userId )
+    public async Task<int> GetExerciseId(IMathExcercise mathExercise, MathTypeName mathTypeName, string level, string userId, string? aiText )
     {
         //solutionId, resultId, exerciseId
-        Result result = await GetResult(mathExcercise.Answer());
-        Exercise exercise = await GetExercise(mathExcercise.Question(), mathTypeName, level, result.ResultId);
-        Solution solution = await GetSolutionInternal(result, exercise, userId);
+        string question = aiText ?? mathExercise.Question();
         
-        return solution;
+        Result result = await GetResult(mathExercise.Answer());
+        Exercise exercise = await GetExercise(question, mathTypeName, level, result.ResultId);
+      
+        
+        return exercise.ExerciseId;
     }
 
-    private async Task<Solution> GetSolutionInternal(Result result, Exercise exercise, string userId)
+    private async Task<Solution> GetSolutionInternal(Result result, int exerciseId, string userId)
     {
         var solution = new Solution
         {
             CreatedAt = DateTime.Now,
-            ExerciseId = exercise.ExerciseId,
+            ExerciseId = exerciseId,
             UserId = userId
         };
         _context.Solutions.Add(solution);
@@ -91,4 +93,6 @@ public class CreatorRepository : ICreatorRepository
         return result;
 
     }
+
+   
 }

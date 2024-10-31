@@ -5,5 +5,5 @@ namespace MathHelperr.Service;
 
 public interface ICreatorRepository
 {
-    Task<Solution> GetSolution(IMathExcercise mathExcercise, MathTypeName mathTypeName, string level, string userId);
+    Task<int> GetExerciseId(IMathExcercise mathExcercise, MathTypeName mathTypeName, string level, string userId, string? aiTExt);
 }

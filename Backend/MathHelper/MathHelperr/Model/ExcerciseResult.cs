@@ -7,5 +7,5 @@ public class ExcerciseResult
 {
     public List<int> Result { get; init; }
     public string? Question { get; init; }
-    public SolutionSolvedDto? SolutionSolvedDto { get; set; }
+    public int ExerciseId { get; set; }
 }

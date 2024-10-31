@@ -2,25 +2,22 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import LevelButtons from "./LevelButtons";
 import Stopwatch from "./StopWatch";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 export default function ExercisePageWithStopWatch({
   operation,
   translatedOperation,
+  ai = false,
 }) {
   const [matek, setMath] = useState([]);
   const [userAnswer, setUserAnswer] = useState("");
   const [userSecondAnswer, setUserSecondAnswer] = useState("");
   const [feedback, setFeedback] = useState("");
   const [level, setLevel] = useState(1);
+  const navigator = useNavigate();
 
   const userReduxName = useSelector((state) => state.userData.value);
   const inputRef = useRef(null); // hivatkozási pont létrehozása
-
-  // if (userReduxName) {
-  //   console.log(userReduxName);
-  // } else {
-  //   console.log("not loged in");
-  // }
 
   //stopwatch
   const [isRunning, setIsRunning] = useState(false);
@@ -28,12 +25,20 @@ export default function ExercisePageWithStopWatch({
   const [elapsedTime, setElapsedTime] = useState(null);
   const [isTimeRequested, setIsTimeRequested] = useState(false);
   const [isBuilt, setIsBuilt] = useState(false);
+  const fetchUrl = ai == false ? "TestForDatabase" : "GetAiExercise";
+  console.log("fetchurl", fetchUrl);
+
+  useEffect(() => {
+    if (userReduxName == null) {
+      navigator("/login");
+    }
+  }, [userReduxName, navigator]);
 
   useEffect(() => {
     const fetcher = async () => {
       try {
         const response = await fetch(
-          `api/algebra/TestForDatabase?type=${operation}`,
+          `api/algebra/${fetchUrl}?type=${operation}`,
           {
             method: "GET",
             headers: {
@@ -61,12 +66,12 @@ export default function ExercisePageWithStopWatch({
     if (isBuilt) {
       fetcher();
     }
-  }, [level, isBuilt]);
+  }, [level, isBuilt, operation, fetchUrl]);
 
   const fetchData = async () => {
     try {
       const response = await fetch(
-        `api/algebra/TestForDatabase?type=${operation}`,
+        `api/algebra/${fetchUrl}?type=${operation}`,
         {
           method: "GET",
           headers: {
@@ -92,9 +97,10 @@ export default function ExercisePageWithStopWatch({
 
   const updateSolution = async () => {
     var solvedAt = new Date().toISOString();
+    var exerciseId = matek.exerciseId;
 
     var solution = {
-      ...matek.solutionSolvedDto,
+      exerciseId,
       elapsedTime,
       solvedAt: solvedAt,
     };
@@ -167,6 +173,13 @@ export default function ExercisePageWithStopWatch({
     setIsRunning(true);
     setIsBuilt(true);
   };
+  if (userReduxName == null) {
+    return (
+      <div>
+        <button onClick={() => navigator("/login")}>login</button>
+      </div>
+    );
+  }
 
   return (
     <div>

@@ -8,6 +8,7 @@ using MathHelperr.Service.Authentication;
 using MathHelperr.Service.Factory;
 using MathHelperr.Service.Groq;
 using MathHelperr.Service.LevelProvider;
+using MathHelperr.Service.Math.Factory;
 using MathHelperr.Service.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -110,6 +111,8 @@ app.UseCors("AllowAll");
 app.MapControllers();
 
 app.Run();
+
+
 
 
 void AddRoles()
@@ -353,3 +356,4 @@ void AddIdentity()
         .AddDefaultTokenProviders();
     
 }
+public partial class Program { }

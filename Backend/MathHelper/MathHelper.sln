@@ -2,6 +2,10 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MathHelperr", "MathHelperr\MathHelperr.csproj", "{DD3E2678-1377-4446-8DCA-4C76CFA4754C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTest", "UnitTest\UnitTest.csproj", "{5B89AF71-C117-44D3-A4C6-A73A954441FE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTest", "IntegrationTest\IntegrationTest.csproj", "{FD4F1C4D-8667-4F09-A738-CFA25DA32CE3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +16,13 @@ Global
 		{DD3E2678-1377-4446-8DCA-4C76CFA4754C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DD3E2678-1377-4446-8DCA-4C76CFA4754C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DD3E2678-1377-4446-8DCA-4C76CFA4754C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B89AF71-C117-44D3-A4C6-A73A954441FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B89AF71-C117-44D3-A4C6-A73A954441FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B89AF71-C117-44D3-A4C6-A73A954441FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B89AF71-C117-44D3-A4C6-A73A954441FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD4F1C4D-8667-4F09-A738-CFA25DA32CE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD4F1C4D-8667-4F09-A738-CFA25DA32CE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD4F1C4D-8667-4F09-A738-CFA25DA32CE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD4F1C4D-8667-4F09-A738-CFA25DA32CE3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

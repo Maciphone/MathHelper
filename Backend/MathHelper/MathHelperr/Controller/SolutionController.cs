@@ -3,6 +3,7 @@ using MathHelperr.Data;
 using MathHelperr.Model.Db;
 using MathHelperr.Model.Db.DTO;
 using MathHelperr.Service;
+using MathHelperr.Service.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -48,12 +49,51 @@ public class SolutionController :ControllerBase
         }
 
     }
+
+    [Authorize(Roles = "User, Admin")]
+    [HttpDelete("DeleteSolution{id}")]
+    public async Task<IActionResult> DeleteSolutionById(int id)
+    {
+        if (id == null)
+        {
+            return BadRequest("no id");
+            
+        }
+
+        try
+        {
+            await _solutionRepository.DeleteAsync(id);
+            return Ok("save ok");
+
+        }
+        catch (DbUpdateConcurrencyException ex)
+        {
+            Console.WriteLine("Konkurens frissítési hiba: " + ex.Message);
+            return StatusCode(409, "Konkurens frissítési hiba történt"); // 409: Conflict
+        }
+        catch (DbUpdateException ex)
+        {
+            Console.WriteLine("Adatbázis frissítési hiba: " + ex.Message);
+            return StatusCode(500, "Adatbázis hiba történt");
+        }
+        catch (InvalidOperationException ex)
+        {
+            Console.WriteLine("Érvénytelen művelet: " + ex.Message);
+            return BadRequest("Érvénytelen művelet");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Hiba történt a törlési művelet során: " + ex.Message);
+            return StatusCode(500, "Ismeretlen hiba történt a törlési művelet során");
+        }
+        
+    }
     
     //[Authorize (Roles = "User")]
     [HttpPost("UpdateSolution")]
     public async Task<IActionResult> CreateSolution(SolutionSolvedDto solutionSolvedDto)
-    { 
-      
+    {
+
         try
         {
             var userId = User.FindAll(c => c.Type == ClaimTypes.NameIdentifier).FirstOrDefault().Value;
@@ -66,10 +106,10 @@ public class SolutionController :ControllerBase
                 SolvedAt = solutionSolvedDto.SolvedAt.ToLocalTime(),
                 CreatedAt = DateTime.Now,
             };
-        
+
             Console.WriteLine(solution);
             await _solutionRepository.AddAsync(solution);
-            
+
             return Ok();
         }
         catch (DbUpdateConcurrencyException)
@@ -86,8 +126,20 @@ public class SolutionController :ControllerBase
             Console.WriteLine(ex.Message);
             return StatusCode(StatusCodes.Status500InternalServerError, $"Váratlan hiba történt: {ex.Message}");
         }
+    }
 
-       
+    [Authorize]
+    [HttpGet("GetRole")]
+    public  IActionResult GetRole()
+    {
+        var roles = User.FindAll(ClaimTypes.Role).Select(r => r.Value).ToList();
+        if (roles.Contains("Admin"))
+        {
+            return Ok();
+        }
+
+        return Forbid();
+
 
     }
 }

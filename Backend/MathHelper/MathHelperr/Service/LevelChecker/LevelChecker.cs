@@ -1,8 +1,6 @@
-using System;
-using System.Linq;
 using System.Reflection;
 
-namespace MathHelperr.Service.ImplementationChecker;
+namespace MathHelperr.Service.LevelChecker;
 
 public class LevelChecker
 {

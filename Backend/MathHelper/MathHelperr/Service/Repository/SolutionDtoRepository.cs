@@ -1,10 +1,8 @@
-
-
 using MathHelperr.Data;
 using MathHelperr.Model.Db.DTO;
 using Microsoft.EntityFrameworkCore;
 
-namespace MathHelperr.Service;
+namespace MathHelperr.Service.Repository;
 
 public class SolutionDtoRepository : IRepositoryUserData<SolutionDto>
 {
@@ -14,7 +12,7 @@ public class SolutionDtoRepository : IRepositoryUserData<SolutionDto>
     {
         _context = context;
     }
-
+    
 
     public async Task<SolutionDto> GetByUserIdAsync(int id, string userId)
     {
@@ -37,7 +35,6 @@ public class SolutionDtoRepository : IRepositoryUserData<SolutionDto>
                 ElapsedTime = s.ElapsedTime,
                 SolvedAt = s.SolvedAt,
                 CreatedAt = s.CreatedAt,
-                UserId = s.UserId,
                 Question = s.Exercise.Question
             };
         }
@@ -50,6 +47,7 @@ public class SolutionDtoRepository : IRepositoryUserData<SolutionDto>
         return await _context.Solutions
             .Where(s => s.UserId == userId)
             .Where(s => s.SolvedAt != DateTime.MinValue)
+            .Include(s => s.Exercise)
             .Select(s => new SolutionDto
             {
                 SolutionId = s.SolutionId,
@@ -59,7 +57,6 @@ public class SolutionDtoRepository : IRepositoryUserData<SolutionDto>
                 ElapsedTime = s.ElapsedTime,
                 SolvedAt = s.SolvedAt,
                 CreatedAt = s.CreatedAt,
-                UserId = s.UserId,
                 Question = s.Exercise.Question
             })
             .ToListAsync();
@@ -80,7 +77,6 @@ public class SolutionDtoRepository : IRepositoryUserData<SolutionDto>
                 ElapsedTime = s.ElapsedTime,
                 SolvedAt = s.SolvedAt,
                 CreatedAt = s.CreatedAt,
-                UserId = s.UserId,
                 Question = s.Exercise.Question
             })
             .ToListAsync();

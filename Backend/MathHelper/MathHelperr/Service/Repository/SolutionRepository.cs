@@ -20,7 +20,7 @@ public class SolutionRepository : IRepository<Solution>
             .FirstOrDefaultAsync(r => r.SolutionId == id);
     }
 
-    public async Task<IEnumerable<Solution>> GetAllAsync()
+    public async Task<IEnumerable<Solution?>> GetAllAsync()
     {
         return await _context.Solutions.ToListAsync();
     }

@@ -1,7 +1,8 @@
 using MathHelperr.Service.AbstractImplementation;
+using MathHelperr.Service.Factory;
 using MathHelperr.Utility;
 
-namespace MathHelperr.Service.Factory;
+namespace MathHelperr.Service.Math.Factory;
 
 public class MathFactory : IMathFactory
 {
@@ -12,8 +13,10 @@ public class MathFactory : IMathFactory
     private readonly IMultiplicationTextGenerator _multiplicationTextGenerator;
     private readonly IRemainDivisonExampleGenerator _remainDivisonExampleGenerator;
     private readonly IRemainDivisionTextGenerator _remainDivisionTextGenerator;
+    private readonly IDivisionExampleGenerator _divisionExampleGenerator;
+    private readonly IDivisionTextGenerator _divisionTextGenerator;
 
-    public MathFactory(IAlgebraExampleGenerator algebraExampleGenerator, IAlgebraTextGenerator algebraTextGenerator, IMultiplicationExampleGenerator multiplicationExampleGenerator, IMultiplicationTextGenerator multiplicationTextGenerator, IServiceProvider serviceProvider, IRemainDivisionTextGenerator remainDivisionTextGenerator, IRemainDivisonExampleGenerator remainDivisonExampleGenerator)
+    public MathFactory(IAlgebraExampleGenerator algebraExampleGenerator, IAlgebraTextGenerator algebraTextGenerator, IMultiplicationExampleGenerator multiplicationExampleGenerator, IMultiplicationTextGenerator multiplicationTextGenerator, IServiceProvider serviceProvider, IRemainDivisionTextGenerator remainDivisionTextGenerator, IRemainDivisonExampleGenerator remainDivisonExampleGenerator, IDivisionTextGenerator divisionTextGenerator, IDivisionExampleGenerator divisionExampleGenerator)
     {
         _algebraExampleGenerator = algebraExampleGenerator;
         _algebraTextGenerator = algebraTextGenerator;
@@ -22,6 +25,8 @@ public class MathFactory : IMathFactory
         _serviceProvider = serviceProvider;
         _remainDivisionTextGenerator = remainDivisionTextGenerator;
         _remainDivisonExampleGenerator = remainDivisonExampleGenerator;
+        _divisionTextGenerator = divisionTextGenerator;
+        _divisionExampleGenerator = divisionExampleGenerator;
     }
     
     public IMathExcercise getMathExcercise(MathTypeName operationType)
@@ -39,9 +44,7 @@ public class MathFactory : IMathFactory
                 return new MultiplicationExerciseFromAbstract(_multiplicationExampleGenerator,
                     _multiplicationTextGenerator);
             case MathTypeName.Division:
-                return new DivisionExerciseFromAbstract(
-                    _serviceProvider.GetRequiredService<IDivisionExampleGenerator>(),
-                    _serviceProvider.GetRequiredService<IDivisionTextGenerator>());
+                return new DivisionExerciseFromAbstract(_divisionExampleGenerator, _divisionTextGenerator);
             case MathTypeName.RemainDivision:
                 return new RemainDivisionExerciseFromAbstract(
                     _remainDivisonExampleGenerator,

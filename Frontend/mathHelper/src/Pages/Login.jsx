@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addName } from "../Reduce/userInformation";
 import { setTokenExpiration } from "../Reduce/authSlice";
 
-export const Login = () => {
+export const Login = ({ setIsLoggedIn }) => {
   const [cookies, setCookie, removeCookie] = useCookies(["token"]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -48,6 +48,7 @@ export const Login = () => {
         //data storage with Redux , add username to Reduce
         dispatch(addName(data.userName));
         dispatch(setTokenExpiration(data.minutesTokenValid));
+        setIsLoggedIn(true);
         //console.log(data.minutesTokenValid);
 
         //cookieProvider - don't use it xxs attack
@@ -67,9 +68,8 @@ export const Login = () => {
     // Figyeljük a Redux állapot változását
     if (username) {
       console.log("Felhasználónév a Redux-ból:", username);
-      console.log(tokenExpiration);
     }
-  }, [username, tokenExpiration]);
+  }, [username]);
 
   const logOut = () => {
     document.cookie = "token=; path=/; max-age=0";
@@ -95,9 +95,7 @@ export const Login = () => {
         <form className="w-full flex flex-col gap-4" onSubmit={handleLogin}>
           {/* Email mező */}
           <div className="flex flex-col gap-1">
-            <label htmlFor="email" className="font-semibold">
-              Email
-            </label>
+            <label htmlFor="email" className="font-semibold"></label>
             <input
               type="email"
               id="email"
@@ -112,9 +110,7 @@ export const Login = () => {
 
           {/* Password mező */}
           <div className="flex flex-col gap-1">
-            <label htmlFor="password" className="font-semibold">
-              Password
-            </label>
+            <label htmlFor="password" className="font-semibold"></label>
             <input
               type="password"
               id="password"

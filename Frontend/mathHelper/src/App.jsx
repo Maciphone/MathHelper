@@ -11,11 +11,12 @@ import { CookiesProvider } from "react-cookie";
 import RemainDivision from "./Pages/RemainDivision";
 import MySolutions from "./Pages/MySolutions";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { removeName } from "./Reduce/userInformation";
 import ExpirationAlert from "./Components/ExpirationAlert";
 import First from "./PagesToDelete/First";
 import Ai from "./Pages/Ai";
+import Registration from "./Pages/Registration.jsx";
 
 function App() {
   const navigate = useNavigate();
@@ -28,28 +29,36 @@ function App() {
 
   //alert modal
   const [showModal, setShowModal] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   //
   useEffect(() => {
-    if (!tokenExpiration) return;
+    if (!tokenExpiration || !isLoggedIn) return;
 
     const timeUntillExpiration = tokenExpiration * 60 * 1000; //set to milisecs
 
     const timeoutSet = setTimeout(() => {
       dispatch(removeName());
       setShowModal(true);
+      setIsLoggedIn(false);
     }, timeUntillExpiration);
     return () => clearTimeout(timeoutSet);
-  }, [dispatch, tokenExpiration]);
+  }, [dispatch, tokenExpiration, isLoggedIn]);
 
-  const handleModalClose = () => {
-    setShowModal(false); // close alertModal
-  };
-
-  const handleNavigateLogin = () => {
+  // const handleModalClose = () => {
+  //   setShowModal(false); // close alertModal
+  // };
+  // const handleNavigateLogin = () => {
+  //   setShowModal(false);
+  //   navigate("/login"); // navigation in modal
+  // };
+  const handleModalClose = useCallback(() => {
     setShowModal(false);
-    navigate("/login"); // navigation in modal
-  };
+  }, []);
+  const handleNavigateLogin = useCallback(() => {
+    setShowModal(false);
+    navigate("/login");
+  }, [navigate]);
 
   const routes = useRoutes([
     {
@@ -87,7 +96,11 @@ function App() {
         },
         {
           path: "/login",
-          element: <Login />,
+          element: <Login setIsLoggedIn={setIsLoggedIn} />,
+        },
+        {
+          path: "/register",
+          element: <Registration />,
         },
         {
           path: "/todelete",

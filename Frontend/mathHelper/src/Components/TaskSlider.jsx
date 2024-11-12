@@ -3,7 +3,7 @@ import "./TaskSlider.css";
 
 const TaskSlider = ({ handleOperation }) => {
   const [activeIndex, setActiveIndex] = useState(0);
-  const tasks = ["Algebra", "Osztás", "Szorzás", "MaradékOsztás"];
+  const tasks = ["Összeadás", "Osztás", "Szorzás", "MaradékOsztás"];
 
   const nextSlide = () => {
     setActiveIndex((prevIndex) => (prevIndex + 1) % tasks.length);

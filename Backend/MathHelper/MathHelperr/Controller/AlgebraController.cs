@@ -8,6 +8,7 @@ using MathHelperr.Model.Db.DTO;
 using MathHelperr.Service;
 using MathHelperr.Service.Factory;
 using MathHelperr.Service.Groq;
+using MathHelperr.Service.Repository;
 using MathHelperr.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

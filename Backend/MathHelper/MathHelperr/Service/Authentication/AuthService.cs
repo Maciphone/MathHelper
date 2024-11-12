@@ -20,6 +20,7 @@ public class AuthService :IAuthService
         var user = new IdentityUser { UserName = username, Email = email };
         var result = await _userManager.CreateAsync(user, password);
         
+        
         if (!result.Succeeded)
         {
             return FailedRegistration(result, email, username);

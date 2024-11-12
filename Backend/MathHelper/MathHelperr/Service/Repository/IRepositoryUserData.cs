@@ -1,4 +1,4 @@
-namespace MathHelperr.Service;
+namespace MathHelperr.Service.Repository;
 
 public interface IRepositoryUserData<T>  where T : class
 {

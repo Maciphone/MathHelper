@@ -5,7 +5,8 @@ using MathHelperr.Model.Db.DTO;
 using MathHelperr.Utility;
 using Microsoft.EntityFrameworkCore;
 
-namespace MathHelperr.Service;
+namespace MathHelperr.Service.Repository;
+
 
 public class CreatorRepository : ICreatorRepository
 {

@@ -55,15 +55,6 @@ public class AuthController : ControllerBase
         }
 
         var result = await _authService.LoginAsync(request.Email, request.Password, tokenValidTimesSpan);
-
-        var jwtKey = _configuration["Jwt:CookieName"];
-        
-        //token to send in headers
-        var token = result.Token;
-        var cookieOptions = result.Options;
-        Response.Cookies.Append(jwtKey, token, cookieOptions);
-
-
         if (!result.Success)
         {
             AddErrors(result);
@@ -75,6 +66,12 @@ public class AuthController : ControllerBase
             }
             return BadRequest(ModelState);
         }
+        var jwtKey = _configuration["Jwt:CookieName"];
+        
+        //token to send in headers
+        var token = result.Token;
+        var cookieOptions = result.Options;
+        Response.Cookies.Append(jwtKey, token, cookieOptions);
 
         return Ok(new AuthResponse(result.Email, result.UserName, tokenValidTimesSpan));
     }

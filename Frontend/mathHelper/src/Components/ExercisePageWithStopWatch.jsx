@@ -13,7 +13,8 @@ export default function ExercisePageWithStopWatch({
   const [userAnswer, setUserAnswer] = useState("");
   const [userSecondAnswer, setUserSecondAnswer] = useState("");
   const [feedback, setFeedback] = useState("");
-  const [level, setLevel] = useState(1);
+  const [level, setLevel] = useState("");
+
   const navigator = useNavigate();
 
   const userReduxName = useSelector((state) => state.userData.value);
@@ -34,41 +35,7 @@ export default function ExercisePageWithStopWatch({
     }
   }, [userReduxName, navigator]);
 
-  useEffect(() => {
-    const fetcher = async () => {
-      try {
-        const response = await fetch(
-          `api/algebra/${fetchUrl}?type=${operation}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Level: `${level}`,
-            },
-            credentials: "include",
-          }
-        );
-        if (!response.ok) {
-          const errorData = await response.json();
-          console.error("Error from backend:", errorData);
-          throw new Error(errorData.message || "Failed to fetch");
-        }
-        const data = await response.json();
-        console.log(data);
-
-        setMath(data);
-        setIsRunning(true);
-        inputRef.current.focus();
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    if (isBuilt) {
-      fetcher();
-    }
-  }, [level, isBuilt, operation, fetchUrl]);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const response = await fetch(
         `api/algebra/${fetchUrl}?type=${operation}`,
@@ -89,11 +56,21 @@ export default function ExercisePageWithStopWatch({
       setMath(data);
       setIsRunning(true);
 
-      inputRef.current.focus();
+      //  inputRef.current.focus();
     } catch (error) {
       console.error(error);
     }
-  };
+  }, [level, operation, fetchUrl]);
+
+  useEffect(() => {
+    inputRef.current, focus;
+  }, [matek]);
+
+  useEffect(() => {
+    if (isBuilt) {
+      fetchData();
+    }
+  }, [isBuilt, fetchData, fetchUrl, level, operation]);
 
   const updateSolution = async () => {
     var solvedAt = new Date().toISOString();
@@ -146,6 +123,7 @@ export default function ExercisePageWithStopWatch({
     setUserAnswer("");
     inputRef.current.focus();
   };
+
   useEffect(() => {
     const update = async () => {
       await updateSolution();
@@ -173,6 +151,7 @@ export default function ExercisePageWithStopWatch({
     setIsRunning(true);
     setIsBuilt(true);
   };
+
   if (userReduxName == null) {
     return (
       <div>
@@ -255,3 +234,38 @@ export default function ExercisePageWithStopWatch({
 //   setUserAnswer("");
 //   inputRef.current.focus();
 // };
+
+// useEffect(() => {
+//   const fetcher = async () => {
+//     try {
+//       const response = await fetch(
+//         `api/algebra/${fetchUrl}?type=${operation}`,
+//         {
+//           method: "GET",
+//           headers: {
+//             "Content-Type": "application/json",
+//             Level: `${level}`,
+//           },
+//           credentials: "include",
+//         }
+//       );
+//       if (!response.ok) {
+//         const errorData = await response.json();
+//         console.error("Error from backend:", errorData);
+//         throw new Error(errorData.message || "Failed to fetch");
+//       }
+//       const data = await response.json();
+//       console.log(data);
+
+//       setMath(data);
+//       setIsRunning(true);
+//       inputRef.current.focus();
+//       setLevel("");
+//     } catch (error) {
+//       console.error(error);
+//     }
+//   };
+//   if (isBuilt) {
+//     fetchData();
+//   }
+// }, [isBuilt, fetchData, fetchUrl, level, operation]);

@@ -1,4 +1,6 @@
-namespace MathHelperr.Service;
+
+namespace MathHelperr.Service.Repository;
+
 
 public interface IRepository<T> where T :class
 {

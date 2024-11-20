@@ -41,7 +41,7 @@ public class AlgebraController :ControllerBase
         _solutionRepository = solutionRepository;
       
     }
-
+/*
     [HttpGet("GetExercise")]
     public ActionResult<ExcerciseResult> GetQuestion(string type)
     {
@@ -73,7 +73,7 @@ public class AlgebraController :ControllerBase
         //var res = await _context.Solutions.FirstOrDefaultAsync(e => e.SolutionId == dto.SolutionId);
         return 1;
     }
-    
+    */
     //[FromHeader(Name= "Level")]string level, 
     [Authorize(Roles = "User")]
     [HttpGet("TestForDatabase") ]
@@ -90,7 +90,7 @@ public class AlgebraController :ControllerBase
         {
             return BadRequest("no id");
         }
-        var exercise =_mathFactory.GetMathExercise(type);
+        var exercise =_mathFactory.GetMathExercise(type, int.Parse(level));
   //      exercise.Answer().Result.ForEach(e=>Console.WriteLine($"origi eredmények: {e}"));
  
         var question = exercise.Question();
@@ -123,7 +123,7 @@ public class AlgebraController :ControllerBase
         }
       
         
-        var exercise =_mathFactory.GetMathExercise(type);
+        var exercise =_mathFactory.GetMathExercise(type, int.Parse(level));
         
         var question =  await _groqResultGenerator.GetAiText(exercise.Question());
         var answer = exercise.Answer().Result;
@@ -139,7 +139,7 @@ public class AlgebraController :ControllerBase
         return Ok(result);
       
     }
-    
+    /*
     [HttpGet("GetAiExerciseTest")]
     public async Task<ActionResult<ExcerciseResult>> GetAiExerciseTest(MathTypeName type)
     {
@@ -155,7 +155,7 @@ public class AlgebraController :ControllerBase
         return Ok(result);
 
     }
-
+*/
     
 
 }

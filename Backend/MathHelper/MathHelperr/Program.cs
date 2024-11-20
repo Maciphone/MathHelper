@@ -47,6 +47,19 @@ builder.Services.AddScoped<IGroqResultGenerator, GroqResultGenerator>();
 builder.Services.AddScoped<ICreatorRepository, CreatorRepository>();
 builder.Services.AddScoped<IRepositoryUserData<SolutionDto>, SolutionDtoRepository>();
 
+
+//IGenerator Branch registration test
+builder.Services.AddScoped<IAlgebraExampleGenerator, Level1AlgebraExampleGenerator>();
+builder.Services.AddScoped<IAlgebraExampleGenerator, Level2AlgebraExampleGenerator>();
+builder.Services.AddScoped<IAlgebraExampleGenerator, Level3AlgebraExampleGenerator>();
+
+builder.Services.AddTransient<IAlgebraTextGenerator, Level1AlgebraTextGenerator>();
+builder.Services.AddTransient<IAlgebraTextGenerator, Level2AlgebraTextGenerator>();
+builder.Services.AddTransient<IAlgebraTextGenerator, Level3AlgebraTextGenerator>();
+
+
+builder.Services.AddScoped<AlgebraExampleGeneratorFactory>();
+builder.Services.AddScoped<AlgebraTextGeneratorFactory>();
 //register repository
 builder.Services.AddScoped<IRepository<Solution>, SolutionRepository>();
 
@@ -60,7 +73,7 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 
 // IMath children registration for different levels, solution for same interface
 // implementations registration
-AddAlgebraGenerators();
+//AddAlgebraGenerators();
 AddMultiplicationGenerators();
 AddDivisionGenerators();
 

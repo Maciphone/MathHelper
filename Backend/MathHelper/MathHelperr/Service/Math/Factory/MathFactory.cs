@@ -15,8 +15,12 @@ public class MathFactory : IMathFactory
     private readonly IRemainDivisionTextGenerator _remainDivisionTextGenerator;
     private readonly IDivisionExampleGenerator _divisionExampleGenerator;
     private readonly IDivisionTextGenerator _divisionTextGenerator;
+    
+    //IGenerator Branch registration test
+    private readonly AlgebraExampleGeneratorFactory _algebraExampleGeneratorFactory;
+    private readonly AlgebraTextGeneratorFactory _algebraTextGeneratorFactory;
 
-    public MathFactory(IAlgebraExampleGenerator algebraExampleGenerator, IAlgebraTextGenerator algebraTextGenerator, IMultiplicationExampleGenerator multiplicationExampleGenerator, IMultiplicationTextGenerator multiplicationTextGenerator, IServiceProvider serviceProvider, IRemainDivisionTextGenerator remainDivisionTextGenerator, IRemainDivisonExampleGenerator remainDivisonExampleGenerator, IDivisionTextGenerator divisionTextGenerator, IDivisionExampleGenerator divisionExampleGenerator)
+    public MathFactory(IAlgebraExampleGenerator algebraExampleGenerator, IAlgebraTextGenerator algebraTextGenerator, IMultiplicationExampleGenerator multiplicationExampleGenerator, IMultiplicationTextGenerator multiplicationTextGenerator, IServiceProvider serviceProvider, IRemainDivisionTextGenerator remainDivisionTextGenerator, IRemainDivisonExampleGenerator remainDivisonExampleGenerator, IDivisionTextGenerator divisionTextGenerator, IDivisionExampleGenerator divisionExampleGenerator, AlgebraExampleGeneratorFactory algebraExampleGeneratorFactory, AlgebraTextGeneratorFactory algebraTextGeneratorFactory)
     {
         _algebraExampleGenerator = algebraExampleGenerator;
         _algebraTextGenerator = algebraTextGenerator;
@@ -27,18 +31,24 @@ public class MathFactory : IMathFactory
         _remainDivisonExampleGenerator = remainDivisonExampleGenerator;
         _divisionTextGenerator = divisionTextGenerator;
         _divisionExampleGenerator = divisionExampleGenerator;
+        _algebraExampleGeneratorFactory = algebraExampleGeneratorFactory;
+        _algebraTextGeneratorFactory = algebraTextGeneratorFactory;
     }
     
-    public IMathExcercise GetMathExercise(MathTypeName operationType)
+    public IMathExcercise GetMathExercise(MathTypeName operationType, int level)
     {
         switch (operationType)
         {
                 //Same outcome, works both way! shorter code with serviceProvider!!!
             case MathTypeName.Algebra:
-                var algebraExampleGenerator = _serviceProvider.GetRequiredService<IAlgebraExampleGenerator>();
-                var algebraTextGenerator = _serviceProvider.GetRequiredService<IAlgebraTextGenerator>();
-                return new AlgebraExerciseFromAbstract(
-                    algebraExampleGenerator, algebraTextGenerator);
+                // var algebraExampleGenerator = _serviceProvider.GetRequiredService<IAlgebraExampleGenerator>();
+                // var algebraTextGenerator = _serviceProvider.GetRequiredService<IAlgebraTextGenerator>();
+                // return new AlgebraExerciseFromAbstract(
+                //     algebraExampleGenerator, algebraTextGenerator);
+                var algebraExampleGenerator = _algebraExampleGeneratorFactory.GetGenerator(level);
+                var algebraTextGenerator = _algebraTextGeneratorFactory.GetTextGenerator(level);
+                return new AlgebraExerciseFromAbstract(algebraExampleGenerator, algebraTextGenerator);
+            
            
             case MathTypeName.Multiplication:
                 return new MultiplicationExerciseFromAbstract(_multiplicationExampleGenerator,

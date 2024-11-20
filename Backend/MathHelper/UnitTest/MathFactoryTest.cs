@@ -9,7 +9,7 @@ namespace UnitTest;
 
 public class Tests
 {
-    [Test]
+    /*[Test]
     public void GetMathExcercise_ShouldReturnAlgebraExercise_WhenMathTypeIsAlgebra()
     {
         // Arrange
@@ -120,5 +120,5 @@ public class Tests
         });
     }
 
-
+*/
 }

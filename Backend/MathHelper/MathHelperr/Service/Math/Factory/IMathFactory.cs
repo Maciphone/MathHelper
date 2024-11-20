@@ -4,5 +4,5 @@ namespace MathHelperr.Service.Factory;
 
 public interface IMathFactory
 {
-    IMathExcercise getMathExcercise(MathTypeName operationType);
+    IMathExcercise GetMathExercise(MathTypeName operationType);
 }

@@ -3,9 +3,10 @@ using MathHelperr.Model.Db;
 
 namespace MathHelperr.Service.AbstractImplementation;
 
-public abstract class AbstractMathExercise<TExample, TText>
+public abstract class AbstractMathExercise<TExample, TText> : IMathExcercise
 where TExample : IMathExampleGenerator
 where TText : IMathTextGenerator
+
 {
     protected string _question;
     protected AlgebraResult _generatedNumber;
@@ -18,7 +19,16 @@ where TText : IMathTextGenerator
         TextGenerator = textGenerator;
         GenerateExercise();
     }
+    public virtual string Question()
+    {
+        return _question;
+    }
+    public virtual AlgebraResult Answer()
+    {
 
+        return _generatedNumber;
+    }
+    
     private void GenerateExercise()
     {
         _generatedNumber = ExampleGenerator.Example();
@@ -26,14 +36,5 @@ where TText : IMathTextGenerator
     }
 
 
-    public virtual string Question()
-    {
-        return _question;
-    }
-
-    public virtual AlgebraResult Answer()
-    {
-
-        return _generatedNumber;
-    }
+    
 }

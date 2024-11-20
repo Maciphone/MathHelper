@@ -138,7 +138,8 @@ public class SolutionController :ControllerBase
             return Ok();
         }
 
-        return Forbid();
+        return NotFound(new { message = "not admin" });
+
 
 
     }

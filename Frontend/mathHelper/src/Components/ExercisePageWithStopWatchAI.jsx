@@ -4,7 +4,7 @@ import Stopwatch from "./StopWatch";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-export default function ExercisePageWithStopWatch({
+export default function ExercisePageWithStopWatchAI({
   operation,
   translatedOperation,
   ai = false,
@@ -14,7 +14,7 @@ export default function ExercisePageWithStopWatch({
   const [userSecondAnswer, setUserSecondAnswer] = useState("");
   const [feedback, setFeedback] = useState("");
   const [level, setLevel] = useState("");
-
+  const [isLevelSetted, setIsLeveleSetted] = useState(false);
   const navigator = useNavigate();
 
   const userReduxName = useSelector((state) => state.userData.value);
@@ -55,6 +55,8 @@ export default function ExercisePageWithStopWatch({
       console.log(data);
       setMath(data);
       setIsRunning(true);
+      setLevel("");
+      setIsLeveleSetted(false);
 
       //  inputRef.current.focus();
     } catch (error) {
@@ -67,10 +69,10 @@ export default function ExercisePageWithStopWatch({
   }, [matek]);
 
   useEffect(() => {
-    if (isBuilt) {
+    if (isBuilt && isLevelSetted) {
       fetchData();
     }
-  }, [isBuilt, fetchData, fetchUrl, level, operation]);
+  }, [isBuilt, fetchData, fetchUrl, level, operation, isLevelSetted]);
 
   const updateSolution = async () => {
     var solvedAt = new Date().toISOString();
@@ -99,6 +101,9 @@ export default function ExercisePageWithStopWatch({
       console.error("Failed to update solution:", error.message);
     }
   };
+  useEffect(() => {
+    setMath("");
+  }, [operation]);
 
   useEffect(() => {
     setReset((prevReset) => !prevReset);
@@ -122,7 +127,6 @@ export default function ExercisePageWithStopWatch({
       setFeedback("Rossz válasz, próbáld újra!");
     }
     setUserAnswer("");
-    setUserSecondAnswer("");
     inputRef.current.focus();
   };
 
@@ -149,6 +153,7 @@ export default function ExercisePageWithStopWatch({
   };
 
   const handleLevel = (e) => {
+    setIsLeveleSetted(true);
     setLevel(e);
     setIsRunning(true);
     setIsBuilt(true);
@@ -164,7 +169,9 @@ export default function ExercisePageWithStopWatch({
 
   return (
     <div>
-      <div>{userReduxName && <p>Szia {userReduxName}</p>}</div>
+      <div className="text-container">
+        {userReduxName && <p>Szia {userReduxName}</p>}
+      </div>
 
       <div>
         <LevelButtons operation={operation} handleLevel={handleLevel} />
@@ -202,7 +209,7 @@ export default function ExercisePageWithStopWatch({
             </form>
             <button onClick={skip}>másikat</button>
 
-            <div onClick={() => setReset(!reset)}>
+            <div className="text-container" onClick={() => setReset(!reset)}>
               <Stopwatch
                 isRunning={isRunning}
                 onReset={reset}
@@ -214,6 +221,8 @@ export default function ExercisePageWithStopWatch({
 
           {feedback && <p>{feedback}</p>}
         </div>
+      ) : !level && !matek ? (
+        <div>válassz szintet</div>
       ) : (
         <p>Loading...</p>
       )}

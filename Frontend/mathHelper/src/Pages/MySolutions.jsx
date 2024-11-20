@@ -14,7 +14,7 @@ export default function MySolutions() {
   useEffect(() => {
     const fetchRole = async () => {
       try {
-        const response = await fetch(`api/solutions/GetRole`, {
+        const response = await fetch(`api/solution/GetRole`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -108,10 +108,7 @@ export default function MySolutions() {
               <td>{solution.question}</td>
               <td>{solution.resultValue.join(", ")}</td>
               <button onClick={() => handleDelete(solution.solutionId)}>
-                <a
-                  href="https://www.flaticon.com/free-icons/recycle-bin"
-                  title="recycle bin icons"
-                ></a>
+                törlés
               </button>
             </tr>
           ))}

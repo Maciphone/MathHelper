@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.IdentityModel.Tokens;
 
 
@@ -66,13 +67,32 @@ AddDivisionGenerators();
 AddJwtAuthentication();
 AddIdentity();
 
+//docker-compose miatt
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+                       ?? builder.Configuration["ConnectionStrings__DefaultConnection"];
+
 // Configure Identity DbContext
+//builder.Services.AddDbContext<ApplicationDbContext>(options =>
+  //  options.UseSqlServer(connectionString));
+//builder.Services.AddDbContext<UserContext>(options => options.UseSqlServer(connectionString));
+
+
 builder.Services.AddDbContext<UserContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<AuthenticationSeeder>();
 
 
 builder.Services.AddControllers();
+
+// ssl tanustvány miatt lehet majd törlöd docker miatt 
+// builder.WebHost.ConfigureKestrel(options =>
+// {
+//     options.ListenAnyIP(443, listenOptions =>
+//     {
+//         listenOptions.UseHttps("/https/localhost-cert.pem", "/https/localhost-key.pem");
+//     });
+//     options.ListenAnyIP(80); // HTTP
+// });
 
 //CORS settings - call before MApControllers()
 builder.Services.AddCors(options =>
@@ -88,6 +108,8 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+//Migration();
 
 // Authentication: add identity roles
 AddRoles();
@@ -112,7 +134,17 @@ app.MapControllers();
 
 app.Run();
 
-
+void Migration()
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var userContext = scope.ServiceProvider.GetRequiredService<UserContext>();
+        
+        dbContext.Database.Migrate();
+        userContext.Database.Migrate();
+    }
+}
 
 
 void AddRoles()

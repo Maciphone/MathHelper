@@ -64,7 +64,7 @@ public class AuthController : ControllerBase
             {
                 Console.WriteLine(error);
             }
-            return BadRequest(ModelState);
+            return BadRequest(errors);
         }
         var jwtKey = _configuration["Jwt:CookieName"];
         

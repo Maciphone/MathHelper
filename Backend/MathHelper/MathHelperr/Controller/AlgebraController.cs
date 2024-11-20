@@ -49,7 +49,7 @@ public class AlgebraController :ControllerBase
         var typeCasted = (MathTypeName)Enum.Parse(typeof(MathTypeName), type); //parse string to MAthTypeName enum
         Console.WriteLine(typeCasted);
         //var exercise = _serviceProvider.GetRequiredService<IMathFactory>().getMathExcercise(type);
-        var exercise =_mathFactory.getMathExcercise(typeCasted);
+        var exercise =_mathFactory.GetMathExercise(typeCasted);
         var question = exercise.Question();
         var answer = exercise.Answer().Result;
         Console.WriteLine(answer.Count());
@@ -74,32 +74,25 @@ public class AlgebraController :ControllerBase
         return 1;
     }
     
+    //[FromHeader(Name= "Level")]string level, 
     [Authorize(Roles = "User")]
     [HttpGet("TestForDatabase") ]
-    //[FromHeader(Name= "Level")]string level, 
     public async Task<ActionResult<ExcerciseResult>> TestDb(MathTypeName type)
     {
-  
-        //frontend a headers-ben "Level" kulcson 
         var level = Request.Headers["Level"].ToString();
         //var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        var userId = User.FindAll(c => c.Type == ClaimTypes.NameIdentifier).FirstOrDefault().Value;
+        var userId = User.FindAll(c => c.Type == ClaimTypes.NameIdentifier).FirstOrDefault()?.Value;
         foreach (var claim in User.FindAll(c=>c.Type==ClaimTypes.NameIdentifier))
         {
             Console.WriteLine(claim.Type, claim.Value);
         }
-        var user = User.Identity.Name;
-
         if (userId == null)
         {
             return BadRequest("no id");
         }
-      
-        
-        var exercise =_mathFactory.getMathExcercise(type);
+        var exercise =_mathFactory.GetMathExercise(type);
   //      exercise.Answer().Result.ForEach(e=>Console.WriteLine($"origi eredmények: {e}"));
  
-        
         var question = exercise.Question();
         var answer = exercise.Answer().Result;
         var exerciseId = await _creatorRepository.GetExerciseId(exercise, type, level, userId, null);
@@ -130,7 +123,7 @@ public class AlgebraController :ControllerBase
         }
       
         
-        var exercise =_mathFactory.getMathExcercise(type);
+        var exercise =_mathFactory.GetMathExercise(type);
         
         var question =  await _groqResultGenerator.GetAiText(exercise.Question());
         var answer = exercise.Answer().Result;
@@ -150,7 +143,7 @@ public class AlgebraController :ControllerBase
     [HttpGet("GetAiExerciseTest")]
     public async Task<ActionResult<ExcerciseResult>> GetAiExerciseTest(MathTypeName type)
     {
-        var exercise =_mathFactory.getMathExcercise(type);
+        var exercise =_mathFactory.GetMathExercise(type);
         var aiStringResponse = await _groqResultGenerator.GetAiText(exercise.Question());
         var answer = exercise.Answer().Result;
         var result = new ExcerciseResult()

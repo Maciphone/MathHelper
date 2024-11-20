@@ -1,38 +1,60 @@
 .slider-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 300px;
-    margin: auto;
-  }
-  
-  .slider-button {
-    background-color: #ddd;
-    border: none;
-    padding: 10px;
-    cursor: pointer;
-    font-size: 20px;
-    color: black;
-  }
-  
-  .slider-content {
-    width: 200px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 10px;
-    
-  }
-  
-  .task-card {
-    width: 100%;
-    text-align: center;
-    padding: 15px;
-    background-color: #f0f0f0;
-    border-radius: 10px;
-    font-size: 18px;
-    font-weight: bold;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    color: black;
-  }
-  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 300px;
+  margin: auto;
+  background-color: #f7f9fc; /* Világoskék háttér */
+  padding: 10px;
+  border-radius: 15px; /* Lekerekített sarkok */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Enyhe árnyék */
+}
+
+.slider-button {
+  background-color: #ff9800; /* Narancssárga gomb */
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  font-size: 20px;
+  color: white;
+  border-radius: 50%; /* Kör alakú gombok */
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.slider-button:hover {
+  background-color: #e64a19; /* Sötétebb narancssárga hover */
+  transform: scale(1.1); /* Kicsit megnő hover állapotban */
+}
+
+.slider-content {
+  width: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 10px;
+  background-color: #4caf50; /* Vidám zöld */
+  border-radius: 10px;
+  color: white; /* Fehér szöveg */
+  font-size: 18px;
+  font-weight: bold;
+  padding: 15px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Enyhe árnyék */
+}
+
+.task-card {
+  width: 100%;
+  text-align: center;
+  padding: 15px;
+  background-color: #fff9e6; /* Világos sárga kártya */
+  border-radius: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  color: #333; /* Sötét szürke szöveg */
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.task-card:hover {
+  background-color: #ffefcc; /* Enyhén sötétebb sárga hover állapotban */
+  transform: scale(1.05); /* Kicsit nagyobb hover állapotban */
+}

@@ -27,12 +27,20 @@ export default function Welcome() {
       <p>{userReduxName ? `Welcome ${userReduxName}` : "Nincs token"}</p>
       <p>
         {userReduxName ? (
-          `Welcome ${userReduxName} be vagy jelentkezve`
+          <div>
+            Welcome ${userReduxName} be vagy jelentkezve <br /> Szia, kis
+            matekzseni! 👋 Üdvözlünk a Matekvarázs világában, ahol izgalmas és
+            játékos feladatokon keresztül fejlesztheted a számolási tudásodat!
+            🎲💡 Legyen szó összeadásról, kivonásról vagy szorzásról, itt mindig
+            találsz neked való kihívást. 🌟 Fedezd fel a rejtélyeket, gyűjts
+            pontokat, és lépj szintet, miközben észre sem veszed, hogy tanulsz!
+            Kalandra fel, mert a matek szórakozás is lehet! 🚀✨
+          </div>
         ) : (
           <button onClick={() => navigate("/login")}>Login</button>
         )}
       </p>
-      Welcome
+      Matekra fel!
     </div>
   );
 }

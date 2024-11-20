@@ -29,7 +29,7 @@ public class MathFactory : IMathFactory
         _divisionExampleGenerator = divisionExampleGenerator;
     }
     
-    public IMathExcercise getMathExcercise(MathTypeName operationType)
+    public IMathExcercise GetMathExercise(MathTypeName operationType)
     {
         switch (operationType)
         {

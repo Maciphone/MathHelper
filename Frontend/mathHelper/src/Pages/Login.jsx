@@ -55,11 +55,19 @@ export const Login = ({ setIsLoggedIn }) => {
         // setCookie("token", data.token, { path: "/", maxAge: 30 });
 
         navigate("/");
+      }
+      if (response.status === 400) {
+        const dataError = await response.json();
+        const badCredentialsKey = "Bad credentials";
+        if (Array.isArray(dataError[badCredentialsKey])) {
+          const errorMessages = dataError[badCredentialsKey].join(", ");
+          setError(errorMessages);
+        }
       } else {
         setError("Invalid credentials");
       }
     } catch (error) {
-      setError("An error occurred");
+      // setError("An error occurred");
       console.error(error);
     }
   };
@@ -80,7 +88,7 @@ export const Login = ({ setIsLoggedIn }) => {
   useEffect(() => {
     if (error) {
       alert(error);
-      setError("");
+      setError(null);
     }
   }, [error]);
 
@@ -89,10 +97,10 @@ export const Login = ({ setIsLoggedIn }) => {
       id="webcrumbs"
       className="flex justify-center items-center min-h-screen"
     >
-      <div className="w-[400px] bg-neutral-50 min-h-[500px] p-6 rounded-lg shadow-lg flex flex-col items-center">
-        <h1 className="text-2xl font-title mb-6">Login</h1>
+      <div>
+        <h1>Login</h1>
 
-        <form className="w-full flex flex-col gap-4" onSubmit={handleLogin}>
+        <form onSubmit={handleLogin}>
           {/* Email mező */}
           <div className="flex flex-col gap-1">
             <label htmlFor="email" className="font-semibold"></label>
@@ -109,7 +117,7 @@ export const Login = ({ setIsLoggedIn }) => {
           </div>
 
           {/* Password mező */}
-          <div className="flex flex-col gap-1">
+          <div>
             <label htmlFor="password" className="font-semibold"></label>
             <input
               type="password"
@@ -124,19 +132,12 @@ export const Login = ({ setIsLoggedIn }) => {
           </div>
 
           {/* Login gomb */}
-          <button
-            type="submit"
-            className="w-full bg-primary text-white py-3 rounded-md mt-4 hover:bg-primary-600"
-          >
-            Log In
-          </button>
+          <button type="submit">Log In</button>
         </form>
 
-        <p className="mt-6 text-neutral-700">
+        <p>
           Don't have an account?
-          <a href="/register" className="text-primary ml-1">
-            Register
-          </a>
+          <a href="/register">Register</a>
         </p>
       </div>
     </div>

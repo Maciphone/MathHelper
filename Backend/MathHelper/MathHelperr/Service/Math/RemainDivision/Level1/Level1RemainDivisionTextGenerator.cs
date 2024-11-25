@@ -4,6 +4,7 @@ namespace MathHelperr.Service;
 
 public class Level1RemainDivisionTextGenerator : IRemainDivisionTextGenerator
 {
+    public int Level => 1;
     public string Answer(AlgebraResult example)
     {
         int a = example.A;

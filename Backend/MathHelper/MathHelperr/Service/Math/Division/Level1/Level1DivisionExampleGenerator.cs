@@ -5,6 +5,7 @@ namespace MathHelperr.Service;
 public class Level1DivisionExampleGenerator : IDivisionExampleGenerator
 {
     private static readonly Random _random = new Random();
+    public int Level => 1;
 
     public AlgebraResult Example()
     {
@@ -20,7 +21,8 @@ public class Level1DivisionExampleGenerator : IDivisionExampleGenerator
         {
             A = a*b,
             B = b,
-            Result =  [result]
+            Result =  [result],
+            Level = Level
         };
         
 

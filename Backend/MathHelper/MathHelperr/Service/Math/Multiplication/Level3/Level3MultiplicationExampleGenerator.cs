@@ -6,6 +6,7 @@ public class Level3MultiplicationExampleGenerator : IMultiplicationExampleGenera
 {
     private static readonly Random _random = new Random();
 
+    public int Level => 3;
     public AlgebraResult Example()
     {
         return GetNumbers();
@@ -20,7 +21,8 @@ public class Level3MultiplicationExampleGenerator : IMultiplicationExampleGenera
         {
             A = a,
             B = b,
-            Result =  [result]
+            Result =  [result],
+            Level = Level
         };
         
 

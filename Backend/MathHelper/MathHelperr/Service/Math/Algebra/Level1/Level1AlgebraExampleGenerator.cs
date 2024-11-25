@@ -21,7 +21,8 @@ public class Level1AlgebraExampleGenerator : IAlgebraExampleGenerator
         {
             A = a,
             B = b,
-            Result = [result]
+            Result = [result],
+            Level = Level
         };
         
 

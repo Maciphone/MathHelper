@@ -5,6 +5,7 @@ namespace MathHelperr.Service;
 public class Level1RemainDivisionExampleGenerator : IRemainDivisonExampleGenerator
 {
     private static readonly Random _random = new Random();
+    public int Level => 1;
 
     public AlgebraResult Example()
     {
@@ -21,7 +22,8 @@ public class Level1RemainDivisionExampleGenerator : IRemainDivisonExampleGenerat
         {
             A = b,
             B = a,
-            Result =  [result, dividResult]
+            Result =  [result, dividResult],
+            Level = Level
         };
         
 

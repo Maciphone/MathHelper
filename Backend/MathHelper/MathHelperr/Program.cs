@@ -33,7 +33,9 @@ builder.Services.AddScoped<IAlgebraExcercise, AlgebraExerciseFromAbstract>();
 builder.Services.AddScoped<IMultiplicationExcercise, MultiplicationExerciseFromAbstract>();
 builder.Services.AddScoped<IDivisionExcercise, DivisionExerciseFromAbstract>();
 builder.Services.AddScoped<IRemainDivisionExcercise, RemainDivisionExerciseFromAbstract>();
-builder.Services.AddScoped<IMathFactory, MathFactory>();
+
+//original factory, new implementation because refactoring - it runs with this!!!!!
+//builder.Services.AddScoped<IMathFactory, MathFactory>();
 
 //Get "level" data from htttp context or later from desctop application
 //HttpContextAccessor - acces to http content
@@ -52,14 +54,61 @@ builder.Services.AddScoped<IRepositoryUserData<SolutionDto>, SolutionDtoReposito
 builder.Services.AddScoped<IAlgebraExampleGenerator, Level1AlgebraExampleGenerator>();
 builder.Services.AddScoped<IAlgebraExampleGenerator, Level2AlgebraExampleGenerator>();
 builder.Services.AddScoped<IAlgebraExampleGenerator, Level3AlgebraExampleGenerator>();
+// builder.Services.AddScoped<IAlgebraTextGenerator, Level1AlgebraTextGenerator>();
+// builder.Services.AddScoped<IAlgebraTextGenerator, Level2AlgebraTextGenerator>();
+// builder.Services.AddScoped<IAlgebraTextGenerator, Level3AlgebraTextGenerator>();
 
-builder.Services.AddTransient<IAlgebraTextGenerator, Level1AlgebraTextGenerator>();
-builder.Services.AddTransient<IAlgebraTextGenerator, Level2AlgebraTextGenerator>();
-builder.Services.AddTransient<IAlgebraTextGenerator, Level3AlgebraTextGenerator>();
+builder.Services.AddScoped<IDivisionExampleGenerator, Level1DivisionExampleGenerator>();
+builder.Services.AddScoped<IDivisionTextGenerator, Level1DivisionTextGenerator>();
+
+// builder.Services.AddScoped<IMultiplicationTextGenerator, Level1MultiplicationTextGenerator>();
+// builder.Services.AddScoped<IMultiplicationTextGenerator, Level2MultiplicationTextGenerator>();
+// builder.Services.AddScoped<IMultiplicationTextGenerator, Level3MultiplicationTextGenerator>();
+builder.Services.AddScoped<IMultiplicationExampleGenerator, Level1MultiplicationExampleGenerator>();
+builder.Services.AddScoped<IMultiplicationExampleGenerator, Level2MultiplicationExampleGenerator>();
+builder.Services.AddScoped<IMultiplicationExampleGenerator, Level3MultiplicationExampleGenerator>();
+
+builder.Services.AddScoped<IRemainDivisonExampleGenerator, Level1RemainDivisionExampleGenerator>();
+// builder.Services.AddScoped<IRemainDivisionTextGenerator, Level1RemainDivisionTextGenerator>();
+//modified textgenerator
+builder.Services.AddScoped<IMathTextGenerator, AlgebraTextGeneratorGeneral>();
+builder.Services.AddScoped<IMathTextGenerator, DivisionTextGeneratorGeneral>();
+builder.Services.AddScoped<IMathTextGenerator, RemainDivisionTextGeneratorGenral>();
+builder.Services.AddScoped<IMathTextGenerator, MultiplicationTextGeneratorGeneral>();
+
+builder.Services.AddScoped<IAlgebraTextGenerator, AlgebraTextGeneratorGeneral>();
+builder.Services.AddScoped<IDivisionTextGenerator, DivisionTextGeneratorGeneral>();
+builder.Services.AddScoped<IRemainDivisionTextGenerator, RemainDivisionTextGeneratorGenral>();
+builder.Services.AddScoped<IMultiplicationTextGenerator, MultiplicationTextGeneratorGeneral>();
+// // IMathExampleGenerator regisztráció
+// builder.Services.AddScoped<IMathExampleGenerator, Level1AlgebraExampleGenerator>();
+// builder.Services.AddScoped<IMathExampleGenerator, Level2AlgebraExampleGenerator>();
+// builder.Services.AddScoped<IMathExampleGenerator, Level3AlgebraExampleGenerator>();
+// builder.Services.AddScoped<IMathExampleGenerator, Level1DivisionExampleGenerator>();
+// builder.Services.AddScoped<IMathExampleGenerator, Level1MultiplicationExampleGenerator>();
+// builder.Services.AddScoped<IMathExampleGenerator, Level2MultiplicationExampleGenerator>();
+// builder.Services.AddScoped<IMathExampleGenerator, Level3MultiplicationExampleGenerator>();
+// builder.Services.AddScoped<IMathExampleGenerator, Level1RemainDivisionExampleGenerator>();
+//
+// // IMathTextGenerator regisztráció
+// builder.Services.AddScoped<IMathTextGenerator, Level1AlgebraTextGenerator>();
+// builder.Services.AddScoped<IMathTextGenerator, Level2AlgebraTextGenerator>();
+// builder.Services.AddScoped<IMathTextGenerator, Level3AlgebraTextGenerator>();
+// builder.Services.AddScoped<IMathTextGenerator, Level1DivisionTextGenerator>();
+// builder.Services.AddScoped<IMathTextGenerator, Level1MultiplicationTextGenerator>();
+// builder.Services.AddScoped<IMathTextGenerator, Level2MultiplicationTextGenerator>();
+// builder.Services.AddScoped<IMathTextGenerator, Level3MultiplicationTextGenerator>();
+// builder.Services.AddScoped<IMathTextGenerator, Level1RemainDivisionTextGenerator>();
 
 
-builder.Services.AddScoped<AlgebraExampleGeneratorFactory>();
-builder.Services.AddScoped<AlgebraTextGeneratorFactory>();
+  //generikus factroy registration
+//builder.Services.AddScoped(typeof(IMathExampleGeneratorFactory<>), typeof(MathGeneratorFactory));
+//builder.Services.AddScoped<IMathGeneratorFactory, MathGeneratorFactory>();
+builder.Services.AddScoped<MathGeneratorFactory>();
+builder.Services.AddScoped<IMathFactory, MathFactoryMarkingWithFactory>(); 
+
+//builder.Services.AddScoped<AlgebraExampleGeneratorFactory>();
+//builder.Services.AddScoped<AlgebraTextGeneratorFactory>();
 //register repository
 builder.Services.AddScoped<IRepository<Solution>, SolutionRepository>();
 
@@ -101,6 +150,7 @@ builder.Services.AddControllers();
 // builder.WebHost.ConfigureKestrel(options =>
 // {
 //     options.ListenAnyIP(443, listenOptions =>
+
 //     {
 //         listenOptions.UseHttps("/https/localhost-cert.pem", "/https/localhost-key.pem");
 //     });

@@ -4,6 +4,7 @@ namespace MathHelperr.Service;
 
 public class Level2AlgebraTextGenerator : IAlgebraTextGenerator
 {
+    public int Level => 2;
     private readonly Random _random = new Random();
     public string Answer(AlgebraResult example)
     {

@@ -5,6 +5,7 @@ namespace MathHelperr.Service;
 public class Level2MultiplicationExampleGenerator : IMultiplicationExampleGenerator
 {
     private static readonly Random _random = new Random();
+    public int Level => 2;
 
     public AlgebraResult Example()
     {
@@ -22,7 +23,8 @@ public class Level2MultiplicationExampleGenerator : IMultiplicationExampleGenera
             A = a,
             B = b,
             Equal = equal,
-            Result =  [result]
+            Result =  [result],
+            Level = Level
         };
         
 

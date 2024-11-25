@@ -4,6 +4,7 @@ namespace MathHelperr.Service;
 
 public class Level2MultiplicationTextGenerator : IMultiplicationTextGenerator
 {
+    public int Level => 2;
     private static readonly Random _random = new Random();
 
     public string Answer(AlgebraResult example)

@@ -1,5 +1,6 @@
 namespace MathHelperr.Service.Math.Factory;
 
+[Obsolete("new factroy method implemented, but have worked on it, so I did not delete it")]
 public class GenericExampleGenerator<T> where T : IMathExampleGenerator
 {
     private readonly Dictionary<int, T> _generators;

@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: .dockerfile
     environment:
-      - ConnectionStrings__DefaultConnection=Server=db;Database=MathHelperDocker;User Id=sa;Password=Macko1234;Encrypt=false
+      - ConnectionStrings__DefaultConnection=Server=db;User Id=sa;Password=Macko1234;Encrypt=false
     ports:
       - "8080:80"
       - "8443:443"

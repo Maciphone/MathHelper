@@ -1,5 +1,7 @@
 namespace MathHelperr.Service.Math.Factory.GeneratorFactory.AbstractText;
 
+[Obsolete("new factroy method implemented, but have worked on it, so I did not delete it")]
+
 public  class GenericTextGenerator<T> where T: IMathTextGenerator
 {
     private readonly Dictionary<int, T> _generators;

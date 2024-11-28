@@ -1,11 +1,12 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=1f2a3bf3_002Dab2c_002D4641_002Daafc_002D511b3d1461a0/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="TestUserLoginWrongPassword" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=1f2a3bf3_002Dab2c_002D4641_002Daafc_002D511b3d1461a0/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="TestUserLoginWrongPassword" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
     &lt;TestId&gt;xUnit::FD4F1C4D-8667-4F09-A738-CFA25DA32CE3::net8.0::MyIntegrationTest.IntegrationTest&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;NUnit3x::5B89AF71-C117-44D3-A4C6-A73A954441FE::net8.0::UnitTest.GeneratorTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::5B89AF71-C117-44D3-A4C6-A73A954441FE::net8.0::UnitTest.Tests.GetMathExcercise_ShouldReturnAlgebraExercise_WhenMathTypeIsAlgebra&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=ccc418ac_002Dbb28_002D4e1e_002D9c59_002D71f65357e24b/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="GetMathExcercise_ShouldReturnAlgebraExercise_WhenMathTypeIsAlgebra" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=ccc418ac_002Dbb28_002D4e1e_002D9c59_002D71f65357e24b/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="GetMathExcercise_ShouldReturnAlgebraExercise_WhenMathTypeIsAlgebra" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;Or&gt;&#xD;
     &lt;TestAncestor&gt;&#xD;
       &lt;TestId&gt;NUnit3x::5B89AF71-C117-44D3-A4C6-A73A954441FE::net8.0::UnitTest.Tests.GetMathExcercise_ShouldReturnAlgebraExercise_WhenMathTypeIsAlgebra&lt;/TestId&gt;&#xD;
@@ -20,6 +21,13 @@
       &lt;TestId&gt;NUnit3x::5B89AF71-C117-44D3-A4C6-A73A954441FE::net8.0::UnitTest.GeneratorTest.AlgebraGenerators_ShouldUseLevel1GeneratorExample_WhenLevelIs1&lt;/TestId&gt;&#xD;
       &lt;TestId&gt;NUnit3x::5B89AF71-C117-44D3-A4C6-A73A954441FE::net8.0::UnitTest.GeneratorTest.AlgebraGenerators_ShouldUseLevel1GeneratorText_WhenLevelIs100_ReturnsDefault&lt;/TestId&gt;&#xD;
       &lt;TestId&gt;xUnit::85FFCCB2-8783-4489-91AA-0BA79812B065::net8.0::MyIntegrationTest.IntegrationTest.TestUserLoginWrongPassword&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;NUnit3x::5B89AF71-C117-44D3-A4C6-A73A954441FE::net8.0::UnitTest.Tests.GetMathExercise_ShouldReturnMultiplicationExercise_WhenMathTypeIsMultiplication&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;NUnit3x::5B89AF71-C117-44D3-A4C6-A73A954441FE::net8.0::UnitTest.Tests.GetMathExercise_ShouldReturnDivisionExercise_WhenMathTypeIsDivision&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;NUnit3x::5B89AF71-C117-44D3-A4C6-A73A954441FE::net8.0::UnitTest.Tests.GetMathExercise_ShouldReturnRemainDivisionExercise_WhenMathTypeIsRemainDivision&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;NUnit3x::5B89AF71-C117-44D3-A4C6-A73A954441FE::net8.0::UnitTest.Tests.GetMathExercise_ShouldThrowNotImplementedException_WhenMathTypeIsUnsupported&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;NUnit3x::5B89AF71-C117-44D3-A4C6-A73A954441FE::net8.0::UnitTest.Tests.GetMathExercise_ShouldThrowInvalidOperationExceptionException_WhenLevelIsUnsupported&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;NUnit3x::5B89AF71-C117-44D3-A4C6-A73A954441FE::net8.0::UnitTest.Tests&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::FD4F1C4D-8667-4F09-A738-CFA25DA32CE3::net8.0::MyIntegrationTest.IntegrationTest&lt;/TestId&gt;&#xD;
     &lt;/TestAncestor&gt;&#xD;
     &lt;ProjectFile&gt;5B89AF71-C117-44D3-A4C6-A73A954441FE/f:GeneratorTest.cs&lt;/ProjectFile&gt;&#xD;
   &lt;/Or&gt;&#xD;

@@ -54,16 +54,12 @@ builder.Services.AddScoped<IRepositoryUserData<SolutionDto>, SolutionDtoReposito
 builder.Services.AddScoped<IAlgebraExampleGenerator, Level1AlgebraExampleGenerator>();
 builder.Services.AddScoped<IAlgebraExampleGenerator, Level2AlgebraExampleGenerator>();
 builder.Services.AddScoped<IAlgebraExampleGenerator, Level3AlgebraExampleGenerator>();
-// builder.Services.AddScoped<IAlgebraTextGenerator, Level1AlgebraTextGenerator>();
-// builder.Services.AddScoped<IAlgebraTextGenerator, Level2AlgebraTextGenerator>();
-// builder.Services.AddScoped<IAlgebraTextGenerator, Level3AlgebraTextGenerator>();
+
 
 builder.Services.AddScoped<IDivisionExampleGenerator, Level1DivisionExampleGenerator>();
-builder.Services.AddScoped<IDivisionTextGenerator, Level1DivisionTextGenerator>();
 
-// builder.Services.AddScoped<IMultiplicationTextGenerator, Level1MultiplicationTextGenerator>();
-// builder.Services.AddScoped<IMultiplicationTextGenerator, Level2MultiplicationTextGenerator>();
-// builder.Services.AddScoped<IMultiplicationTextGenerator, Level3MultiplicationTextGenerator>();
+
+
 builder.Services.AddScoped<IMultiplicationExampleGenerator, Level1MultiplicationExampleGenerator>();
 builder.Services.AddScoped<IMultiplicationExampleGenerator, Level2MultiplicationExampleGenerator>();
 builder.Services.AddScoped<IMultiplicationExampleGenerator, Level3MultiplicationExampleGenerator>();
@@ -71,44 +67,20 @@ builder.Services.AddScoped<IMultiplicationExampleGenerator, Level3Multiplication
 builder.Services.AddScoped<IRemainDivisonExampleGenerator, Level1RemainDivisionExampleGenerator>();
 // builder.Services.AddScoped<IRemainDivisionTextGenerator, Level1RemainDivisionTextGenerator>();
 //modified textgenerator
-builder.Services.AddScoped<IMathTextGenerator, AlgebraTextGeneratorGeneral>();
-builder.Services.AddScoped<IMathTextGenerator, DivisionTextGeneratorGeneral>();
-builder.Services.AddScoped<IMathTextGenerator, RemainDivisionTextGeneratorGenral>();
-builder.Services.AddScoped<IMathTextGenerator, MultiplicationTextGeneratorGeneral>();
 
 builder.Services.AddScoped<IAlgebraTextGenerator, AlgebraTextGeneratorGeneral>();
 builder.Services.AddScoped<IDivisionTextGenerator, DivisionTextGeneratorGeneral>();
 builder.Services.AddScoped<IRemainDivisionTextGenerator, RemainDivisionTextGeneratorGenral>();
 builder.Services.AddScoped<IMultiplicationTextGenerator, MultiplicationTextGeneratorGeneral>();
-// // IMathExampleGenerator regisztráció
-// builder.Services.AddScoped<IMathExampleGenerator, Level1AlgebraExampleGenerator>();
-// builder.Services.AddScoped<IMathExampleGenerator, Level2AlgebraExampleGenerator>();
-// builder.Services.AddScoped<IMathExampleGenerator, Level3AlgebraExampleGenerator>();
-// builder.Services.AddScoped<IMathExampleGenerator, Level1DivisionExampleGenerator>();
-// builder.Services.AddScoped<IMathExampleGenerator, Level1MultiplicationExampleGenerator>();
-// builder.Services.AddScoped<IMathExampleGenerator, Level2MultiplicationExampleGenerator>();
-// builder.Services.AddScoped<IMathExampleGenerator, Level3MultiplicationExampleGenerator>();
-// builder.Services.AddScoped<IMathExampleGenerator, Level1RemainDivisionExampleGenerator>();
-//
-// // IMathTextGenerator regisztráció
-// builder.Services.AddScoped<IMathTextGenerator, Level1AlgebraTextGenerator>();
-// builder.Services.AddScoped<IMathTextGenerator, Level2AlgebraTextGenerator>();
-// builder.Services.AddScoped<IMathTextGenerator, Level3AlgebraTextGenerator>();
-// builder.Services.AddScoped<IMathTextGenerator, Level1DivisionTextGenerator>();
-// builder.Services.AddScoped<IMathTextGenerator, Level1MultiplicationTextGenerator>();
-// builder.Services.AddScoped<IMathTextGenerator, Level2MultiplicationTextGenerator>();
-// builder.Services.AddScoped<IMathTextGenerator, Level3MultiplicationTextGenerator>();
-// builder.Services.AddScoped<IMathTextGenerator, Level1RemainDivisionTextGenerator>();
+
 
 
   //generikus factroy registration
 //builder.Services.AddScoped(typeof(IMathExampleGeneratorFactory<>), typeof(MathGeneratorFactory));
 //builder.Services.AddScoped<IMathGeneratorFactory, MathGeneratorFactory>();
-builder.Services.AddScoped<MathGeneratorFactory>();
+builder.Services.AddScoped<IMathGeneratorFactory, MathGeneratorFactory>();
 builder.Services.AddScoped<IMathFactory, MathFactoryMarkingWithFactory>(); 
 
-//builder.Services.AddScoped<AlgebraExampleGeneratorFactory>();
-//builder.Services.AddScoped<AlgebraTextGeneratorFactory>();
 //register repository
 builder.Services.AddScoped<IRepository<Solution>, SolutionRepository>();
 
@@ -119,12 +91,6 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 //AddRoles() belongs also to auth.
 
 
-
-// IMath children registration for different levels, solution for same interface
-// implementations registration
-//AddAlgebraGenerators();
-AddMultiplicationGenerators();
-AddDivisionGenerators();
 
 AddJwtAuthentication();
 AddIdentity();
@@ -219,151 +185,6 @@ void AddRoles()
 }
 
 
-void AddDivisionGenerators()
-{
-    builder.Services.AddScoped<IDivisionExampleGenerator>(provider =>
-    {
-        var context = provider.GetRequiredService<IContextProvider>();
-        var level = context.GetLevel();
-        switch (level)
-        {
-            case "1":
-                return new Level1DivisionExampleGenerator();
-            default:
-                return new Level1DivisionExampleGenerator();
-        }
-
-        throw new InvalidOperationException();
-    });
-    
-    builder.Services.AddScoped<IDivisionTextGenerator>(provider =>
-    {
-        var context = provider.GetRequiredService<IContextProvider>();
-        var level = context.GetLevel();
-        switch (level)
-        {
-            case "1":
-                return new Level1DivisionTextGenerator();
-            default:
-                return new Level1DivisionTextGenerator();
-        }
-
-        throw new InvalidOperationException();
-    });
-    
-}
-
-void AddMultiplicationGenerators()
-{
-    
-    builder.Services.AddScoped<IMultiplicationTextGenerator>(provider =>
-    {
-        var context = provider.GetRequiredService<IContextProvider>();
-        var level = context.GetLevel();
-        switch (level)
-        {
-            case "1":
-                return new Level1MultiplicationTextGenerator();
-            case "2":
-                return new Level2MultiplicationTextGenerator();
-            case "3":
-                return new Level3MultiplicationTextGenerator();
-            default:
-                return new Level1MultiplicationTextGenerator();
-        }
-
-        throw new InvalidOperationException();
-    });
-    
-    builder.Services.AddScoped<IMultiplicationExampleGenerator>(implementationFactory: provider =>
-    {
-        var context = provider.GetRequiredService<IContextProvider>();
-        var level = context.GetLevel();
-        switch (level)
-        {
-            case "1":
-                return new Level1MultiplicationExampleGenerator();
-            case "2":
-                return new Level2MultiplicationExampleGenerator();
-            case "3":
-                return new Level3MultiplicationExampleGenerator();
-            default:
-                return new Level1MultiplicationExampleGenerator();
-        }
-        throw new InvalidOperationException();
-    });
-
-    builder.Services.AddScoped<IRemainDivisonExampleGenerator>(implementationFactory: provider =>
-    {
-        var context = provider.GetRequiredService<IContextProvider>();
-        var level = context.GetLevel();
-        switch (level)
-        {
-            case "1":
-                return new Level1RemainDivisionExampleGenerator();
-           default:
-                return new Level1RemainDivisionExampleGenerator();
-        }
-        throw new InvalidOperationException();
-    });
-    
-    builder.Services.AddScoped<IRemainDivisionTextGenerator>(implementationFactory: provider =>
-    {
-        var context = provider.GetRequiredService<IContextProvider>();
-        var level = context.GetLevel();
-        switch (level)
-        {
-            case "1":
-                return new Level1RemainDivisionTextGenerator();
-            default:
-                return new Level1RemainDivisionTextGenerator();
-        }
-        throw new InvalidOperationException();
-    });
-    
-    
-}
-
-void AddAlgebraGenerators()
-{
-    builder.Services.AddScoped<IAlgebraTextGenerator>(provider =>
-    {
-        var context = provider.GetRequiredService<IContextProvider>();
-        var level = context.GetLevel();
-        switch (level)
-        {
-            case "1":
-                return new Level1AlgebraTextGenerator();
-            case "2":
-                return new Level2AlgebraTextGenerator();
-            case "3":
-                return new Level3AlgebraTextGenerator();
-            default:
-                return new Level1AlgebraTextGenerator();
-        }
-
-        throw new ArgumentException("Invalid level");
-    });
-
-    builder.Services.AddScoped<IAlgebraExampleGenerator>(provider =>
-    {
-        var context = provider.GetRequiredService<IContextProvider>();
-        var level = context.GetLevel();
-        switch (level)
-        {
-            case "1":
-                return new Level1AlgebraExampleGenerator();
-            case "2":
-                return new Level2AlgebraExampleGenerator();
-            case "3":
-                return new Level3AlgebraExampleGenerator();
-            default:
-                return new Level1AlgebraExampleGenerator();
-        }
-
-        throw new ArgumentException("Invalid level");
-    });
-}
 
 void AddJwtAuthentication()
 {

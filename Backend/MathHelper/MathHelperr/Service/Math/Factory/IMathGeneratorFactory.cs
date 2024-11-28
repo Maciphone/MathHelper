@@ -3,6 +3,6 @@ namespace MathHelperr.Service.Math.Factory;
 public interface IMathGeneratorFactory
 
 {
-    IMathExampleGenerator GetExampleGenerator(int level);
-    IMathTextGenerator GetTextGenerator(int level);
+    T GetGenerator<T>(Type generatorType, int level) where T : class;
+    
 }

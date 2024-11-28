@@ -1,20 +1,18 @@
 namespace MathHelperr.Service.Math.Factory;
 
-public class MathGeneratorFactory
+public class MathGeneratorFactory : IMathGeneratorFactory
 {
    
         private readonly IServiceProvider _serviceProvider;
-        private readonly IEnumerable<IMathTextGenerator> _textGenerators;
 
-        public MathGeneratorFactory(IServiceProvider serviceProvider, IEnumerable<IMathTextGenerator> textGenerators)
+        public MathGeneratorFactory(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
-            _textGenerators = textGenerators;
         }
-
-        public object GetGenerator(Type generatorType, int level)
+        
+        public  T GetGenerator<T>(Type generatorType, int level) where T: class
         { 
-            var generators = _serviceProvider.GetServices(generatorType);
+            var generators = _serviceProvider.GetServices<T>();
             
             foreach (var generator in generators)
             {
@@ -25,49 +23,13 @@ public class MathGeneratorFactory
                 }
             }
 
-            throw new InvalidOperationException($"No generator found for type {generatorType.Name} and level {level}");
-        }
+            var defaultGenerator =  generators.FirstOrDefault(g => (int)g.GetType().GetProperty("Level").GetValue(g) == 1);
+            return defaultGenerator;
 
-        public object GetTextGenerator(Type generatorType)
-        {
-            var generator = _serviceProvider.GetServices(generatorType).ToList()[0];
-           //var generator =  _textGenerators.FirstOrDefault(g => g.GetType() == generatorType);
-            if (generator == null)
-            {
-                throw new NotImplementedException();
-            }
-            return generator;
         }
         
-        
     }
 
 
-    
-
-    
-    /*
-    public IMathExampleGenerator GetExampleGenerator(int level)
-    {
-        var generator = _exampleGenerators.FirstOrDefault(g => g.Level == level);
-        if (generator == null)
-        {
-            throw new NotImplementedException();
-            _exampleGenerators.First(g => g.Level == 1);
-        }
-        return generator;
-    }
-
-    public IMathTextGenerator GetTextGenerator(int level)
-    {
-        var generator = _textGenerators.FirstOrDefault(g => g.Level == level);
-        if (generator == null)
-        {
-            throw new NotImplementedException();
-            _textGenerators.Where(g => g.Level == 1);
-        }
-        return generator;
-    }
-    */
     
  

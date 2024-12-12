@@ -99,8 +99,17 @@ public class AlgebraController :ControllerBase
   
         var question = exercise.Question();
         var answer = exercise.Answer().Result;
-        var exerciseId = await _creatorRepository.GetExerciseId(exercise, type, level, userId, null);
-        
+        int exerciseId;
+        try
+        {
+            exerciseId = await _creatorRepository.GetExerciseId(exercise, type, level, userId, null);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exeption at creatorRep: {ex}");
+            return BadRequest();
+        }
+
         var encriptedAnswer=answer.Select(item => _encriptor.GetEncriptedData(item)).ToList();
         ExcerciseResult result = new ExcerciseResult()
         {

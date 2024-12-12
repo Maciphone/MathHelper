@@ -10,7 +10,7 @@ public class MathGeneratorFactory : IMathGeneratorFactory
             _serviceProvider = serviceProvider;
         }
         
-        public  T GetGenerator<T>(Type generatorType, int level) where T: class
+        public  T GetGenerator<T>(int level) where T: class
         { 
             var generators = _serviceProvider.GetServices<T>();
             
@@ -24,6 +24,11 @@ public class MathGeneratorFactory : IMathGeneratorFactory
             }
 
             var defaultGenerator =  generators.FirstOrDefault(g => (int)g.GetType().GetProperty("Level").GetValue(g) == 1);
+
+            if (defaultGenerator == null)
+            {
+                throw new NotImplementedException();
+            }
             return defaultGenerator;
 
         }

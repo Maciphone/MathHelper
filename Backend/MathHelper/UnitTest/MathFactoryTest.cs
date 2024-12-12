@@ -21,7 +21,7 @@ public class Tests
 
        
         mockMathgeneratorFactory
-            .Setup(factory => factory.GetGenerator<IAlgebraExampleGenerator>(It.IsAny<Type>(), It.IsAny<int>()))
+            .Setup(factory => factory.GetGenerator<IAlgebraExampleGenerator>( It.IsAny<int>()))
             .Returns(mockAlgebraExampleGenerator.Object);
 
       
@@ -47,7 +47,7 @@ public class Tests
 
        
         mockMathgeneratorFactory
-            .Setup(factory => factory.GetGenerator<IMultiplicationExampleGenerator>(It.IsAny<Type>(), It.IsAny<int>()))
+            .Setup(factory => factory.GetGenerator<IMultiplicationExampleGenerator>( It.IsAny<int>()))
             .Returns(mockMultiplicationExampleGenerator.Object);
 
       
@@ -73,7 +73,7 @@ public class Tests
 
        
         mockMathgeneratorFactory
-            .Setup(factory => factory.GetGenerator<IDivisionExampleGenerator>(It.IsAny<Type>(), It.IsAny<int>()))
+            .Setup(factory => factory.GetGenerator<IDivisionExampleGenerator>( It.IsAny<int>()))
             .Returns(mockExampleGenerator.Object);
 
       
@@ -101,7 +101,7 @@ public class Tests
 
        
         mockMathgeneratorFactory
-            .Setup(factory => factory.GetGenerator<IRemainDivisonExampleGenerator>(It.IsAny<Type>(), It.IsAny<int>()))
+            .Setup(factory => factory.GetGenerator<IRemainDivisonExampleGenerator>( It.IsAny<int>()))
             .Returns(mockExampleGenerator.Object);
 
       

@@ -3,6 +3,8 @@ import LevelButtons from "./LevelButtons";
 import Stopwatch from "./StopWatch";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+//decription
+import { decryptData } from "./WebCryptoEncriptor";
 
 export default function ExercisePageWithStopWatchAI({
   operation,
@@ -38,6 +40,11 @@ export default function ExercisePageWithStopWatchAI({
     }
   }, [userReduxName, navigator]);
 
+  const decriptdData = async (toDecript) => {
+    const result = await decryptData(toDecript);
+    return result;
+  };
+
   const fetchData = useCallback(async () => {
     try {
       const response = await fetch(
@@ -58,7 +65,7 @@ export default function ExercisePageWithStopWatchAI({
       console.log(data);
       setMath(data);
       setIsRunning(true);
-      setLevel("");
+      //setLevel("");
       setIsLeveleSetted(false);
 
       //  inputRef.current.focus();
@@ -66,12 +73,6 @@ export default function ExercisePageWithStopWatchAI({
       console.error(error);
     }
   }, [level, operation, fetchUrl]);
-
-  useEffect(() => {
-    if (level) {
-      setCalculate(date * level);
-    }
-  }, [level, date]);
 
   useEffect(() => {
     inputRef.current, focus;
@@ -121,21 +122,31 @@ export default function ExercisePageWithStopWatchAI({
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (
-      (operation == "RemainDivision" &&
-        parseInt(userAnswer) === matek.result[0] / calculate &&
-        parseInt(userSecondAnswer) === matek.result[1]) / calculate ||
-      parseInt(userAnswer) === matek.result[0] / calculate
-    ) {
-      setFeedback("Bravo!");
-      setIsTimeRequested(true); //triger stopwatch
-      setUserAnswer("");
-      setUserSecondAnswer("");
-      inputRef.current.focus();
-    } else {
-      setFeedback("Rossz válasz, próbáld újra!");
+    try {
+      const decryptedResult0 = await decriptdData(matek.result[0]);
+      console.log(decryptedResult0);
+      const decryptedResult1 = await decriptdData(matek.result[1]);
+
+      if (
+        (operation === "RemainDivision" &&
+          parseInt(userAnswer) === decryptedResult0 &&
+          parseInt(userSecondAnswer) === decryptedResult1) ||
+        parseInt(userAnswer) === decryptedResult0
+      ) {
+        setFeedback("Bravo!");
+        setIsTimeRequested(true); //triger stopwatch
+        setUserAnswer("");
+        setUserSecondAnswer("");
+        inputRef.current.focus();
+      } else {
+        setFeedback("Rossz válasz, próbáld újra!");
+      }
+    } catch (error) {
+      console.error("Hiba történt a válasz ellenőrzése során:", error);
+      setFeedback("Hiba történt, próbáld újra!");
     }
     setUserAnswer("");
+    setUserSecondAnswer("");
     inputRef.current.focus();
   };
 
@@ -293,3 +304,51 @@ export default function ExercisePageWithStopWatchAI({
 //     fetchData();
 //   }
 // }, [isBuilt, fetchData, fetchUrl, level, operation]);
+
+// const handleSubmit = async (e) => {
+//   e.preventDefault();
+
+//   if (
+//     (operation == "RemainDivision" &&
+//       parseInt(userAnswer) === matek.result[0] &&
+//       parseInt(userSecondAnswer) === matek.result[1]) ||
+//     parseInt(userAnswer) === matek.result[0]
+//   ) {
+//     setFeedback("Bravo!");
+//     setIsTimeRequested(true); //triger stopwatch
+//     setUserAnswer("");
+//     setUserSecondAnswer("");
+//     inputRef.current.focus();
+//   } else {
+//     setFeedback("Rossz válasz, próbáld újra!");
+//   }
+//   setUserAnswer("");
+//   inputRef.current.focus();
+// };
+//  try {
+//     const decryptedResult0 = await decriptdData(matek.result[0]);
+//     console.log(decryptedResult0);
+//     const decryptedResult1 = await decriptdData(matek.result[1]);
+
+//     if (
+//       (operation === "RemainDivision" &&
+//         parseInt(userAnswer) === decryptedResult0 &&
+//         parseInt(userSecondAnswer) === decryptedResult1) ||
+//       parseInt(userAnswer) === decryptedResult0
+//     ) {
+//       setFeedback("Bravo!");
+//       setIsTimeRequested(true); //triger stopwatch
+//       setUserAnswer("");
+//       setUserSecondAnswer("");
+//       inputRef.current.focus();
+//     } else {
+//       setFeedback("Rossz válasz, próbáld újra!");
+//     }
+//   } catch (error) {
+//     console.error("Hiba történt a válasz ellenőrzése során:", error);
+//     setFeedback("Hiba történt, próbáld újra!");
+//   }
+//   setUserAnswer("");
+//   setUserSecondAnswer("");
+//   inputRef.current.focus();
+// };

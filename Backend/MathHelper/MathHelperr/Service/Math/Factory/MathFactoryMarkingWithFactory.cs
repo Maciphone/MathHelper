@@ -29,22 +29,21 @@ public class MathFactoryMarkingWithFactory : IMathFactory
         {
             case MathTypeName.Algebra:
                 return new AlgebraExerciseFromAbstract(
-                    _factory.GetGenerator<IAlgebraExampleGenerator>(typeof(IAlgebraExampleGenerator), level),
+                    _factory.GetGenerator<IAlgebraExampleGenerator>( level),
                     _algebraTextGenerator);
             case MathTypeName.Division:
                 return new DivisionExerciseFromAbstract(
-                    _factory.GetGenerator<IDivisionExampleGenerator>(typeof(IDivisionExampleGenerator), level),
+                    _factory.GetGenerator<IDivisionExampleGenerator>(level),
                     _divisionTextGenerator);
                 break;
             case MathTypeName.Multiplication:
                 return new MultiplicationExerciseFromAbstract(
-                    _factory.GetGenerator<IMultiplicationExampleGenerator>(typeof(IMultiplicationExampleGenerator),
-                        level),
+                    _factory.GetGenerator<IMultiplicationExampleGenerator>(level),
                     _multiplicationTextGenerator);
             case MathTypeName.RemainDivision:
                 return new RemainDivisionExerciseFromAbstract(
-                    _factory.GetGenerator<IRemainDivisonExampleGenerator>(typeof(IRemainDivisonExampleGenerator),
-                        level), _remainDivisionTextGenerator);
+                    _factory.GetGenerator<IRemainDivisonExampleGenerator>( level),
+                    _remainDivisionTextGenerator);
                   //  _factory.GetTextGenerator<IRemainDivisionTextGenerator>(typeof(IRemainDivisionTextGenerator)));
                 break;
             default:

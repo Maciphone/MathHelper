@@ -24,12 +24,15 @@ public class IntegrationTest : IClassFixture<MathHelperFactory>
     private readonly ITestOutputHelper output;
     private readonly IConfiguration _configuration;
     private readonly CookieContainer _cookieContainer;
+    private readonly ITestOutputHelper _output;
+
 
     public IntegrationTest(MathHelperFactory factory,  ITestOutputHelper output)
     {
         this.output = output;
         _factory = factory;
-       
+        _output = output;
+
         _client = factory.CreateClient(new WebApplicationFactoryClientOptions
         {
             BaseAddress = new Uri("https://localhost:5001") // HTTPS URL
@@ -86,19 +89,22 @@ public class IntegrationTest : IClassFixture<MathHelperFactory>
             new StringContent(JsonConvert.SerializeObject(loginRequest),
                 Encoding.UTF8, mediaType: "application/json")); 
         
-        Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode); //eddig ok
         
         //headers must contain Level key!
         var request = new HttpRequestMessage(HttpMethod.Get, "api/algebra/TestForDatabase?type=Algebra");
         request.Headers.Add("Level", "1");
-
+        
+            
         var response = await _client.SendAsync(request);
-       
-        
+        _output.WriteLine("request gheadders");
+   
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        
-        var responseBody = await response.Content.ReadAsStringAsync();
-        var responseObject = JsonConvert.DeserializeObject<ExcerciseResult>(responseBody);
+       
+         var responseBody = await response.Content.ReadAsStringAsync();
+         _output.WriteLine(responseBody);
+       
+         var responseObject = JsonConvert.DeserializeObject<ExcerciseResult>(responseBody);
         
        // Assert.False(string.IsNullOrEmpty(responseObject.Question));
 

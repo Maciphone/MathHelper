@@ -1,4 +1,5 @@
 using System.Net;
+using System.Security.Cryptography.X509Certificates;
 using MathHelperr.Data;
 using MathHelperr.Model.Db;
 using MathHelperr.Utility;
@@ -86,11 +87,14 @@ public class MathHelperFactory : WebApplicationFactory<Program>
             // Alkalmazás konfiguráció betöltése
             config.AddJsonFile("appsettings.json")
                 .AddEnvironmentVariables();
+            DotNetEnv.Env.Load();
         });
         //https beállítás a cookiehoz
         //builder.UseSetting("https_port", "5001"); // HTTPS port beállítása
         builder.ConfigureKestrel(options =>
         {
+          
+            options.ListenAnyIP(80); // HTTP
             options.ListenLocalhost(5001, listenOptions =>
             {
                 listenOptions.UseHttps(); // HTTPS engedélyezése

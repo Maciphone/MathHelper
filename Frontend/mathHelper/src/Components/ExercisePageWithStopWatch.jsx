@@ -3,6 +3,8 @@ import LevelButtons from "./LevelButtons";
 import Stopwatch from "./StopWatch";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+//decription
+import { decryptData } from "./WebCryptoEncriptor";
 
 export default function ExercisePageWithStopWatch({
   operation,
@@ -36,6 +38,11 @@ export default function ExercisePageWithStopWatch({
       navigator("/login");
     }
   }, [userReduxName, navigator]);
+
+  const decriptdData = async (toDecript) => {
+    const result = await decryptData(toDecript);
+    return result;
+  };
 
   const fetchData = useCallback(async () => {
     try {
@@ -116,19 +123,27 @@ export default function ExercisePageWithStopWatch({
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (
-      (operation == "RemainDivision" &&
-        parseInt(userAnswer) === matek.result[0] / calculate &&
-        parseInt(userSecondAnswer) === matek.result[1]) / calculate ||
-      parseInt(userAnswer) === matek.result[0] / calculate
-    ) {
-      setFeedback("Bravo!");
-      setIsTimeRequested(true); //triger stopwatch
-      setUserAnswer("");
-      setUserSecondAnswer("");
-      inputRef.current.focus();
-    } else {
-      setFeedback("Rossz válasz, próbáld újra!");
+    try {
+      const decryptedResult0 = await decriptdData(matek.result[0]);
+      const decryptedResult1 = await decriptdData(matek.result[1]);
+
+      if (
+        (operation === "RemainDivision" &&
+          parseInt(userAnswer) === decryptedResult0 &&
+          parseInt(userSecondAnswer) === decryptedResult1) ||
+        parseInt(userAnswer) === decryptedResult0
+      ) {
+        setFeedback("Bravo!");
+        setIsTimeRequested(true); //triger stopwatch
+        setUserAnswer("");
+        setUserSecondAnswer("");
+        inputRef.current.focus();
+      } else {
+        setFeedback("Rossz válasz, próbáld újra!");
+      }
+    } catch (error) {
+      console.error("Hiba történt a válasz ellenőrzése során:", error);
+      setFeedback("Hiba történt, próbáld újra!");
     }
     setUserAnswer("");
     setUserSecondAnswer("");

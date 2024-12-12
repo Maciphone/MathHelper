@@ -164,7 +164,14 @@ builder.Services.AddCors(options =>
     });
 });
 
+
+
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage(); // Fejlesztői hibakezelő oldal engedélyezése
+}
 
 Migration();
 

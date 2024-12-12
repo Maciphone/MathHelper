@@ -1,10 +1,13 @@
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using DotNetEnv;
 using MathHelperr.Data;
 using MathHelperr.Model.Db;
 using MathHelperr.Model.Db.DTO;
 using MathHelperr.Service;
 using MathHelperr.Service.AbstractImplementation;
 using MathHelperr.Service.Authentication;
+using MathHelperr.Service.Encription;
 using MathHelperr.Service.Factory;
 using MathHelperr.Service.Groq;
 using MathHelperr.Service.LevelProvider;
@@ -18,11 +21,13 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.IdentityModel.Tokens;
 
 
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddJsonFile("appsettings.json");
 builder.Configuration.AddUserSecrets<Program>();
-
+Env.Load();
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -84,6 +89,9 @@ builder.Services.AddScoped<IMathFactory, MathFactoryMarkingWithFactory>();
 //register repository
 builder.Services.AddScoped<IRepository<Solution>, SolutionRepository>();
 
+//register encription
+builder.Services.AddScoped<IEncription, Encriptor>();
+
 
 //authentication registration
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -96,32 +104,52 @@ AddJwtAuthentication();
 AddIdentity();
 
 //docker-compose miatt
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-                       ?? builder.Configuration["ConnectionStrings__DefaultConnection"];
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 // Configure Identity DbContext
-//builder.Services.AddDbContext<ApplicationDbContext>(options =>
-  //  options.UseSqlServer(connectionString));
-//builder.Services.AddDbContext<UserContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(connectionString,
+    sqlOptions =>
+    {
+        sqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5, // Hány próbálkozás legyen
+            maxRetryDelay: TimeSpan.FromSeconds(10), // Mekkora késleltetéssel
+            errorNumbersToAdd: null); // További hibaazonosítók, ha szükséges
+    }));
+builder.Services.AddDbContext<UserContext>(options => options.UseSqlServer(connectionString,
+    sqlOptions =>
+    {
+        sqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5, // Hány próbálkozás legyen
+            maxRetryDelay: TimeSpan.FromSeconds(10), // Mekkora késleltetéssel
+            errorNumbersToAdd: null); // További hibaazonosítók, ha szükséges
+    }));
+//eddig docker 
 
-
-builder.Services.AddDbContext<UserContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+//docker testelés előtt
+//builder.Services.AddDbContext<UserContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+//builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<AuthenticationSeeder>();
 
 
 builder.Services.AddControllers();
 
 // ssl tanustvány miatt lehet majd törlöd docker miatt 
-// builder.WebHost.ConfigureKestrel(options =>
-// {
-//     options.ListenAnyIP(443, listenOptions =>
+builder.WebHost.ConfigureKestrel(options =>
+{
+    Console.WriteLine($"CERT_PATH: {Environment.GetEnvironmentVariable("CERT_PATH")}");
+    Console.WriteLine($"CERT_PASSWORD: {Environment.GetEnvironmentVariable("CERT_PASSWORD")}");
 
-//     {
-//         listenOptions.UseHttps("/https/localhost-cert.pem", "/https/localhost-key.pem");
-//     });
-//     options.ListenAnyIP(80); // HTTP
-// });
+    var certPath = Environment.GetEnvironmentVariable("CERT_PATH");
+    var certPassword = Environment.GetEnvironmentVariable("CERT_PASSWORD");
+    var certificate = new X509Certificate2(certPath, certPassword, X509KeyStorageFlags.MachineKeySet);
+    options.ListenAnyIP(443, listenOptions =>
+    {
+        
+        listenOptions.UseHttps(certificate);
+    });
+    options.ListenAnyIP(80); // HTTP
+});
 
 //CORS settings - call before MApControllers()
 builder.Services.AddCors(options =>
@@ -138,7 +166,7 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-//Migration();
+Migration();
 
 // Authentication: add identity roles
 AddRoles();
@@ -165,13 +193,18 @@ app.Run();
 
 void Migration()
 {
+    
     using (var scope = app.Services.CreateScope())
     {
         var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         var userContext = scope.ServiceProvider.GetRequiredService<UserContext>();
-        
-        dbContext.Database.Migrate();
-        userContext.Database.Migrate();
+
+        //Test nem fut le, ha nem relációs adatbázisból fut a migráció
+        if (dbContext.Database.IsRelational()) // Csak relációs adatbázis esetén fut
+        {
+            dbContext.Database.Migrate();
+            userContext.Database.Migrate();
+        }
     }
 }
 

@@ -2,11 +2,15 @@
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
-EXPOSE 80
-EXPOSE 443
 
-COPY ./localhost-cert.pem /https/localhost-cert.pem
-COPY ./localhost-key.pem /https/localhost-key.pem
+COPY ./ssl/localhost.pfx /https/localhost.pfx
+
+
+#COPY ./localhost-cert.pem /https/localhost-cert.pem
+#COPY ./localhost-key.pem /https/localhost-key.pem
+
+COPY wait-for-it.sh .
+RUN chmod +x wait-for-it.sh
 
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
@@ -25,4 +29,8 @@ RUN dotnet publish "MathHelperr.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "MathHelperr.dll", "--urls", "https://+:443;http://+:80"]
+EXPOSE 80
+EXPOSE 443
+ENV ASPNETCORE_URLS=https://+:443;http://+:80
+ENTRYPOINT ["dotnet", "MathHelperr.dll"]
+#ENTRYPOINT ["dotnet", "MathHelperr.dll", "--urls", "https://+:443;http://+:80"]

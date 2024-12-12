@@ -17,6 +17,9 @@ export default function ExercisePageWithStopWatchAI({
   const [isLevelSetted, setIsLeveleSetted] = useState(false);
   const navigator = useNavigate();
 
+  const [calculate, setCalculate] = useState("");
+  const [date, setDate] = useState(new Date().getDate());
+
   const userReduxName = useSelector((state) => state.userData.value);
   const inputRef = useRef(null); // hivatkozási pont létrehozása
 
@@ -63,6 +66,12 @@ export default function ExercisePageWithStopWatchAI({
       console.error(error);
     }
   }, [level, operation, fetchUrl]);
+
+  useEffect(() => {
+    if (level) {
+      setCalculate(date * level);
+    }
+  }, [level, date]);
 
   useEffect(() => {
     inputRef.current, focus;
@@ -114,9 +123,9 @@ export default function ExercisePageWithStopWatchAI({
 
     if (
       (operation == "RemainDivision" &&
-        parseInt(userAnswer) === matek.result[0] &&
-        parseInt(userSecondAnswer) === matek.result[1]) ||
-      parseInt(userAnswer) === matek.result[0]
+        parseInt(userAnswer) === matek.result[0] / calculate &&
+        parseInt(userSecondAnswer) === matek.result[1]) / calculate ||
+      parseInt(userAnswer) === matek.result[0] / calculate
     ) {
       setFeedback("Bravo!");
       setIsTimeRequested(true); //triger stopwatch

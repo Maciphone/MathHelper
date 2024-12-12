@@ -5,7 +5,7 @@ namespace MathHelperr.Model;
 
 public class ExcerciseResult
 {
-    public List<int> Result { get; init; }
+    public List<string> Result { get; init; }
     public string? Question { get; init; }
     public int ExerciseId { get; set; }
 }

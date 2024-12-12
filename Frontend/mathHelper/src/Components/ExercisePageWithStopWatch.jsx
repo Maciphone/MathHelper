@@ -14,6 +14,8 @@ export default function ExercisePageWithStopWatch({
   const [userSecondAnswer, setUserSecondAnswer] = useState("");
   const [feedback, setFeedback] = useState("");
   const [level, setLevel] = useState("");
+  const [calculate, setCalculate] = useState("");
+  const [date, setDate] = useState(new Date().getDate());
 
   const navigator = useNavigate();
 
@@ -63,6 +65,13 @@ export default function ExercisePageWithStopWatch({
   }, [level, operation, fetchUrl]);
 
   useEffect(() => {
+    if (level) {
+      setCalculate(date * level);
+      console.log(calculate);
+    }
+  }, [level, date]);
+
+  useEffect(() => {
     inputRef.current, focus;
   }, [matek]);
 
@@ -109,9 +118,9 @@ export default function ExercisePageWithStopWatch({
 
     if (
       (operation == "RemainDivision" &&
-        parseInt(userAnswer) === matek.result[0] &&
-        parseInt(userSecondAnswer) === matek.result[1]) ||
-      parseInt(userAnswer) === matek.result[0]
+        parseInt(userAnswer) === matek.result[0] / calculate &&
+        parseInt(userSecondAnswer) === matek.result[1]) / calculate ||
+      parseInt(userAnswer) === matek.result[0] / calculate
     ) {
       setFeedback("Bravo!");
       setIsTimeRequested(true); //triger stopwatch
@@ -152,6 +161,8 @@ export default function ExercisePageWithStopWatch({
     setLevel(e);
     setIsRunning(true);
     setIsBuilt(true);
+    setCalculate(date * e);
+    console.log(date * e);
   };
 
   if (userReduxName == null) {

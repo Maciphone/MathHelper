@@ -6,6 +6,7 @@ using MathHelperr.Model;
 using MathHelperr.Model.Db;
 using MathHelperr.Model.Db.DTO;
 using MathHelperr.Service;
+using MathHelperr.Service.Encription;
 using MathHelperr.Service.Factory;
 using MathHelperr.Service.Groq;
 using MathHelperr.Service.Repository;
@@ -26,20 +27,22 @@ public class AlgebraController :ControllerBase
     private readonly ICreatorRepository _creatorRepository;
     private readonly IRepository<Solution> _solutionRepository;
     private readonly IMathFactory _mathFactory;
+    private readonly IEncription _encriptor;
     
     public AlgebraController(
         IMathFactory mathFactory, 
         IGroqResultGenerator groqResultGenerator, 
         ApplicationDbContext context, 
         ICreatorRepository creatorRepository, 
-        IRepository<Solution> solutionRepository)
+        IRepository<Solution> solutionRepository, 
+        IEncription encriptor)
     {
         _mathFactory = mathFactory;
         _groqResultGenerator = groqResultGenerator;
         _context = context;
         _creatorRepository = creatorRepository;
         _solutionRepository = solutionRepository;
-      
+        _encriptor = encriptor;
     }
 /*
     [HttpGet("GetExercise")]
@@ -93,14 +96,16 @@ public class AlgebraController :ControllerBase
         var exercise =_mathFactory.GetMathExercise(type, int.Parse(level));
   //      exercise.Answer().Result.ForEach(e=>Console.WriteLine($"origi eredmények: {e}"));
  
+  
         var question = exercise.Question();
         var answer = exercise.Answer().Result;
         var exerciseId = await _creatorRepository.GetExerciseId(exercise, type, level, userId, null);
-       
+        
+        var encriptedAnswer=answer.Select(item => _encriptor.GetEncriptedData(item)).ToList();
         ExcerciseResult result = new ExcerciseResult()
         {
             Question = question,
-            Result = answer,
+            Result = encriptedAnswer,
            ExerciseId = exerciseId
         };
        
@@ -129,10 +134,12 @@ public class AlgebraController :ControllerBase
         var answer = exercise.Answer().Result;
         var exerciseId = await _creatorRepository.GetExerciseId(exercise, type, level, userId, question);
        
+        var encriptedAnswer=answer.Select(item => _encriptor.GetEncriptedData(item)).ToList();
+
         ExcerciseResult result = new ExcerciseResult()
         {
             Question = question,
-            Result = answer,
+            Result = encriptedAnswer,
             ExerciseId = exerciseId
         };
        

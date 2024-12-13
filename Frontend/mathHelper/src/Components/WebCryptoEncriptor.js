@@ -10,7 +10,7 @@ const ivBytes = new TextEncoder().encode(ivString);
 export const decryptData = async (encryptedBase64) => {
     try {
         // Base64 dekódolás
-        console.log("bwjövö titkosított adat: ", encryptedBase64);
+
         const encryptedBytes = Uint8Array.from(atob(encryptedBase64), c =>
             c.charCodeAt(0)
         );

@@ -82,7 +82,8 @@ public class TokenService : ITokenService
 
     private SigningCredentials CreateSigningCredentials()
     {
-        var secret = _configuration["Jwt:IssuerSigningKey"];
+       // var secret = _configuration["Jwt:IssuerSigningKey"];
+       var secret = Environment.GetEnvironmentVariable("JWT_IssuerSigningKey");
         return new SigningCredentials(
             new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(secret)

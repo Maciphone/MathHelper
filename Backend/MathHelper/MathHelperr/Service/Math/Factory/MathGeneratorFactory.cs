@@ -22,8 +22,8 @@ public class MathGeneratorFactory : IMathGeneratorFactory
                     return generator;
                 }
             }
-
-            var defaultGenerator =  generators.FirstOrDefault(g => (int)g.GetType().GetProperty("Level").GetValue(g) == 1);
+            var defaultGenerator =  generators.FirstOrDefault(g 
+                => (int)g.GetType().GetProperty("Level").GetValue(g) == 1);
 
             if (defaultGenerator == null)
             {

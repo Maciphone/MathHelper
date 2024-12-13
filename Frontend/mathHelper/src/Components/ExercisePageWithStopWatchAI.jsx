@@ -124,7 +124,6 @@ export default function ExercisePageWithStopWatchAI({
 
     try {
       const decryptedResult0 = await decriptdData(matek.result[0]);
-      console.log(decryptedResult0);
       const decryptedResult1 = await decriptdData(matek.result[1]);
 
       if (

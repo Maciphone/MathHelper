@@ -7,6 +7,7 @@ export default function MySolutions() {
   const [isBuilt, setIsBuilt] = useState(false);
   const [Loading, setLoading] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
   const userReduxName = useSelector((state) => state.userData.value);
   const navigator = useNavigate();
   console.log(isBuilt);
@@ -79,6 +80,25 @@ export default function MySolutions() {
       console.error(error);
     }
   };
+  const handleSort = (key) => {
+    let direction = "ascending";
+    if (sortConfig.key === key && sortConfig.direction === "ascending") {
+      direction = "descending";
+    }
+    setSortConfig({ key, direction });
+
+    const sortedData = [...solutions].sort((a, b) => {
+      if (a[key] < b[key]) {
+        return direction === "ascending" ? -1 : 1;
+      }
+      if (a[key] > b[key]) {
+        return direction === "ascending" ? 1 : -1;
+      }
+      return 0;
+    });
+
+    setSolutions(sortedData);
+  };
 
   if (setLoading & (solutions == null)) {
     return <div>...loading</div>;
@@ -90,12 +110,15 @@ export default function MySolutions() {
       <table>
         <thead>
           <tr>
-            <th>Matematika Típus</th>
-            <th>Szint</th>
-            <th>Kezdési Dátum</th>
-            <th>Megoldási Idő (másodperc)</th>
-            <th>Feladat</th>
-            <th>Eredmény</th>
+            <th onClick={() => handleSort("mathTypeName")}>Matematika Típus</th>
+            <th onClick={() => handleSort("level")}>Szint</th>
+            <th onClick={() => handleSort("createdAt")}>Kezdési Dátum</th>
+            <th onClick={() => handleSort("elapsedTime")}>
+              Megoldási Idő (másodperc)
+            </th>
+            <th onClick={() => handleSort("question")}>Feladat</th>
+            <th onClick={() => handleSort("resultValue")}>Eredmény</th>
+            <th>Műveletek</th>
           </tr>
         </thead>
         <tbody>
@@ -107,9 +130,11 @@ export default function MySolutions() {
               <td>{solution.elapsedTime / 100} s</td>
               <td>{solution.question}</td>
               <td>{solution.resultValue.join(", ")}</td>
-              <button onClick={() => handleDelete(solution.solutionId)}>
-                törlés
-              </button>
+              <td>
+                <button onClick={() => handleDelete(solution.solutionId)}>
+                  törlés
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>

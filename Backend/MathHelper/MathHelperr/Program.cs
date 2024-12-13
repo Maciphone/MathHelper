@@ -232,7 +232,8 @@ void AddJwtAuthentication()
 
 
     var jwtSettings = builder.Configuration.GetSection("Jwt");
-    var issuerSigningKey = builder.Configuration["Jwt:IssuerSigningKey"];
+    //var issuerSigningKey = builder.Configuration["Jwt:IssuerSigningKey"];
+    var issuerSigningKey = Environment.GetEnvironmentVariable("JWT_IssuerSigningKey");
 
 
 

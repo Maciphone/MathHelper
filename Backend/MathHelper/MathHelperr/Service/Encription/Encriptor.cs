@@ -43,7 +43,7 @@ public class Encriptor : IEncription
     public string GetEncriptedData(int toEncript)
     {
         byte[] encriptedBytes = EncryptWithAES(toEncript.ToString(), Key, Iv);
-        string base64 = Convert.ToBase64String(encriptedBytes);
-        return base64;
+        string encryptedString = Convert.ToBase64String(encriptedBytes);
+        return encryptedString;
     }
 }

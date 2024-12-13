@@ -47,7 +47,7 @@ Environment variables required for the application:
 
 - **ConnectionStrings__DefaultConnection**: Database connection string. Example:
   ```
-  Server=db;Database=MathHelper;User Id=sa;Password=Macko1234;Encrypt=false;
+  Server=db;Database=YOURDATABASE;User Id=sa;Password=YOURPASSWORD;Encrypt=false;
   ```
   - `Server`: Database server name or address (e.g., `db` in a containerized setup).
   - `Database`: Name of the database.
@@ -61,13 +61,13 @@ Environment variables required for the application:
 
 - **CERT_PASSWORD**: SSL certificate password. Example: `MYPassword`. Set during certificate creation.
 
-- **AES_KEY**: AES encryption key. Example: `1234567890123456` (16 characters).
+- **AES_KEY**: AES encryption key. Example: `1234567893333444` (16 characters).
 
-- **AES_IV**: AES initialization vector. Example: `1234567890123457` (16 characters).
+- **AES_IV**: AES initialization vector. Example: `1223334450123457` (16 characters).
 
 - **CERT_PATH**: Path to the SSL certificate file. Example:
   ```
-  C:\Users\macko\OneDrive\Dokumentumok\suli\codecool\practise\5_petProjects\MathHelper\Backend\MathHelper\MathHelperr\ssl\localhost.pfx
+  Backend\MathHelper\MathHelperr\ssl\localhost.pfx
   ```
 
 **SSL Certificate Notes**:

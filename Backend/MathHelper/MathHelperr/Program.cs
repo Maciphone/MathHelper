@@ -1,5 +1,6 @@
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using dotenv.net;
 using DotNetEnv;
 using MathHelperr.Data;
 using MathHelperr.Model.Db;
@@ -25,9 +26,30 @@ using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.AddJsonFile("appsettings.json");
-builder.Configuration.AddUserSecrets<Program>();
-Env.Load();
+builder.Logging.ClearProviders(); // Alap logoló szolgáltatók törlése
+builder.Logging.AddConsole(); // Konzolos logolás engedélyezése
+builder.Logging.SetMinimumLevel(LogLevel.Trace); // Minimum szint: Trace, mindent naplóz
+
+
+
+//builder.Configuration.AddUserSecrets<Program>();
+var configuration = builder.Configuration;
+//Env.Load("C:\\Users\\macko\\OneDrive\\Dokumentumok\\suli\\codecool\\practise\\5_petProjects\\MathHelper\\Backend\\MathHelper\\MathHelperr");
+DotEnv.Load(options: new DotEnvOptions(envFilePaths: new[] { ".env" }));
+builder.Configuration
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddEnvironmentVariables();
+
+//Majd töröld
+var email = builder.Configuration["ADMIN_EMAIL"];
+
+Console.WriteLine($"Admin Email: {email}");
+Console.WriteLine("Kestrel server is starting...");
+Console.WriteLine(builder.Configuration["ConnectionStrings:DefaultConnection"]);
+
+
+
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -104,7 +126,7 @@ AddJwtAuthentication();
 AddIdentity();
 
 //docker-compose miatt
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var connectionString = builder.Configuration["ConnectionStrings:DefaultConnection"];
 
 // Configure Identity DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -124,7 +146,7 @@ builder.Services.AddDbContext<UserContext>(options => options.UseSqlServer(conne
             maxRetryDelay: TimeSpan.FromSeconds(10), // Mekkora késleltetéssel
             errorNumbersToAdd: null); // További hibaazonosítók, ha szükséges
     }));
-//eddig docker 
+//docker end
 
 //docker testelés előtt
 //builder.Services.AddDbContext<UserContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -137,11 +159,10 @@ builder.Services.AddControllers();
 // ssl tanustvány miatt lehet majd törlöd docker miatt 
 builder.WebHost.ConfigureKestrel(options =>
 {
-    Console.WriteLine($"CERT_PATH: {Environment.GetEnvironmentVariable("CERT_PATH")}");
-    Console.WriteLine($"CERT_PASSWORD: {Environment.GetEnvironmentVariable("CERT_PASSWORD")}");
+   
 
-    var certPath = Environment.GetEnvironmentVariable("CERT_PATH");
-    var certPassword = Environment.GetEnvironmentVariable("CERT_PASSWORD");
+    var certPath = builder.Configuration["CERT_PATH"];
+    var certPassword =builder.Configuration["CERT_PASSWORD"];
     var certificate = new X509Certificate2(certPath, certPassword, X509KeyStorageFlags.MachineKeySet);
     options.ListenAnyIP(443, listenOptions =>
     {
@@ -233,7 +254,7 @@ void AddJwtAuthentication()
 
     var jwtSettings = builder.Configuration.GetSection("Jwt");
     //var issuerSigningKey = builder.Configuration["Jwt:IssuerSigningKey"];
-    var issuerSigningKey = Environment.GetEnvironmentVariable("JWT_IssuerSigningKey");
+    var issuerSigningKey = configuration["JWT_IssuerSigningKey"];
 
 
 
@@ -251,8 +272,8 @@ void AddJwtAuthentication()
                 ValidateAudience = true,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                ValidIssuer = jwtSettings["ValidIssuer"],
-                ValidAudience = jwtSettings["ValidAudience"],
+                ValidIssuer = configuration["ValidIssuer"],
+                ValidAudience = configuration["ValidAudience"],
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(issuerSigningKey))
             };
             options.Events = new JwtBearerEvents
@@ -272,7 +293,7 @@ void AddJwtAuthentication()
                 {
                     Console.WriteLine("JWT Token received: " + context.Token);
                     context.Token = context.Request.Cookies[
-                        jwtSettings["CookieName"] ??
+                        configuration["CookieName"] ??
                         throw new InvalidOperationException(
                             "no CookieName key in appsettings")]; // A token cookie-ból való kiolvasása
                     return Task.CompletedTask;

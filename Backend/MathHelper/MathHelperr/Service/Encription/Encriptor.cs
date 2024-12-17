@@ -10,15 +10,19 @@ public class Encriptor : IEncription
 {
     private string Key;
     private string Iv;
+    private IConfiguration _configuration;
 
-    public Encriptor()
+    public Encriptor(IConfiguration configuration)
     {
-        Key = Environment.GetEnvironmentVariable("AES_KEY");
-        Iv = Environment.GetEnvironmentVariable("AES_IV");
+        _configuration = configuration;
+        Key = _configuration["AES_KEY"];
+        Console.WriteLine($"key: {Key}");
+        Iv = _configuration["AES_IV"];
     }
     
     private static byte[] EncryptWithAES(string plainText, string key, string iv)
     {
+        Console.WriteLine($"key: {key}");
         using (Aes aes = Aes.Create())
         {
             aes.Key = Encoding.UTF8.GetBytes(key);

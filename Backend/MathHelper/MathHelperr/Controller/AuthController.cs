@@ -66,7 +66,7 @@ public class AuthController : ControllerBase
             }
             return BadRequest(errors);
         }
-        var jwtKey = _configuration["Jwt:CookieName"];
+        var jwtKey = _configuration["CookieName"];
         
         //token to send in headers
         var token = result.Token;

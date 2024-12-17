@@ -16,6 +16,7 @@ public class MathGeneratorFactory : IMathGeneratorFactory
             
             foreach (var generator in generators)
             {
+                
                 var levelProperty = generator.GetType().GetProperty("Level");
                 if (levelProperty != null && (int)levelProperty.GetValue(generator) == level)
                 {

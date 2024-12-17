@@ -1,16 +1,20 @@
+
 using Microsoft.AspNetCore.Identity;
 
 namespace MathHelperr.Service.Authentication;
 
 public class AuthenticationSeeder
 {
+   
     private RoleManager<IdentityRole> roleManager;
     private UserManager<IdentityUser> userManager;
+    private readonly IConfiguration _configuration;
 
-    public AuthenticationSeeder(RoleManager<IdentityRole> roleManager, UserManager<IdentityUser> userManager)
+    public AuthenticationSeeder(RoleManager<IdentityRole> roleManager, UserManager<IdentityUser> userManager, IConfiguration configuration)
     {
         this.roleManager = roleManager;
         this.userManager = userManager;
+        _configuration = configuration;
     }
     
     public void AddRoles()
@@ -40,11 +44,18 @@ public class AuthenticationSeeder
 
     private async Task CreateAdminIfNotExists()
     {
-        var adminInDb = await userManager.FindByEmailAsync("admin@admin.com");
+        var email = _configuration["ADMIN_EMAIL"];
+        var password =_configuration["ADMIN_PASSWORD"];
+        Console.WriteLine($"Admin Email: {email}");
+        if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+        {
+            throw new Exception("ADMIN_EMAIL or ADMIN_PASSWORD environment variable is missing.");
+        }
+        var adminInDb = await userManager.FindByEmailAsync(email);
         if (adminInDb == null)
         {
-            var admin = new IdentityUser { UserName = "admin", Email = "admin@admin.com" };
-            var adminCreated = await userManager.CreateAsync(admin, "admin123");
+            var admin = new IdentityUser { UserName = "admin", Email = email };
+            var adminCreated = await userManager.CreateAsync(admin, password);
 
             if (adminCreated.Succeeded)
             {

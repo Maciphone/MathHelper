@@ -19,8 +19,8 @@ public class TokenService : ITokenService
 
     public string CreateToken(IdentityUser user, string role)
     {
-        var expirationMinutes = int.Parse(_configuration["Jwt:CookieExpiration"]);
-        var expiration = DateTime.UtcNow.AddMinutes(expirationMinutes);
+        var expirationMinutes = _configuration["CookieExpiration"];
+        var expiration = DateTime.UtcNow.AddMinutes(int.Parse(expirationMinutes));
         var token = CreateJwtToken(
             CreateClaims(user, role),
             CreateSigningCredentials(),
@@ -33,9 +33,9 @@ public class TokenService : ITokenService
 
     private JwtSecurityToken CreateJwtToken(List<Claim> claims, SigningCredentials credentials, DateTime expiration)
     {
-         var jwtStettings =_configuration.GetSection("Jwt"); //IConfigurationSection object - kulcsokra hivatkozva get value like a json
-         var validIssuer = jwtStettings["ValidIssuer"];
-         var validAudience = jwtStettings["ValidAudience"];
+        
+         var validIssuer = _configuration["ValidIssuer"];
+         var validAudience = _configuration["ValidAudience"];
  
         return new JwtSecurityToken(
             validIssuer,
@@ -83,7 +83,7 @@ public class TokenService : ITokenService
     private SigningCredentials CreateSigningCredentials()
     {
        // var secret = _configuration["Jwt:IssuerSigningKey"];
-       var secret = Environment.GetEnvironmentVariable("JWT_IssuerSigningKey");
+       var secret =_configuration["JWT_IssuerSigningKey"];
         return new SigningCredentials(
             new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(secret)

@@ -42,7 +42,7 @@ public class AuthController : ControllerBase
     [HttpPost("Login")]
     public async Task<ActionResult<AuthResponse>> Authenticate([FromBody] AuthRequest request)
     {
-        var tokenValidTimesSpan =int.Parse(_configuration["Jwt:CookieExpiration"]);
+        var tokenValidTimesSpan =int.Parse(_configuration["CookieExpiration"]);
         if (!ModelState.IsValid)
         {
             var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
@@ -66,7 +66,7 @@ public class AuthController : ControllerBase
             }
             return BadRequest(errors);
         }
-        var jwtKey = _configuration["Jwt:CookieName"];
+        var jwtKey = _configuration["CookieName"];
         
         //token to send in headers
         var token = result.Token;

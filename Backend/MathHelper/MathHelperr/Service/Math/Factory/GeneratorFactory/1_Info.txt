@@ -1,0 +1,8 @@
+
+
+The whole directory is obsolete, but I left it in the project.
+Worked on different ways to find a solution, and all the files 
+are just memento for that, and shows, that long codes and lots 
+of files can refactored, and a coding is important, but
+structures and refactoring are importanter ;)
+"English lessons are important, but tacos are importanter!" 

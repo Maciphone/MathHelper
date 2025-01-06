@@ -5,18 +5,28 @@ services:
     build:
       context: .
       dockerfile: .dockerfile
-    environment:
-      - ConnectionStrings__DefaultConnection=Server=db;Database=MathHelperDocker;User Id=sa;Password=Macko1234;Encrypt=false
+    env_file: 
+      - .env
+    depends_on:
+      - db
     ports:
       - "8080:80"
       - "8443:443"
-    depends_on:
-      - db
+    environment:
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ConnectionStrings__DefaultConnection=Server=db;Database=MathHelper;User Id=sa;Password=Macko1234;Encrypt=false;
+      - CERT_PATH=/https/localhost.pfx #elhagyható, a .envben szerepel
+      - CERT_PASSWORD=MYPassword #elhagyható, a .envben szerepel
+    entrypoint: ["./wait-for-it.sh", "db:1433", "-t", "90", "--", "dotnet", "MathHelperr.dll"]
 
   db:
     image: mcr.microsoft.com/mssql/server:2019-latest
-    environment:
-      SA_PASSWORD: "Macko1234"
-      ACCEPT_EULA: "Y"
+    env_file:
+      - .env
     ports:
       - "1433:1433"
+
+   # environment:
+   #   SA_PASSWORD: "Macko1234"
+   #   ACCEPT_EULA: "Y"
+    #CERT_PATH=C:\Users\macko\OneDrive\Dokumentumok\suli\codecool\practise\5_petProjects\MathHelper\Backend\MathHelper\MathHelperr\ssl\localhost.pfx

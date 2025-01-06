@@ -6,6 +6,7 @@ using MathHelperr.Model;
 using MathHelperr.Model.Db;
 using MathHelperr.Model.Db.DTO;
 using MathHelperr.Service;
+using MathHelperr.Service.Encription;
 using MathHelperr.Service.Factory;
 using MathHelperr.Service.Groq;
 using MathHelperr.Service.Repository;
@@ -26,22 +27,24 @@ public class AlgebraController :ControllerBase
     private readonly ICreatorRepository _creatorRepository;
     private readonly IRepository<Solution> _solutionRepository;
     private readonly IMathFactory _mathFactory;
+    private readonly IEncription _encriptor;
     
     public AlgebraController(
         IMathFactory mathFactory, 
         IGroqResultGenerator groqResultGenerator, 
         ApplicationDbContext context, 
         ICreatorRepository creatorRepository, 
-        IRepository<Solution> solutionRepository)
+        IRepository<Solution> solutionRepository, 
+        IEncription encriptor)
     {
         _mathFactory = mathFactory;
         _groqResultGenerator = groqResultGenerator;
         _context = context;
         _creatorRepository = creatorRepository;
         _solutionRepository = solutionRepository;
-      
+        _encriptor = encriptor;
     }
-
+/*
     [HttpGet("GetExercise")]
     public ActionResult<ExcerciseResult> GetQuestion(string type)
     {
@@ -73,7 +76,7 @@ public class AlgebraController :ControllerBase
         //var res = await _context.Solutions.FirstOrDefaultAsync(e => e.SolutionId == dto.SolutionId);
         return 1;
     }
-    
+    */
     //[FromHeader(Name= "Level")]string level, 
     [Authorize(Roles = "User")]
     [HttpGet("TestForDatabase") ]
@@ -90,17 +93,28 @@ public class AlgebraController :ControllerBase
         {
             return BadRequest("no id");
         }
-        var exercise =_mathFactory.GetMathExercise(type);
+        var exercise =_mathFactory.GetMathExercise(type, int.Parse(level));
   //      exercise.Answer().Result.ForEach(e=>Console.WriteLine($"origi eredmények: {e}"));
  
+  
         var question = exercise.Question();
         var answer = exercise.Answer().Result;
-        var exerciseId = await _creatorRepository.GetExerciseId(exercise, type, level, userId, null);
-       
+        int exerciseId;
+        try
+        {
+            exerciseId = await _creatorRepository.GetExerciseId(exercise, type, level, userId, null);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exeption at creatorRep: {ex}");
+            return BadRequest();
+        }
+
+        var encriptedAnswer=answer.Select(item => _encriptor.GetEncriptedData(item)).ToList();
         ExcerciseResult result = new ExcerciseResult()
         {
             Question = question,
-            Result = answer,
+            Result = encriptedAnswer,
            ExerciseId = exerciseId
         };
        
@@ -123,23 +137,25 @@ public class AlgebraController :ControllerBase
         }
       
         
-        var exercise =_mathFactory.GetMathExercise(type);
+        var exercise =_mathFactory.GetMathExercise(type, int.Parse(level));
         
         var question =  await _groqResultGenerator.GetAiText(exercise.Question());
         var answer = exercise.Answer().Result;
         var exerciseId = await _creatorRepository.GetExerciseId(exercise, type, level, userId, question);
        
+        var encriptedAnswer=answer.Select(item => _encriptor.GetEncriptedData(item)).ToList();
+
         ExcerciseResult result = new ExcerciseResult()
         {
             Question = question,
-            Result = answer,
+            Result = encriptedAnswer,
             ExerciseId = exerciseId
         };
        
         return Ok(result);
       
     }
-    
+    /*
     [HttpGet("GetAiExerciseTest")]
     public async Task<ActionResult<ExcerciseResult>> GetAiExerciseTest(MathTypeName type)
     {
@@ -155,7 +171,7 @@ public class AlgebraController :ControllerBase
         return Ok(result);
 
     }
-
+*/
     
 
 }

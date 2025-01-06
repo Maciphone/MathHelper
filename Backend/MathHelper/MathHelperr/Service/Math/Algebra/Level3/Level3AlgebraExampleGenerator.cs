@@ -5,6 +5,7 @@ namespace MathHelperr.Service;
 public class Level3AlgebraExampleGenerator : IAlgebraExampleGenerator
 {
     private static readonly Random _random = new Random();
+    public int Level => 3;
 
     public AlgebraResult Example()
     {
@@ -22,7 +23,8 @@ public class Level3AlgebraExampleGenerator : IAlgebraExampleGenerator
             A = a,
             B = b,
             Equal = equal,
-            Result =  [result]
+            Result =  [result],
+            Level = Level
         };
         
 

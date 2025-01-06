@@ -6,6 +6,7 @@ public class Level2AlgebraExampleGenerator : IAlgebraExampleGenerator
 {
     private static readonly Random _random = new Random();
 
+    public int Level => 2;
     public AlgebraResult Example()
     {
         return GetNumbers();
@@ -20,7 +21,8 @@ public class Level2AlgebraExampleGenerator : IAlgebraExampleGenerator
         {
             A = a,
             B = equal,
-            Result =  [result]
+            Result =  [result],
+            Level = Level
         };
         
 

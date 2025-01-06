@@ -18,16 +18,16 @@ public class LevelController : ControllerBase
         switch (operation.ToLower())
         {
             case "multiplication":
-                numberOfLevels = LevelChecker.GetNumberOfImplementations<IMultiplicationTextGenerator>();
+                numberOfLevels = LevelChecker.GetNumberOfImplementations<IMultiplicationExampleGenerator>();
                 break;
             case "algebra":
-                numberOfLevels = LevelChecker.GetNumberOfImplementations<IAlgebraTextGenerator>();
+                numberOfLevels = LevelChecker.GetNumberOfImplementations<IAlgebraExampleGenerator>();
                 break;
             case "division":
-                numberOfLevels = LevelChecker.GetNumberOfImplementations<IDivisionTextGenerator>();
+                numberOfLevels = LevelChecker.GetNumberOfImplementations<IDivisionExampleGenerator>();
                 break;
             case "remaindivision":
-                numberOfLevels = LevelChecker.GetNumberOfImplementations<IRemainDivisionTextGenerator>();
+                numberOfLevels = LevelChecker.GetNumberOfImplementations<IRemainDivisonExampleGenerator>();
                 break;
             default:
                 return BadRequest("Unknown operation.");

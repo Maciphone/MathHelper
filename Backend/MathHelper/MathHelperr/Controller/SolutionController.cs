@@ -31,6 +31,7 @@ public class SolutionController :ControllerBase
     public async Task<ActionResult<IEnumerable<SolutionDto>>> GetUserSolutions()
     {
         var userId = User.FindAll(c => c.Type == ClaimTypes.NameIdentifier).FirstOrDefault()?.Value;
+        
         if (userId == null)
         {
             return BadRequest("no such user");

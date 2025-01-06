@@ -1,10 +1,14 @@
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using dotenv.net;
+using DotNetEnv;
 using MathHelperr.Data;
 using MathHelperr.Model.Db;
 using MathHelperr.Model.Db.DTO;
 using MathHelperr.Service;
 using MathHelperr.Service.AbstractImplementation;
 using MathHelperr.Service.Authentication;
+using MathHelperr.Service.Encription;
 using MathHelperr.Service.Factory;
 using MathHelperr.Service.Groq;
 using MathHelperr.Service.LevelProvider;
@@ -18,10 +22,33 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.IdentityModel.Tokens;
 
 
+
+
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.AddJsonFile("appsettings.json");
-builder.Configuration.AddUserSecrets<Program>();
+builder.Logging.ClearProviders(); // Alap logoló szolgáltatók törlése
+builder.Logging.AddConsole(); // Konzolos logolás engedélyezése
+builder.Logging.SetMinimumLevel(LogLevel.Trace); // Minimum szint: Trace, mindent naplóz
+
+
+
+//builder.Configuration.AddUserSecrets<Program>();
+var configuration = builder.Configuration;
+//Env.Load("C:\\Users\\macko\\OneDrive\\Dokumentumok\\suli\\codecool\\practise\\5_petProjects\\MathHelper\\Backend\\MathHelper\\MathHelperr");
+DotEnv.Load(options: new DotEnvOptions(envFilePaths: new[] { ".env" }));
+builder.Configuration
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddEnvironmentVariables();
+
+//Majd töröld
+var email = builder.Configuration["ADMIN_EMAIL"];
+
+Console.WriteLine($"Admin Email: {email}");
+Console.WriteLine("Kestrel server is starting...");
+Console.WriteLine(builder.Configuration["ConnectionStrings:DefaultConnection"]);
+
+
 
 
 // Add services to the container.
@@ -33,7 +60,9 @@ builder.Services.AddScoped<IAlgebraExcercise, AlgebraExerciseFromAbstract>();
 builder.Services.AddScoped<IMultiplicationExcercise, MultiplicationExerciseFromAbstract>();
 builder.Services.AddScoped<IDivisionExcercise, DivisionExerciseFromAbstract>();
 builder.Services.AddScoped<IRemainDivisionExcercise, RemainDivisionExerciseFromAbstract>();
-builder.Services.AddScoped<IMathFactory, MathFactory>();
+
+//original factory, new implementation because refactoring - it runs with this!!!!!
+//builder.Services.AddScoped<IMathFactory, MathFactory>();
 
 //Get "level" data from htttp context or later from desctop application
 //HttpContextAccessor - acces to http content
@@ -47,8 +76,43 @@ builder.Services.AddScoped<IGroqResultGenerator, GroqResultGenerator>();
 builder.Services.AddScoped<ICreatorRepository, CreatorRepository>();
 builder.Services.AddScoped<IRepositoryUserData<SolutionDto>, SolutionDtoRepository>();
 
+
+//IGenerator Branch registration test
+builder.Services.AddScoped<IAlgebraExampleGenerator, Level1AlgebraExampleGenerator>();
+builder.Services.AddScoped<IAlgebraExampleGenerator, Level2AlgebraExampleGenerator>();
+builder.Services.AddScoped<IAlgebraExampleGenerator, Level3AlgebraExampleGenerator>();
+
+
+builder.Services.AddScoped<IDivisionExampleGenerator, Level1DivisionExampleGenerator>();
+
+
+
+builder.Services.AddScoped<IMultiplicationExampleGenerator, Level1MultiplicationExampleGenerator>();
+builder.Services.AddScoped<IMultiplicationExampleGenerator, Level2MultiplicationExampleGenerator>();
+builder.Services.AddScoped<IMultiplicationExampleGenerator, Level3MultiplicationExampleGenerator>();
+
+builder.Services.AddScoped<IRemainDivisonExampleGenerator, Level1RemainDivisionExampleGenerator>();
+// builder.Services.AddScoped<IRemainDivisionTextGenerator, Level1RemainDivisionTextGenerator>();
+//modified textgenerator
+
+builder.Services.AddScoped<IAlgebraTextGenerator, AlgebraTextGeneratorGeneral>();
+builder.Services.AddScoped<IDivisionTextGenerator, DivisionTextGeneratorGeneral>();
+builder.Services.AddScoped<IRemainDivisionTextGenerator, RemainDivisionTextGeneratorGenral>();
+builder.Services.AddScoped<IMultiplicationTextGenerator, MultiplicationTextGeneratorGeneral>();
+
+
+
+  //generikus factroy registration
+//builder.Services.AddScoped(typeof(IMathExampleGeneratorFactory<>), typeof(MathGeneratorFactory));
+//builder.Services.AddScoped<IMathGeneratorFactory, MathGeneratorFactory>();
+builder.Services.AddScoped<IMathGeneratorFactory, MathGeneratorFactory>();
+builder.Services.AddScoped<IMathFactory, MathFactoryMarkingWithFactory>(); 
+
 //register repository
 builder.Services.AddScoped<IRepository<Solution>, SolutionRepository>();
+
+//register encription
+builder.Services.AddScoped<IEncription, Encriptor>();
 
 
 //authentication registration
@@ -58,41 +122,55 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 
 
 
-// IMath children registration for different levels, solution for same interface
-// implementations registration
-AddAlgebraGenerators();
-AddMultiplicationGenerators();
-AddDivisionGenerators();
-
 AddJwtAuthentication();
 AddIdentity();
 
 //docker-compose miatt
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-                       ?? builder.Configuration["ConnectionStrings__DefaultConnection"];
+var connectionString = builder.Configuration["ConnectionStrings:DefaultConnection"];
 
 // Configure Identity DbContext
-//builder.Services.AddDbContext<ApplicationDbContext>(options =>
-  //  options.UseSqlServer(connectionString));
-//builder.Services.AddDbContext<UserContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(connectionString,
+    sqlOptions =>
+    {
+        sqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5, // Hány próbálkozás legyen
+            maxRetryDelay: TimeSpan.FromSeconds(10), // Mekkora késleltetéssel
+            errorNumbersToAdd: null); // További hibaazonosítók, ha szükséges
+    }));
+builder.Services.AddDbContext<UserContext>(options => options.UseSqlServer(connectionString,
+    sqlOptions =>
+    {
+        sqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5, // Hány próbálkozás legyen
+            maxRetryDelay: TimeSpan.FromSeconds(10), // Mekkora késleltetéssel
+            errorNumbersToAdd: null); // További hibaazonosítók, ha szükséges
+    }));
+//docker end
 
-
-builder.Services.AddDbContext<UserContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+//docker testelés előtt
+//builder.Services.AddDbContext<UserContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+//builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<AuthenticationSeeder>();
 
 
 builder.Services.AddControllers();
 
 // ssl tanustvány miatt lehet majd törlöd docker miatt 
-// builder.WebHost.ConfigureKestrel(options =>
-// {
-//     options.ListenAnyIP(443, listenOptions =>
-//     {
-//         listenOptions.UseHttps("/https/localhost-cert.pem", "/https/localhost-key.pem");
-//     });
-//     options.ListenAnyIP(80); // HTTP
-// });
+builder.WebHost.ConfigureKestrel(options =>
+{
+   
+
+    var certPath = builder.Configuration["CERT_PATH"];
+    var certPassword =builder.Configuration["CERT_PASSWORD"];
+    var certificate = new X509Certificate2(certPath, certPassword, X509KeyStorageFlags.MachineKeySet);
+    options.ListenAnyIP(443, listenOptions =>
+    {
+        
+        listenOptions.UseHttps(certificate);
+    });
+    options.ListenAnyIP(80); // HTTP
+});
 
 //CORS settings - call before MApControllers()
 builder.Services.AddCors(options =>
@@ -107,9 +185,16 @@ builder.Services.AddCors(options =>
     });
 });
 
+
+
 var app = builder.Build();
 
-//Migration();
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage(); // Fejlesztői hibakezelő oldal engedélyezése
+}
+
+Migration();
 
 // Authentication: add identity roles
 AddRoles();
@@ -136,13 +221,18 @@ app.Run();
 
 void Migration()
 {
+    
     using (var scope = app.Services.CreateScope())
     {
         var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         var userContext = scope.ServiceProvider.GetRequiredService<UserContext>();
-        
-        dbContext.Database.Migrate();
-        userContext.Database.Migrate();
+
+        //Test nem fut le, ha nem relációs adatbázisból fut a migráció
+        if (dbContext.Database.IsRelational()) // Csak relációs adatbázis esetén fut
+        {
+            dbContext.Database.Migrate();
+            userContext.Database.Migrate();
+        }
     }
 }
 
@@ -156,151 +246,6 @@ void AddRoles()
 }
 
 
-void AddDivisionGenerators()
-{
-    builder.Services.AddScoped<IDivisionExampleGenerator>(provider =>
-    {
-        var context = provider.GetRequiredService<IContextProvider>();
-        var level = context.GetLevel();
-        switch (level)
-        {
-            case "1":
-                return new Level1DivisionExampleGenerator();
-            default:
-                return new Level1DivisionExampleGenerator();
-        }
-
-        throw new InvalidOperationException();
-    });
-    
-    builder.Services.AddScoped<IDivisionTextGenerator>(provider =>
-    {
-        var context = provider.GetRequiredService<IContextProvider>();
-        var level = context.GetLevel();
-        switch (level)
-        {
-            case "1":
-                return new Level1DivisionTextGenerator();
-            default:
-                return new Level1DivisionTextGenerator();
-        }
-
-        throw new InvalidOperationException();
-    });
-    
-}
-
-void AddMultiplicationGenerators()
-{
-    
-    builder.Services.AddScoped<IMultiplicationTextGenerator>(provider =>
-    {
-        var context = provider.GetRequiredService<IContextProvider>();
-        var level = context.GetLevel();
-        switch (level)
-        {
-            case "1":
-                return new Level1MultiplicationTextGenerator();
-            case "2":
-                return new Level2MultiplicationTextGenerator();
-            case "3":
-                return new Level3MultiplicationTextGenerator();
-            default:
-                return new Level1MultiplicationTextGenerator();
-        }
-
-        throw new InvalidOperationException();
-    });
-    
-    builder.Services.AddScoped<IMultiplicationExampleGenerator>(implementationFactory: provider =>
-    {
-        var context = provider.GetRequiredService<IContextProvider>();
-        var level = context.GetLevel();
-        switch (level)
-        {
-            case "1":
-                return new Level1MultiplicationExampleGenerator();
-            case "2":
-                return new Level2MultiplicationExampleGenerator();
-            case "3":
-                return new Level3MultiplicationExampleGenerator();
-            default:
-                return new Level1MultiplicationExampleGenerator();
-        }
-        throw new InvalidOperationException();
-    });
-
-    builder.Services.AddScoped<IRemainDivisonExampleGenerator>(implementationFactory: provider =>
-    {
-        var context = provider.GetRequiredService<IContextProvider>();
-        var level = context.GetLevel();
-        switch (level)
-        {
-            case "1":
-                return new Level1RemainDivisionExampleGenerator();
-           default:
-                return new Level1RemainDivisionExampleGenerator();
-        }
-        throw new InvalidOperationException();
-    });
-    
-    builder.Services.AddScoped<IRemainDivisionTextGenerator>(implementationFactory: provider =>
-    {
-        var context = provider.GetRequiredService<IContextProvider>();
-        var level = context.GetLevel();
-        switch (level)
-        {
-            case "1":
-                return new Level1RemainDivisionTextGenerator();
-            default:
-                return new Level1RemainDivisionTextGenerator();
-        }
-        throw new InvalidOperationException();
-    });
-    
-    
-}
-
-void AddAlgebraGenerators()
-{
-    builder.Services.AddScoped<IAlgebraTextGenerator>(provider =>
-    {
-        var context = provider.GetRequiredService<IContextProvider>();
-        var level = context.GetLevel();
-        switch (level)
-        {
-            case "1":
-                return new Level1AlgebraTextGenerator();
-            case "2":
-                return new Level2AlgebraTextGenerator();
-            case "3":
-                return new Level3AlgebraTextGenerator();
-            default:
-                return new Level1AlgebraTextGenerator();
-        }
-
-        throw new ArgumentException("Invalid level");
-    });
-
-    builder.Services.AddScoped<IAlgebraExampleGenerator>(provider =>
-    {
-        var context = provider.GetRequiredService<IContextProvider>();
-        var level = context.GetLevel();
-        switch (level)
-        {
-            case "1":
-                return new Level1AlgebraExampleGenerator();
-            case "2":
-                return new Level2AlgebraExampleGenerator();
-            case "3":
-                return new Level3AlgebraExampleGenerator();
-            default:
-                return new Level1AlgebraExampleGenerator();
-        }
-
-        throw new ArgumentException("Invalid level");
-    });
-}
 
 void AddJwtAuthentication()
 {
@@ -308,7 +253,8 @@ void AddJwtAuthentication()
 
 
     var jwtSettings = builder.Configuration.GetSection("Jwt");
-    var issuerSigningKey = builder.Configuration["Jwt:IssuerSigningKey"];
+    //var issuerSigningKey = builder.Configuration["Jwt:IssuerSigningKey"];
+    var issuerSigningKey = configuration["JWT_IssuerSigningKey"];
 
 
 
@@ -326,8 +272,8 @@ void AddJwtAuthentication()
                 ValidateAudience = true,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                ValidIssuer = jwtSettings["ValidIssuer"],
-                ValidAudience = jwtSettings["ValidAudience"],
+                ValidIssuer = configuration["ValidIssuer"],
+                ValidAudience = configuration["ValidAudience"],
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(issuerSigningKey))
             };
             options.Events = new JwtBearerEvents
@@ -347,7 +293,7 @@ void AddJwtAuthentication()
                 {
                     Console.WriteLine("JWT Token received: " + context.Token);
                     context.Token = context.Request.Cookies[
-                        jwtSettings["CookieName"] ??
+                        configuration["CookieName"] ??
                         throw new InvalidOperationException(
                             "no CookieName key in appsettings")]; // A token cookie-ból való kiolvasása
                     return Task.CompletedTask;

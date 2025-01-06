@@ -25,7 +25,7 @@ export default function Welcome() {
   return (
     <div>
       <p>{userReduxName ? `Welcome ${userReduxName}` : "Nincs token"}</p>
-      <p>
+      <div>
         {userReduxName ? (
           <div>
             Welcome ${userReduxName} be vagy jelentkezve <br /> Szia, kis
@@ -39,7 +39,7 @@ export default function Welcome() {
         ) : (
           <button onClick={() => navigate("/login")}>Login</button>
         )}
-      </p>
+      </div>
       Matekra fel!
     </div>
   );

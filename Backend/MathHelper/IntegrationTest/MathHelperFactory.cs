@@ -1,6 +1,8 @@
 using System.Net;
+using dotenv.net;
 using MathHelperr.Data;
 using MathHelperr.Model.Db;
+using MathHelperr.Service.Authentication;
 using MathHelperr.Utility;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -16,9 +18,28 @@ public class MathHelperFactory : WebApplicationFactory<Program>
 {
     
     private readonly string _dbName = Guid.NewGuid().ToString();
+    private IConfiguration _configuration; 
  
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        builder.ConfigureAppConfiguration((context, config) =>
+        {
+            DotEnv.Load(new DotEnvOptions(envFilePaths: new[] { ".MathHelperr/.env" })); 
+            config.AddEnvironmentVariables();
+            // Alkalmazás konfiguráció betöltése
+            config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddEnvironmentVariables();
+            _configuration = config.Build();
+        });
+        //https settings for  cookies
+        // builder.ConfigureKestrel(options =>
+        // {
+        //     options.ListenLocalhost(8443, listenOptions =>
+        //     {
+        //         listenOptions.UseHttps(); // HTTPS engedélyezése
+        //     });
+        // });
+        
         builder.ConfigureServices(services =>
         {
             var mathelperDbContextDescriptor = services.SingleOrDefault(descriptor => descriptor.ServiceType ==
@@ -44,9 +65,15 @@ public class MathHelperFactory : WebApplicationFactory<Program>
 
             userContext.Database.EnsureDeleted();
             userContext.Database.EnsureCreated();
+            
+            var seeder = new AuthenticationSeeder(roleManager, userManager, _configuration);
+            seeder.AddRoles();
+            seeder.AddAdmin();
 
             var userId = SeeduserConetext(userContext, userManager, roleManager)
                 .GetAwaiter().GetResult();
+            
+            
 
             Exercise exercise = new Exercise
             {
@@ -81,21 +108,7 @@ public class MathHelperFactory : WebApplicationFactory<Program>
 
         });
         //IConfiguration hozzáadása
-        builder.ConfigureAppConfiguration((context, config) =>
-        {
-            // Alkalmazás konfiguráció betöltése
-            config.AddJsonFile("appsettings.json")
-                .AddEnvironmentVariables();
-        });
-        //https beállítás a cookiehoz
-        //builder.UseSetting("https_port", "5001"); // HTTPS port beállítása
-        builder.ConfigureKestrel(options =>
-        {
-            options.ListenLocalhost(5001, listenOptions =>
-            {
-                listenOptions.UseHttps(); // HTTPS engedélyezése
-            });
-        });
+       
     }
     
     
@@ -115,8 +128,12 @@ public class MathHelperFactory : WebApplicationFactory<Program>
         var user = new IdentityUser { UserName = "test", Email = "a@a.hu" };
         await userManager.CreateAsync(user, "password");
         await userManager.AddToRoleAsync(user, "User"); // Adding the user to a role
+        
         var userId = user.Id;
         Console.WriteLine(userId);
+        
+        
+        
         return userId;
     }
 }

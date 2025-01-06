@@ -21,7 +21,7 @@ export default defineConfig({
     },
     proxy: {
       '/api': {
-        target: 'https://localhost:443', // A backend címe HTTPS-en 7246 / 8443
+        target: 'https://localhost:8443', // A backend címe HTTPS-en 7246 / 8443
         changeOrigin: true,
         secure: false, //saját aláírású tanúsítványt használsz, állítsd false-ra
       },

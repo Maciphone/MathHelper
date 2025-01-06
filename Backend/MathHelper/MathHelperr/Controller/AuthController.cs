@@ -73,6 +73,7 @@ public class AuthController : ControllerBase
         var cookieOptions = result.Options;
         Response.Cookies.Append(jwtKey, token, cookieOptions);
 
+        
         return Ok(new AuthResponse(result.Email, result.UserName, tokenValidTimesSpan));
     }
 

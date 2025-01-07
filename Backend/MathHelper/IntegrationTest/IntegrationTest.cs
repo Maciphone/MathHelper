@@ -29,10 +29,11 @@ public class IntegrationTest : IClassFixture<MathHelperFactory>
   
         this.output = output;
         _factory = factory;
+        //_client = _factory.CreateClient();
        
         _client = factory.CreateClient(new WebApplicationFactoryClientOptions
         {
-            BaseAddress = new Uri("https://localhost:8443") // HTTPS URL
+            BaseAddress = new Uri("https://localhost:8443") // HTTPS URL ; to be able to use https connection
         });
     }
     
@@ -75,50 +76,6 @@ public class IntegrationTest : IClassFixture<MathHelperFactory>
         var responseContent = await loginResponse.Content.ReadAsStringAsync();
         Assert.Contains("Invalid email or password", responseContent);
     }
-
-    [Fact]
-    public async Task TestAuthorizedGetExerciseLoggedIn()
-    {
-     
-        var loginRequest = new AuthRequest("a@a.hu", "password");
-       
-        //logging in 
-        var loginResponse = await _client.PostAsync(requestUri: "api/authentication/Login",
-            new StringContent(JsonConvert.SerializeObject(loginRequest),
-                Encoding.UTF8, mediaType: "application/json")); 
-        
-        Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
-        
-        //catch cookie
-        var cookieHeader = loginResponse.Headers.GetValues("Set-Cookie").FirstOrDefault();
-        var cookieContainer = new CookieContainer();
-        cookieContainer.SetCookies(new Uri("https://localhost:8443"), cookieHeader);
-       
-        //to be able to catch 
-        var handler = new HttpClientHandler
-        {
-            CookieContainer = cookieContainer,
-            ServerCertificateCustomValidationCallback = (_, _, _, _) => true
-        };
-        
-        var client = new HttpClient(handler) { BaseAddress = new Uri("https://localhost:8443") };
-
-        var request = new HttpRequestMessage(HttpMethod.Get, "api/algebra/TestForDatabase?type=Algebra");
-        request.Headers.Add("Level", "1"); 
-        
-        var response = await client.SendAsync(request);
-       
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        
-        var responseBody = await response.Content.ReadAsStringAsync();
-        output.WriteLine($"Response: {responseBody}");
-        var responseJson = JsonConvert.DeserializeObject<ExcerciseResult>(responseBody);
-       
-        //the lowest ExerciseID is 1, and it decrease on each run
-        Assert.InRange(responseJson.ExerciseId, 1, int.MaxValue);
-    }
-    
-
     
     [Fact]
     public async Task TestAuthorizedGEtExerciseNotLoggedIn()
@@ -157,4 +114,73 @@ public class IntegrationTest : IClassFixture<MathHelperFactory>
 
     }
 
+    [Fact]
+    public async Task Exercise()
+    {
+        var loginRequest = new AuthRequest("a@a.hu", "password");
+
+        // Logging in
+        var loginResponse = await _client.PostAsync(requestUri: "api/authentication/Login",
+            new StringContent(JsonConvert.SerializeObject(loginRequest),
+                Encoding.UTF8, mediaType: "application/json"));
+
+        Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
+
+        // Creating a new request to add the "Level" header
+        var request = new HttpRequestMessage(HttpMethod.Get, "api/algebra/TestForDatabase?type=Algebra");
+        request.Headers.Add("Level", "1"); // Adding the "Level" header
+
+        var response = await _client.SendAsync(request);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var responseBody = await response.Content.ReadAsStringAsync();
+        var responseJson = JsonConvert.DeserializeObject<ExcerciseResult>(responseBody);
+        Assert.InRange(responseJson.ExerciseId, 1, int.MaxValue);
+        
+    }
+    
 }
+
+// check why not working
+// [Fact]
+// public async Task TestAuthorizedGetExerciseLoggedIn()
+// {
+//      
+//     var loginRequest = new AuthRequest("a@a.hu", "password");
+//        
+//     //logging in 
+//     var loginResponse = await _client.PostAsync(requestUri: "api/authentication/Login",
+//         new StringContent(JsonConvert.SerializeObject(loginRequest),
+//             Encoding.UTF8, mediaType: "application/json")); 
+//         
+//     Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
+//         
+//     //catch cookie
+//     var cookieHeader = loginResponse.Headers.GetValues("Set-Cookie").FirstOrDefault();
+//     var cookieContainer = new CookieContainer();
+//     cookieContainer.SetCookies(new Uri("https://localhost:8443"), cookieHeader);
+//        
+//     //to be able to catch 
+//     var handler = new HttpClientHandler
+//     {
+//         CookieContainer = cookieContainer,
+//         ServerCertificateCustomValidationCallback = (_, _, _, _) => true
+//     };
+//         
+//     var client = new HttpClient(handler) { BaseAddress = new Uri("https://localhost:8443") };
+//
+//     var request = new HttpRequestMessage(HttpMethod.Get, "api/algebra/TestForDatabase?type=Algebra");
+//     request.Headers.Add("Level", "1"); 
+//       
+//     var response = await client.SendAsync(request);
+//        
+//     Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+//         
+//     var responseBody = await response.Content.ReadAsStringAsync();
+//     output.WriteLine($"Response: {responseBody}");
+//     var responseJson = JsonConvert.DeserializeObject<ExcerciseResult>(responseBody);
+//        
+//     //the lowest ExerciseID is 1, and it decrease on each run
+//     Assert.InRange(responseJson.ExerciseId, 1, int.MaxValue);
+// }

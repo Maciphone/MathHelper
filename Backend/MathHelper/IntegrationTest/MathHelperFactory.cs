@@ -31,14 +31,14 @@ public class MathHelperFactory : WebApplicationFactory<Program>
                 .AddEnvironmentVariables();
             _configuration = config.Build();
         });
-        //https settings for  cookies
-        // builder.ConfigureKestrel(options =>
-        // {
-        //     options.ListenLocalhost(8443, listenOptions =>
-        //     {
-        //         listenOptions.UseHttps(); // HTTPS engedélyezése
-        //     });
-        // });
+      
+          builder.ConfigureKestrel(options =>
+          {
+              options.ListenLocalhost(8443, listenOptions =>
+              {
+                  listenOptions.UseHttps(); // HTTPS engedélyezése
+              });
+          });
         
         builder.ConfigureServices(services =>
         {

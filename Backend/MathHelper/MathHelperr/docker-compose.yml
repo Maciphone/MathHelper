@@ -15,7 +15,7 @@ services:
     environment:
       - ASPNETCORE_URLS=https://+:443;http://+:80
       - ConnectionStrings__DefaultConnection=Server=db;Database=MathHelper;User Id=sa;Password=Macko1234;Encrypt=false;
-      - CERT_PATH=/https/localhost.pfx #elhagyható, a .envben szerepel
+      - CERT_PATH=/ssl/localhost.pfx #elhagyható, a .envben szerepel
       - CERT_PASSWORD=MYPassword #elhagyható, a .envben szerepel
     entrypoint: ["./wait-for-it.sh", "db:1433", "-t", "90", "--", "dotnet", "MathHelperr.dll"]
 

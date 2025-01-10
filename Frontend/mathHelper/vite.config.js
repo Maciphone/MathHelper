@@ -14,14 +14,14 @@ const __dirname = dirname(__filename);
 export default defineConfig({
   plugins: [react()],
   server: {
-    port: 3000,
+    port: 9443,
     https: {
       key: fs.readFileSync(path.resolve(__dirname, 'localhost-key.pem')),
       cert: fs.readFileSync(path.resolve(__dirname, 'localhost-cert.pem')),
     },
     proxy: {
       '/api': {
-        target: 'https://localhost:443', // A backend címe HTTPS-en 7246 / 8443
+        target: 'https://localhost:8443', // A backend címe HTTPS-en 7246 / 8443
         changeOrigin: true,
         secure: false, //saját aláírású tanúsítványt használsz, állítsd false-ra
       },

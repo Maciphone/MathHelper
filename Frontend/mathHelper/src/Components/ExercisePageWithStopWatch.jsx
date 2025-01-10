@@ -125,7 +125,12 @@ export default function ExercisePageWithStopWatch({
 
     try {
       const decryptedResult0 = await decriptdData(matek.result[0]);
-      const decryptedResult1 = await decriptdData(matek.result[1]);
+      //not always in use
+      let decryptedResult1 = null;
+
+      if (matek.result?.[1]) {
+        decryptedResult1 = await decriptdData(matek.result[1]);
+      }
 
       if (
         (operation === "RemainDivision" &&

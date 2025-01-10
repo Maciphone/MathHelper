@@ -3,7 +3,9 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 
-COPY ssl/localhost.pfx /https/localhost.pfx
+#COPY ssl/localhost.pfx /https/localhost.pfx
+#ha nincs az adott könyvtárban akkor build alatt hibát dob
+COPY ["ssl/localhost.pfx", "/https/localhost.pfx"]
 
 
 #COPY ./localhost-cert.pem /https/localhost-cert.pem

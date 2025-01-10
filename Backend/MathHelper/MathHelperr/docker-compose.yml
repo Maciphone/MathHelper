@@ -19,9 +19,24 @@ services:
       - CERT_PASSWORD=MYPassword #elhagyható, a .envben szerepel
       - ASPNETCORE_ENVIRONMENT=Production
     entrypoint: ["./wait-for-it.sh", "db:1433", "-t", "90", "--", "dotnet", "MathHelperr.dll"]
-    networks:
-      - shared_network
+    
   
+  frontend:
+    build:
+      context: ../../../Frontend/mathHelper # A frontend relatív elérési útja
+      dockerfile: Dockerfile
+    ports:
+      - "9443:443"
+    environment:
+      - VITE_GROQ_API_KEY=your_api_key
+      - VITE_AES_KEY=1234567890123456
+      - VITE_AES_IV=1234567890123456
+    volumes:
+      - ../../../Frontend/mathHelper/localhost-cert.pem:/etc/ssl/certs/localhost-cert.pem
+      - ../../../Frontend/mathHelper/localhost-key.pem:/etc/ssl/private/localhost-key.pem
+      - ../../../Frontend/mathHelper/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - webapi
 
 
   db:
@@ -30,15 +45,14 @@ services:
       - .env
     ports:
       - "1433:1433"  
-    networks:
-      - shared_network
-        
-networks:
-  shared_network:
-    driver: bridge
+    
   
 
    # environment:
    #   SA_PASSWORD: "Macko1234"
    #   ACCEPT_EULA: "Y"
     #CERT_PATH=C:\Users\macko\OneDrive\Dokumentumok\suli\codecool\practise\5_petProjects\MathHelper\Backend\MathHelper\MathHelperr\ssl\localhost.pfx
+
+
+# docker network connect shared_network mathhelperr-db
+# docker network connect shared_network mathhelperr-webapi-1

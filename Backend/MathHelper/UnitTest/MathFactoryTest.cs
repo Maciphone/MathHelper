@@ -10,7 +10,7 @@ using Moq;
 
 namespace UnitTest;
 
-public class Tests
+public class MathFactoryTest
 {
     [Test]
     public void GetMathExcercise_ShouldReturnAlgebraExercise_WhenMathTypeIsAlgebra()

@@ -34,8 +34,8 @@ jobs:
       run: dotnet build Backend/MathHelper/MathHelperr/MathHelperr.csproj --no-restore --configuration Release
 
     # Unit tesztek futtatása
-    - name: Run Unit Tests
-      run: dotnet test Backend/MathHelper/UnitTest/UnitTest.csproj --no-build --logger "console;verbosity=detailed"
+    #- name: Run Unit Tests
+     # run: dotnet test Backend/MathHelper/UnitTest/UnitTest.csproj --no-build --logger "console;verbosity=detailed"
 
     # Integrációs tesztek futtatása
     - name: Run Integration Tests

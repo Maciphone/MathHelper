@@ -35,7 +35,7 @@ jobs:
 
     # Unit tesztek futtatása
     - name: Run Unit Tests
-      run: dotnet test Backend/MathHelper/UnitTest/UnitTest.csproj --no-build --verbosity normal
+      run: dotnet test Backend/MathHelper/UnitTest/UnitTest.csproj --no-build --logger "console;verbosity=detailed"
 
     # Integrációs tesztek futtatása
     - name: Run Integration Tests

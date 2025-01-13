@@ -10,6 +10,7 @@ using Moq;
 
 namespace UnitTest;
 
+[TestFixture]
 public class UnitTest
 {
     [Test]

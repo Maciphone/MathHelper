@@ -15,14 +15,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    #get code
     - uses: actions/checkout@v4
+    # .net install
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
+    # dependencys install
     - name: Restore dependencies
+      working-directory: Backend/MathHelper/MathHelperr
       run: dotnet restore
+    # build
     - name: Build
       run: dotnet build --no-restore
+    # run tests
     - name: Test
+      working-directory: Backend/MathHelper/MathHelperr
       run: dotnet test --no-build --verbosity normal

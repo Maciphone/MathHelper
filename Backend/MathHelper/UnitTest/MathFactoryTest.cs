@@ -3,6 +3,8 @@ using MathHelperr.Service.AbstractImplementation;
 using MathHelperr.Service.Factory;
 using MathHelperr.Service.Math.Factory;
 using MathHelperr.Utility;
+using NUnit.Framework;
+
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 
@@ -34,7 +36,8 @@ public class Tests
         var result = factory.GetMathExercise(MathTypeName.Algebra, 1);
 
         // Assert
-        Assert.IsInstanceOf<AlgebraExerciseFromAbstract>(result);
+       // Assert.IsInstanceOf<AlgebraExerciseFromAbstract>(result);
+        Assert.That(result, Is.InstanceOf<AlgebraExerciseFromAbstract>());
     }
 
     [Test]
@@ -60,7 +63,8 @@ public class Tests
         var result = factory.GetMathExercise(MathTypeName.Multiplication, 1);
 
         // Assert
-        Assert.IsInstanceOf<MultiplicationExerciseFromAbstract>(result);
+        //Assert.IsInstanceOf<MultiplicationExerciseFromAbstract>(result);
+        Assert.That(result, Is.InstanceOf<MultiplicationExerciseFromAbstract>());
     }
     
     
@@ -88,7 +92,8 @@ public class Tests
         var result = factory.GetMathExercise(MathTypeName.Division, 1);
 
         // Assert
-        Assert.IsInstanceOf<DivisionExerciseFromAbstract>(result);
+        //Assert.IsInstanceOf<DivisionExerciseFromAbstract>(result);
+        Assert.That(result, Is.InstanceOf<DivisionExerciseFromAbstract>());
     }
     
     [Test]
@@ -114,7 +119,8 @@ public class Tests
         var result = factory.GetMathExercise(MathTypeName.RemainDivision, 1);
 
         // Assert
-        Assert.IsInstanceOf<RemainDivisionExerciseFromAbstract>(result);
+        //Assert.IsInstanceOf<RemainDivisionExerciseFromAbstract>(result);
+        Assert.That(result, Is.InstanceOf<RemainDivisionExerciseFromAbstract>());
     }
 
     

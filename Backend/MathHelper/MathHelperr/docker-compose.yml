@@ -28,7 +28,6 @@ services:
     ports:
       - "9443:443"
     environment:
-      - VITE_GROQ_API_KEY=your_api_key
       - VITE_AES_KEY=1234567890123456
       - VITE_AES_IV=1234567890123456
     volumes:

@@ -25,10 +25,8 @@ export const Login = ({ setIsLoggedIn }) => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    console.log(password, email);
 
     try {
-      console.log(password);
       const response = await fetch("api/authentication/Login", {
         method: "POST",
         headers: {
@@ -63,6 +61,7 @@ export const Login = ({ setIsLoggedIn }) => {
           const errorMessages = dataError[badCredentialsKey].join(", ");
           setError(errorMessages);
         }
+        alert("próbáld újra!");
       } else {
         setError("Invalid credentials");
       }
@@ -72,18 +71,19 @@ export const Login = ({ setIsLoggedIn }) => {
     }
   };
 
+  const logOut = () => {
+    // Redux állapot törlése
+    dispatch(addName(null));
+    dispatch(setTokenExpiration(null));
+    navigate("/login");
+  };
+
   useEffect(() => {
     // Figyeljük a Redux állapot változását
     if (username) {
       console.log("Felhasználónév a Redux-ból:", username);
     }
   }, [username]);
-
-  const logOut = () => {
-    document.cookie = "token=; path=/; max-age=0";
-    removeCookie("token");
-    navigate("/");
-  };
 
   useEffect(() => {
     if (error) {
@@ -140,6 +140,7 @@ export const Login = ({ setIsLoggedIn }) => {
           <a href="/register">Register</a>
         </p>
       </div>
+      <button onClick={logOut}>Logout</button>
     </div>
   );
 };

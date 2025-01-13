@@ -39,14 +39,18 @@ DotEnv.Load(options: new DotEnvOptions(envFilePaths: new[] { ".env" }));
 builder.Configuration
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-    .AddEnvironmentVariables();
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true);
+if (builder.Environment.IsProduction())
+{
+    builder.Configuration.AddEnvironmentVariables();
+}
 
 //Majd töröld
 var email = builder.Configuration["ADMIN_EMAIL"];
 
-Console.WriteLine($"Admin Email: {email}");
+
 Console.WriteLine("Kestrel server is starting...");
-Console.WriteLine(builder.Configuration["ConnectionStrings:DefaultConnection"]);
+
 
 
 
@@ -163,6 +167,7 @@ builder.WebHost.ConfigureKestrel(options =>
 
     var certPath = builder.Configuration["CERT_PATH"];
     var certPassword =builder.Configuration["CERT_PASSWORD"];
+    
     var certificate = new X509Certificate2(certPath, certPassword, X509KeyStorageFlags.MachineKeySet);
     options.ListenAnyIP(443, listenOptions =>
     {

@@ -1,0 +1,22 @@
+#depricated - only one compose.yml in use
+# services:
+#   frontend:
+#     build:
+#       context: ./
+#       dockerfile: Dockerfile
+#     ports:
+#       - "9443:443"
+#     environment:
+#       - VITE_GROQ_API_KEY=your_api_key
+#       - VITE_AES_KEY=1234567890123456
+#       - VITE_AES_IV=1234567890123456
+#     volumes:
+#       - ./localhost-cert.pem:/etc/ssl/certs/localhost-cert.pem
+#       - ./localhost-key.pem:/etc/ssl/private/localhost-key.pem
+#       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+#     networks:
+#       - shared_network
+
+# networks:
+#   shared_network:
+#     driver: bridge

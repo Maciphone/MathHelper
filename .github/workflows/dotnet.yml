@@ -22,14 +22,21 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
+   
     # dependencys install
     - name: Restore dependencies
-      working-directory: Backend/MathHelper/MathHelperr
-      run: dotnet restore
+      #working-directory: Backend/MathHelper/MathHelperr
+      run: dotnet restore Backend/MathHelper/MathHelperr/MathHelperr.csproj
+   
     # build
     - name: Build
-      run: dotnet build --no-restore
-    # run tests
-    - name: Test
-      working-directory: Backend/MathHelper/MathHelperr
-      run: dotnet test --no-build --verbosity normal
+     # run: dotnet build --no-restore
+      run: dotnet build Backend/MathHelper/MathHelperr/MathHelperr.csproj --no-restore --configuration Release
+
+    # Unit tesztek futtatása
+    - name: Run Unit Tests
+      run: dotnet test Backend/MathHelper/UnitTest/UnitTest.csproj --no-build --verbosity normal
+
+    # Integrációs tesztek futtatása
+    - name: Run Integration Tests
+      run: dotnet test Backend/MathHelper/IntegrationTest/IntegrationTest.csproj --no-build --verbosity normal

@@ -39,4 +39,4 @@ jobs:
 
     # Integrációs tesztek futtatása
     - name: Run Integration Tests
-      run: dotnet test Backend/MathHelper/IntegrationTest/IntegrationTest.csproj --no-build --verbosity normal
+      run: dotnet test Backend/MathHelper/IntegrationTest/IntegrationTest.csproj --verbosity normal

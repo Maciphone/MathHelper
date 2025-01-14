@@ -1,0 +1,66 @@
+# Általános ignore szabályok
+.DS_Store
+Thumbs.db
+
+# Node.js (React projektek)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.env
+.env.local
+.env.*.local
+.vscode/
+dist/
+build/
+
+# React specifikus
+*.log
+*.lock
+public/static/
+coverage/
+*.cache
+*.env
+*.local
+.eslintcache
+.npmrc
+
+# ASP.NET Core (C#)
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.rsuser
+.vscode/
+.idea/
+*.swp
+*.log
+*.vs/
+*.vsconfig
+ReSharper*
+CodeCoverage/
+
+# ASP.NET specifikus környezetek
+appsettings*.json
+appsettings.Development.json
+appsettings.Local.json
+secrets.json
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.old
+*.orig
+
+# Visual Studio
+*.pdb
+*.userprefs
+*.resharper
+.vs/
+*.log
+
+# Docker
+docker-compose.override.yml
+*.tar

@@ -1,5 +1,6 @@
+<a id="readme-top"></a>
 <div align="center">
-<h3 align="center">Math Helper</h3>
+<h1 align="center">Math Helper</h1>
   <img src="images/mathLogo.jpg" alt="MathHelper Logo" width="400" height="400" />
 </div>
 
